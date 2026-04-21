@@ -39,6 +39,9 @@ function FileInput({ label, accept, onDrop, isUploaded, multiple = false }) {
   );
 }
 
+import { supabase } from '../lib/supabase';
+import { v4 as uuidv4 } from 'uuid';
+
 export default function AssetManager() {
   const { 
     customFBX, setCustomFBX, 
@@ -49,14 +52,61 @@ export default function AssetManager() {
   } = useViewerStore();
 
   const [gpsInput, setGpsInput] = useState(customGPS || '');
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUploadFBX = (file) => setCustomFBX(URL.createObjectURL(file));
   const handleUploadFloorplan = (file) => setCustomFloorplan(URL.createObjectURL(file));
   const handleUploadPanorama = (file) => setCustomPanorama(URL.createObjectURL(file));
   
-  const handleUploadRenders = (files) => {
-    clearCustomRenders();
-    files.forEach(f => addCustomRender(URL.createObjectURL(f)));
+  const handleUploadRenders = async (files) => {
+    if (!supabase) {
+      alert("Supabase Database is not connected! Using local session RAM instead.");
+      clearCustomRenders();
+      files.forEach(f => addCustomRender(URL.createObjectURL(f)));
+      return;
+    }
+
+    setIsUploading(true);
+    // Do not clear custom renders, append to them!
+    try {
+      for (const file of files) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${uuidv4()}.${fileExt}`;
+        const filePath = `renders/${fileName}`;
+
+        // 1. Upload to Storage Bucket
+        const { error: uploadError } = await supabase.storage
+          .from('archviz_models')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        // 2. Get Public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('archviz_models')
+          .getPublicUrl(filePath);
+
+        // 3. Register it in the presentation_assets table
+        const { error: dbError } = await supabase
+          .from('presentation_assets')
+          .insert({
+            project_id: 'demo_project', 
+            asset_type: 'render',
+            asset_url: publicUrl
+          });
+
+        if (dbError) throw dbError;
+
+        // 4. Update the local UI state dynamically
+        addCustomRender(publicUrl);
+      }
+      alert(`Successfully uploaded ${files.length} renders to the Cloud Database!`);
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload renders to the Cloud Database. Check console.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
