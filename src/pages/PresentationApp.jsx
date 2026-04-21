@@ -29,7 +29,8 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
         color: active ? 'white' : (isHovered ? 'white' : 'var(--text-secondary)'),
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600', fontSize: '14px',
         boxShadow: active ? '0 4px 12px var(--accent-glow)' : 'none',
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
+        flexShrink: 0
       }}
     >
       <Icon size={16} /> {label}
