@@ -1,5 +1,7 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video } from 'lucide-react';
+import { useViewerStore } from '../store/viewerStore';
+import { supabase } from '../lib/supabase';
 import ProjectOverview from '../views/ProjectOverview';
 import CinematicsTab from '../views/CinematicsTab';
 import RendersGallery from '../views/RendersGallery';
@@ -36,6 +38,7 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
 };
 
 export default function PresentationApp({ forceAdmin = false }) {
+  const { fetchCloudAssets } = useViewerStore();
   const [activeTab, setActiveTab] = useState('overview');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAdmin] = useState(() => {
@@ -43,6 +46,11 @@ export default function PresentationApp({ forceAdmin = false }) {
     const params = new URLSearchParams(window.location.search);
     return params.get('admin') === 'true';
   });
+
+  // Automatically wire the client state to the Cloud Database on app load!
+  useEffect(() => {
+    fetchCloudAssets(supabase);
+  }, [fetchCloudAssets]);
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', background: 'var(--bg-gradient)', overflow: 'hidden' }}>

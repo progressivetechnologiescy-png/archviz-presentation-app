@@ -46,4 +46,30 @@ export const useViewerStore = create((set) => ({
   
   addCustomRender: (url) => set((state) => ({ customRenders: [...state.customRenders, url] })),
   clearCustomRenders: () => set({ customRenders: [] }),
+
+  // CLOUD FETCHING PIPELINE
+  isFetchingAssets: false,
+  fetchCloudAssets: async (supabaseClient, projectId = "demo_project") => {
+    if (!supabaseClient) return; // Skip if db not configured
+    set({ isFetchingAssets: true });
+    try {
+      const { data, error } = await supabaseClient
+        .from('presentation_assets')
+        .select('*')
+        .eq('project_id', projectId);
+        
+      if (error) {
+        console.error("Cloud DB Error:", error);
+      } else if (data) {
+        const renders = data.filter(d => d.asset_type === 'render').map(d => d.asset_url);
+        if (renders.length > 0) {
+          set({ customRenders: renders });
+        }
+      }
+    } catch (e) {
+      console.error("Cloud Connection Failed:", e);
+    } finally {
+      set({ isFetchingAssets: false });
+    }
+  }
 }));
