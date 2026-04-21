@@ -62,6 +62,11 @@ export default function PresentationApp({ forceAdmin = false }) {
         padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'nowrap', gap: '24px'
       }}>
+        <style>{`
+          @media (max-width: 1300px) {
+            .desktop-logo-text { display: none !important; }
+          }
+        `}</style>
         
         {/* Floating Logo - Top Left */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, pointerEvents: 'none' }}>
@@ -72,7 +77,7 @@ export default function PresentationApp({ forceAdmin = false }) {
           }}>
             <Hexagon size={28} color="#fff" />
           </div>
-          <div style={{ display: window.innerWidth < 1200 ? 'none' : 'block' }}>
+          <div className="desktop-logo-text">
             <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>The Pinnacle Residence</h1>
             <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', whiteSpace: 'nowrap' }}>ARCHVIZ STUDIO LTD.</p>
           </div>
