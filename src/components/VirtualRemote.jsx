@@ -25,9 +25,9 @@ export default function VirtualRemote() {
 
   return (
     <>
-      {/* Primary Movement D-Pad (Right Side) */}
+      {/* Primary Movement D-Pad (Left Side Joystick) */}
       <div className="glass-panel" style={{
-        position: 'absolute', bottom: '30px', right: '30px', zIndex: 100,
+        position: 'absolute', bottom: '30px', left: '380px', zIndex: 100,
         padding: '16px', borderRadius: '24px',
         display: 'grid', gridTemplateColumns: 'repeat(3, 48px)', gridTemplateRows: 'repeat(2, 48px)', gap: '8px'
       }}>
@@ -48,9 +48,9 @@ export default function VirtualRemote() {
         </div>
       </div>
 
-      {/* Secondary Camera Rotation Pad (Left Side) */}
+      {/* Secondary Camera Rotation Pad (Right Side Joystick) */}
       <div className="glass-panel" style={{
-        position: 'absolute', bottom: '30px', left: '380px', /* 320px sidebar + margin offset */ zIndex: 100,
+        position: 'absolute', bottom: '30px', right: '30px', zIndex: 100,
         padding: '12px 16px', borderRadius: '24px',
         display: 'flex', gap: '8px', alignItems: 'center'
       }}>
