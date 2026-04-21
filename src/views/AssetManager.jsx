@@ -54,56 +54,74 @@ export default function AssetManager() {
   const [gpsInput, setGpsInput] = useState(customGPS || '');
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleUploadFBX = (file) => setCustomFBX(URL.createObjectURL(file));
-  const handleUploadFloorplan = (file) => setCustomFloorplan(URL.createObjectURL(file));
-  const handleUploadPanorama = (file) => setCustomPanorama(URL.createObjectURL(file));
+  const uploadSingleFile = async (file, assetType, setLocalUpdate) => {
+    if (!supabase) {
+      alert("Database offline. Using local RAM.");
+      setLocalUpdate(URL.createObjectURL(file));
+      return;
+    }
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
+      const filePath = `${assetType}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+
+      // Clean out existing single-asset for this project (like if they upload a new Panorama, we delete the old DB record so we don't have clashing panoramas)
+      await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: assetType });
+
+      const { error: dbError } = await supabase.from('presentation_assets').insert({
+        project_id: 'demo_project', asset_type: assetType, asset_url: publicUrl
+      });
+      if (dbError) throw dbError;
+
+      setLocalUpdate(publicUrl);
+      alert(`Successfully uploaded ${assetType} to Cloud Database!`);
+    } catch (error) {
+      console.error(`Upload error for ${assetType}:`, error);
+      alert(`Failed to upload ${assetType}.`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleUploadFBX = (file) => uploadSingleFile(file, '3d_model', setCustomFBX);
+  const handleUploadFloorplan = (file) => uploadSingleFile(file, 'floorplan', setCustomFloorplan);
+  const handleUploadPanorama = (file) => uploadSingleFile(file, 'panorama', setCustomPanorama);
   
   const handleUploadRenders = async (files) => {
     if (!supabase) {
-      alert("Supabase Database is not connected! Using local session RAM instead.");
-      clearCustomRenders();
+      alert("Database offline. Using local RAM.");
       files.forEach(f => addCustomRender(URL.createObjectURL(f)));
       return;
     }
-
     setIsUploading(true);
-    // Do not clear custom renders, append to them!
     try {
       for (const file of files) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${uuidv4()}.${fileExt}`;
         const filePath = `renders/${fileName}`;
 
-        // 1. Upload to Storage Bucket
-        const { error: uploadError } = await supabase.storage
-          .from('archviz_models')
-          .upload(filePath, file);
-
+        const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
         if (uploadError) throw uploadError;
 
-        // 2. Get Public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('archviz_models')
-          .getPublicUrl(filePath);
+        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
 
-        // 3. Register it in the presentation_assets table
-        const { error: dbError } = await supabase
-          .from('presentation_assets')
-          .insert({
-            project_id: 'demo_project', 
-            asset_type: 'render',
-            asset_url: publicUrl
-          });
-
+        const { error: dbError } = await supabase.from('presentation_assets').insert({
+          project_id: 'demo_project', asset_type: 'render', asset_url: publicUrl
+        });
         if (dbError) throw dbError;
 
-        // 4. Update the local UI state dynamically
         addCustomRender(publicUrl);
       }
       alert(`Successfully uploaded ${files.length} renders to the Cloud Database!`);
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload renders to the Cloud Database. Check console.");
+      alert("Failed to upload renders.");
     } finally {
       setIsUploading(false);
     }
@@ -144,8 +162,8 @@ export default function AssetManager() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <FileInput 
-            label="3D Model (FBX)" 
-            accept=".fbx" 
+            label="3D Model (FBX, GLB, USDZ)" 
+            accept=".fbx,.glb,.usdz" 
             onDrop={handleUploadFBX} 
             isUploaded={!!customFBX} 
           />

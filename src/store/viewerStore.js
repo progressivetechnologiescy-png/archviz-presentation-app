@@ -61,10 +61,18 @@ export const useViewerStore = create((set) => ({
       if (error) {
         console.error("Cloud DB Error assets:", error);
       } else if (data) {
+        // Map all dynamic asset types from Database
         const renders = data.filter(d => d.asset_type === 'render').map(d => d.asset_url);
-        if (renders.length > 0) {
-          set({ customRenders: renders });
-        }
+        if (renders.length > 0) set({ customRenders: renders });
+
+        const model = data.find(d => d.asset_type === '3d_model');
+        if (model) set({ customFBX: model.asset_url });
+
+        const floorplan = data.find(d => d.asset_type === 'floorplan');
+        if (floorplan) set({ customFloorplan: floorplan.asset_url });
+
+        const panorama = data.find(d => d.asset_type === 'panorama');
+        if (panorama) set({ customPanorama: panorama.asset_url });
       }
 
       // Fetch Config State (GPS, Lighting, etc)
