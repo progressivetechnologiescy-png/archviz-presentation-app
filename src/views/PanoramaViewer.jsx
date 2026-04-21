@@ -6,11 +6,12 @@ import { useViewerStore } from '../store/viewerStore';
 
 // An inverted sphere holding a 360 latlong image
 function SphericalPanorama() {
-  const { customTourNodes, activeTourNodeId, setActiveTourNodeId } = useViewerStore();
+  const { customPanorama, customTourNodes, activeTourNodeId, setActiveTourNodeId } = useViewerStore();
   
-  // Use the spatial network if valid, otherwise fallback to null
+  // Use the standalone custom panorama first (from the Asset Manager)
+  // Otherwise fallback to the complex spatial tour network
   const activeNode = customTourNodes ? customTourNodes[activeTourNodeId] : null;
-  const textureUrl = activeNode ? activeNode.url : null;
+  const textureUrl = customPanorama || (activeNode ? activeNode.url : null);
 
   const texture = textureUrl ? useTexture(textureUrl) : null;
   if(texture) {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { UploadCloud, FileType, CheckCircle, MapPin } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 
@@ -31,7 +31,7 @@ function FileInput({ label, accept, onDrop, isUploaded, multiple = false }) {
         <div>
           <h4 style={{ margin: '0 0 4px 0' }}>{label}</h4>
           <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
-            {isUploaded ? 'Loaded in Session' : `Click or Drop ${accept} file`}
+            {isUploaded ? 'Loaded' : `Drop ${accept}`}
           </p>
         </div>
       </div>
@@ -53,6 +53,13 @@ export default function AssetManager() {
 
   const [gpsInput, setGpsInput] = useState(customGPS || '');
   const [isUploading, setIsUploading] = useState(false);
+
+  // Sync the form field if Cloud DB fetches the GPS late
+  useEffect(() => {
+    if (customGPS && customGPS !== 'Beverly Hills, CA') {
+      setGpsInput(customGPS);
+    }
+  }, [customGPS]);
 
   const uploadSingleFile = async (file, assetType, setLocalUpdate) => {
     if (!supabase) {
