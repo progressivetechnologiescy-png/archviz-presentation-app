@@ -78,8 +78,12 @@ export default function AssetManager() {
 
       const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
 
-      // Clean out existing single-asset for this project (like if they upload a new Panorama, we delete the old DB record so we don't have clashing panoramas)
-      await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: assetType });
+      // Try to clean out existing single-asset for this project, but don't crash if RLS blocks delete!
+      try {
+        await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: assetType });
+      } catch (delErr) {
+        console.warn("Delete policy blocked old asset removal, proceeding with insert anyway.");
+      }
 
       const { error: dbError } = await supabase.from('presentation_assets').insert({
         project_id: 'demo_project', asset_type: assetType, asset_url: publicUrl
@@ -207,9 +211,9 @@ export default function AssetManager() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <MapPin size={24} color="var(--text-secondary)" />
               <div>
-                <h4 style={{ margin: '0 0 4px 0' }}>Map Address or GPS</h4>
+                <h4 style={{ margin: '0 0 4px 0' }}>Real-World Address</h4>
                 <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
-                  Set the map location for the Location Map tab.
+                  Do not paste URLs! Just type the literal text address or city.
                 </p>
               </div>
             </div>
@@ -219,7 +223,7 @@ export default function AssetManager() {
                 type="text" 
                 value={gpsInput}
                 onChange={(e) => setGpsInput(e.target.value)}
-                placeholder="e.g., 40.7128,-74.0060 or 'Empire State Building'"
+                placeholder="e.g., '123 Sunset Blvd, CA' or 'Empire State Building'"
                 style={{ 
                   flex: 1, padding: '12px 16px', borderRadius: '8px',
                   background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white'
