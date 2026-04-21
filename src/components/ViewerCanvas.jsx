@@ -1,6 +1,6 @@
 import React, { useRef, Suspense, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Environment, OrbitControls, ContactShadows, Html, useFBX, PerformanceMonitor, BakeShadows } from '@react-three/drei';
+import { Environment, OrbitControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, BakeShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
@@ -52,16 +52,11 @@ function WalkEngine() {
   return null;
 }
 
-// Load actual FBX model from user
-function LoadedArchModel() {
-  const { activeMaterial, customFBX, isTouring } = useViewerStore();
+// Load FBX Model
+function FBXModel({ url, activeMaterial }) {
+  const fbx = useFBX(url);
   const groupRef = React.useRef();
-  
-  // Conditionally load the uploaded FBX or the default project FBX
-  const fbxPath = customFBX || '/3D FINAL.fbx';
-  const fbx = useFBX(fbxPath);
-  
-  // Apply material overrides to the FBX meshes when the activeMaterial changes
+
   React.useEffect(() => {
     if (fbx) {
       let color = '#ffffff';
@@ -73,27 +68,77 @@ function LoadedArchModel() {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          if(child.material) {
-            if(child.material.color) {
-               child.material.color.set(color);
-            }
+          if(child.material && child.material.color) {
+             child.material.color.set(color);
           }
         }
       });
     }
   }, [fbx, activeMaterial]);
 
-  useFrame((state, delta) => {
-    // Restored manual group rotation!
-    // This isolates the rotation from WalkEngine so they never conflict
+  useFrame(() => {
     if (useViewerStore.getState().isTouring && groupRef.current) {
       groupRef.current.rotation.y += 0.005;
     }
   });
 
   return (
-    <group ref={groupRef} key={fbxPath}>
+    <group ref={groupRef}>
       <primitive object={fbx} scale={0.01} position={[0,0,0]} />
+    </group>
+  );
+}
+
+// Load GLTF/GLB Model
+function GLTFModel({ url, activeMaterial }) {
+  const { scene } = useGLTF(url);
+  const groupRef = React.useRef();
+
+  React.useEffect(() => {
+    if (scene) {
+      let color = '#ffffff';
+      if (activeMaterial === 'wood') color = '#cd853f';
+      if (activeMaterial === 'marble') color = '#f0f4f8';
+      if (activeMaterial === 'concrete') color = '#808080';
+
+      scene.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          if(child.material && child.material.color) {
+             child.material.color.set(color);
+          }
+        }
+      });
+    }
+  }, [scene, activeMaterial]);
+
+  useFrame(() => {
+    if (useViewerStore.getState().isTouring && groupRef.current) {
+      groupRef.current.rotation.y += 0.005;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <primitive object={scene} scale={1} position={[0,0,0]} />
+    </group>
+  );
+}
+
+// Parent Router
+function LoadedArchModel() {
+  const { activeMaterial, customFBX } = useViewerStore();
+  const modelUrl = customFBX || '/3D FINAL.fbx';
+  const isGLTF = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
+
+  return (
+    <group key={modelUrl}>
+      {isGLTF ? (
+        <GLTFModel url={modelUrl} activeMaterial={activeMaterial} />
+      ) : (
+        <FBXModel url={modelUrl} activeMaterial={activeMaterial} />
+      )}
       <Html position={[2, 2.5, 2]} className="hotspot-annotation">
         <h4 style={{ margin: 0, fontSize: '14px', marginBottom: '4px' }}>Premium Finish</h4>
         <p style={{ margin: 0, fontSize: '12px', opacity: 0.7 }}>Real-time color applied to {activeMaterial}.</p>

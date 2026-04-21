@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import { useViewerStore } from '../store/viewerStore';
 
 export default function MobileARView() {
+  const { customFBX } = useViewerStore();
   
   // Dynamically inject Google's model-viewer script on mount
   useEffect(() => {
@@ -13,6 +15,14 @@ export default function MobileARView() {
       document.head.removeChild(script);
     };
   }, []);
+
+  // Determine which model to use based on extension.
+  // If they uploaded a GLB, let Android/Desktop use it. If they uploaded a USDZ, let Apple use it!
+  const isGLB = customFBX && customFBX.toLowerCase().endsWith('.glb');
+  const isUSDZ = customFBX && customFBX.toLowerCase().endsWith('.usdz');
+
+  const androidSrc = isGLB ? customFBX : 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+  const appleSrc = isUSDZ ? customFBX : 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz';
 
   return (
     <div style={{ 
@@ -28,15 +38,10 @@ export default function MobileARView() {
         <p style={{ color: 'var(--accent-color)', margin: '4px 0 0 0', fontWeight: 'bold' }}>WebXR Interactive Layer</p>
       </div>
 
-      {/* 
-        Google <model-viewer> 
-        Needs a .glb file to hook natively into ARKit (iOS) / SceneViewer (Android).
-        We use a high-quality placeholder chair from the Google demo library to prove the desk-drop stack works flawlessly via QR context!
-      */}
       <div style={{ flex: 1, position: 'relative' }}>
         <model-viewer 
-          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-          ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
+          src={androidSrc}
+          ios-src={appleSrc}
           ar 
           ar-modes="webxr scene-viewer quick-look" 
           camera-controls 
