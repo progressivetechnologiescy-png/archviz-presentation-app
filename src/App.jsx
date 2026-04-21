@@ -14,6 +14,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<PresentationApp />} />
+        <Route path="/admin" element={<PresentationApp forceAdmin={true} />} />
         <Route path="/embed" element={<EmbedView />} />
       </Routes>
     </BrowserRouter>

@@ -15,7 +15,16 @@ export default function RendersGallery() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const displayImages = customRenders.length > 0 ? customRenders : [1, 2, 3, 4, 5, 6];
+  const displayImages = customRenders;
+
+  if (displayImages.length === 0) {
+    return (
+      <div style={{ padding: '120px 32px 32px', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '300', marginBottom: '16px' }}>No Renders Available</h2>
+        <p>Please upload high-resolution renders via the Admin panel.</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>

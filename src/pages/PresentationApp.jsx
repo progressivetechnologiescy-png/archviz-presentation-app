@@ -35,10 +35,11 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
   );
 };
 
-export default function PresentationApp() {
+export default function PresentationApp({ forceAdmin = false }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAdmin] = useState(() => {
+    if (forceAdmin) return true;
     const params = new URLSearchParams(window.location.search);
     return params.get('admin') === 'true';
   });
