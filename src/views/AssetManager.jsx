@@ -109,6 +109,26 @@ export default function AssetManager() {
     }
   };
 
+  const handleSaveGPS = async () => {
+    setCustomGPS(gpsInput);
+    if (supabase) {
+      const { error } = await supabase
+        .from('properties_config')
+        .upsert({
+          project_id: 'demo_project',
+          title: 'The Pinnacle Residence',
+          gps_coordinates: gpsInput
+        });
+      
+      if (error) {
+        console.error("Failed to save GPS:", error);
+        alert("Failed to save location to the Cloud. (Check if you ran the SQL policy for properties_config!)");
+      } else {
+        alert("Location Saved to Cloud DB!");
+      }
+    }
+  };
+
   return (
     <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '64px' }}>
@@ -181,7 +201,7 @@ export default function AssetManager() {
                 }}
               />
               <button 
-                onClick={() => setCustomGPS(gpsInput)}
+                onClick={handleSaveGPS}
                 style={{ 
                   padding: '12px 24px', borderRadius: '8px', 
                   background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' 

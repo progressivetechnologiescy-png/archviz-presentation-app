@@ -59,12 +59,25 @@ export const useViewerStore = create((set) => ({
         .eq('project_id', projectId);
         
       if (error) {
-        console.error("Cloud DB Error:", error);
+        console.error("Cloud DB Error assets:", error);
       } else if (data) {
         const renders = data.filter(d => d.asset_type === 'render').map(d => d.asset_url);
         if (renders.length > 0) {
           set({ customRenders: renders });
         }
+      }
+
+      // Fetch Config State (GPS, Lighting, etc)
+      const { data: configData, error: configError } = await supabaseClient
+        .from('properties_config')
+        .select('*')
+        .eq('project_id', projectId)
+        .maybeSingle();
+
+      if (!configError && configData) {
+        if (configData.gps_coordinates) set({ customGPS: configData.gps_coordinates });
+        if (configData.lighting_preset) set({ lightingPreset: configData.lighting_preset });
+        if (configData.active_material) set({ activeMaterial: configData.active_material });
       }
     } catch (e) {
       console.error("Cloud Connection Failed:", e);
