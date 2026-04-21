@@ -119,7 +119,7 @@ export default function ViewerCanvas() {
 
   return (
     <>
-      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 100, display: 'flex', gap: '8px' }}>
+      <div style={{ position: 'absolute', top: 100, right: 32, zIndex: 100, display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <button 
           className="glass-panel hover-lift"
           style={{ padding: '10px 20px', color: 'white', cursor: 'pointer', fontWeight: 'bold', border: '1px solid rgba(255,255,255,0.2)' }}
