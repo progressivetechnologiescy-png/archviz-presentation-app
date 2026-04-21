@@ -26,7 +26,7 @@ export default function QRModal({ onClose }) {
         {/* Dynamic QR Code Generation */}
         <div style={{ background: 'white', padding: '16px', borderRadius: '16px', display: 'inline-block', marginBottom: '24px' }}>
           <img 
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin + window.location.pathname + '?mode=ar')}`}
             alt="AR QR Code"
             style={{ width: '200px', height: '200px' }}
           />
