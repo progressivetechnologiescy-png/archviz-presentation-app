@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
+import { X, ZoomIn } from 'lucide-react';
 
 export default function RendersGallery() {
   const { customRenders } = useViewerStore();
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setSelectedImage(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const displayImages = customRenders.length > 0 ? customRenders : [1, 2, 3, 4, 5, 6];
 
   return (
@@ -14,18 +26,62 @@ export default function RendersGallery() {
         gap: '24px',
         paddingBottom: '32px'
       }}>
-        {displayImages.map((src, i) => (
-          <div key={i} className="glass-panel hover-lift" style={{ 
-             height: '250px', 
-             background: typeof src === 'string' && (src.startsWith('blob:') || src.startsWith('http')) ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
-             display: 'flex', alignItems: 'center', justifyContent: 'center',
-             color: 'rgba(255,255,255,0.2)', fontSize: '14px',
-             borderRadius: '12px', overflow: 'hidden'
-          }}>
-            {typeof src === 'number' && `Render Placeholder ${src}`}
-          </div>
-        ))}
+        {displayImages.map((src, i) => {
+          const isRealImage = typeof src === 'string' && (src.startsWith('blob:') || src.startsWith('http'));
+          return (
+            <div 
+              key={i} 
+              className="glass-panel hover-lift" 
+              onClick={() => isRealImage && setSelectedImage(src)}
+              style={{ 
+                 height: '250px', 
+                 background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
+                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                 color: 'rgba(255,255,255,0.2)', fontSize: '14px',
+                 borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
+                 position: 'relative'
+              }}
+            >
+              {!isRealImage && `Render Placeholder ${src}`}
+            </div>
+          );
+        })}
       </div>
+
+      {/* Fullscreen Lightbox Engine */}
+      {selectedImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 99999,
+          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(20px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          {/* Close Button */}
+          <button 
+            onClick={() => setSelectedImage(null)}
+            className="hover-lift"
+            style={{
+              position: 'absolute', top: '32px', right: '32px',
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+              color: 'white', width: '48px', height: '48px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 2
+            }}
+          >
+            <X size={24} />
+          </button>
+
+          {/* High Res Image */}
+          <img 
+            src={selectedImage} 
+            alt="Fullscreen Render"
+            style={{
+              maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain',
+              borderRadius: '8px', boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+              userSelect: 'none'
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
