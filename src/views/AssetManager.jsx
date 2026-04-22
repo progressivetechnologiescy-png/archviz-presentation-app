@@ -268,67 +268,6 @@ export default function AssetManager() {
                   background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
                 }}>
                 Save Location
-              </button>
-            </div>
-          </div>
-
-          {/* 3D Material Overrides Input */}
-          <div className="hover-lift" style={{
-            border: '1px solid var(--border-glass)',
-            borderRadius: '16px', padding: '24px',
-            background: 'var(--bg-panel)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg, #a8c0ff, #3f2b96)' }}></div>
-              <div>
-                <h4 style={{ margin: '0 0 4px 0' }}>3D Material Overrides</h4>
-                <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
-                  Dynamically adjust the reflectiveness of imported models to make them look like shiny glass or matte stone.
-                </p>
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Roughness</label>
-                  <span style={{ fontSize: '12px', color: 'white' }}>{modelRoughness.toFixed(2)} (0 = Mirror, 1 = Matte)</span>
-                </div>
-                <input 
-                  type="range" min="0" max="1" step="0.05"
-                  value={modelRoughness}
-                  onChange={(e) => setModelProperties({ modelRoughness: parseFloat(e.target.value) })}
-                  style={{ width: '100%', accentColor: 'var(--accent-color)' }}
-                />
-              </div>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Metalness</label>
-                  <span style={{ fontSize: '12px', color: 'white' }}>{modelMetalness.toFixed(2)} (0 = Plastic, 1 = Metal)</span>
-                </div>
-                <input 
-                  type="range" min="0" max="1" step="0.05"
-                  value={modelMetalness}
-                  onChange={(e) => setModelProperties({ modelMetalness: parseFloat(e.target.value) })}
-                  style={{ width: '100%', accentColor: 'var(--accent-color)' }}
-                />
-              </div>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Environment Reflection Intensity</label>
-                  <span style={{ fontSize: '12px', color: 'white' }}>{modelEnvMapIntensity.toFixed(1)}x</span>
-                </div>
-                <input 
-                  type="range" min="0" max="5" step="0.1"
-                  value={modelEnvMapIntensity}
-                  onChange={(e) => setModelProperties({ modelEnvMapIntensity: parseFloat(e.target.value) })}
-                  style={{ width: '100%', accentColor: 'var(--accent-color)' }}
-                />
-              </div>
-            </div>
-          </div>
-
         </div>
 
       </div>

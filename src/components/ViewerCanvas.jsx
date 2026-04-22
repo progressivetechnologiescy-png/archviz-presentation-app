@@ -48,7 +48,6 @@ function WalkEngine() {
 function FBXModel({ url }) {
   const fbx = useFBX(url);
   const groupRef = React.useRef();
-  const { modelRoughness, modelMetalness, modelEnvMapIntensity } = useViewerStore();
 
   React.useEffect(() => {
     if (fbx) {
@@ -56,17 +55,10 @@ function FBXModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // Dynamically apply material overrides
-          if (child.material) {
-            child.material.roughness = modelRoughness;
-            child.material.metalness = modelMetalness;
-            child.material.envMapIntensity = modelEnvMapIntensity;
-            child.material.needsUpdate = true;
-          }
         }
       });
     }
-  }, [fbx, modelRoughness, modelMetalness, modelEnvMapIntensity]);
+  }, [fbx]);
 
   useFrame(() => {
     if (useViewerStore.getState().isTouring && groupRef.current) {
@@ -85,7 +77,6 @@ function FBXModel({ url }) {
 function GLTFModel({ url }) {
   const { scene } = useGLTF(url);
   const groupRef = React.useRef();
-  const { modelRoughness, modelMetalness, modelEnvMapIntensity } = useViewerStore();
 
   React.useEffect(() => {
     if (scene) {
@@ -93,17 +84,10 @@ function GLTFModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // Dynamically apply material overrides
-          if (child.material) {
-            child.material.roughness = modelRoughness;
-            child.material.metalness = modelMetalness;
-            child.material.envMapIntensity = modelEnvMapIntensity;
-            child.material.needsUpdate = true;
-          }
         }
       });
     }
-  }, [scene, modelRoughness, modelMetalness, modelEnvMapIntensity]);
+  }, [scene]);
 
   useFrame(() => {
     if (useViewerStore.getState().isTouring && groupRef.current) {
