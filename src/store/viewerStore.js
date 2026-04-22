@@ -58,7 +58,9 @@ export const useViewerStore = create((set) => ({
   setAiContext: (context) => set({ aiContext: context }),
   setActiveTourNodeId: (id) => set({ activeTourNodeId: id }),
   
-  addCustomRender: (url) => set((state) => ({ customRenders: [...state.customRenders, url] })),
+  // Complex Renders Array [{ id, folder_name, image_url }]
+  customRenders: [],
+  addCustomRender: (renderObj) => set((state) => ({ customRenders: [...state.customRenders, renderObj] })),
   clearCustomRenders: () => set({ customRenders: [] }),
 
   // CLOUD FETCHING PIPELINE
@@ -67,6 +69,7 @@ export const useViewerStore = create((set) => ({
     if (!supabaseClient) return; // Skip if db not configured
     set({ isFetchingAssets: true });
     try {
+      // Fetch Core Models and Legacy Data
       const { data, error } = await supabaseClient
         .from('presentation_assets')
         .select('*')
@@ -75,18 +78,11 @@ export const useViewerStore = create((set) => ({
       if (error) {
         console.error("Cloud DB Error assets:", error);
       } else if (data) {
-        // Sort by newest first to ensure we always load the most recently uploaded asset
         data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-        // Map all dynamic asset types from Database
-        const renders = data.filter(d => d.asset_type === 'render').map(d => d.asset_url);
-        if (renders.length > 0) set({ customRenders: renders });
 
         const modelFbx = data.find(d => d.asset_type === '3d_model_fbx');
         const modelGlb = data.find(d => d.asset_type === '3d_model_glb');
 
-        // Intelligently prioritize the MOST RECENTLY uploaded format (GLB vs FBX) for the PC Viewer,
-        // while preserving BOTH URLs so the AR Viewer (which strictly requires GLB) doesn't break!
         if (modelFbx && modelGlb) {
           set({ customFBX: modelFbx.asset_url, customGLB: modelGlb.asset_url });
           if (new Date(modelFbx.created_at) > new Date(modelGlb.created_at)) {
@@ -107,6 +103,21 @@ export const useViewerStore = create((set) => ({
 
         const panorama = data.find(d => d.asset_type === 'panorama');
         if (panorama) set({ customPanorama: panorama.asset_url });
+      }
+
+      // Fetch Categorized Renders
+      const { data: renderData, error: renderError } = await supabaseClient
+        .from('project_renders')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+
+      if (!renderError && renderData) {
+        set({ customRenders: renderData });
+      } else if (data) {
+        // Fallback: If the new table fails, load the legacy renders
+        const legacyRenders = data.filter(d => d.asset_type === 'render').map(d => ({ id: d.id, folder_name: 'Uncategorized', image_url: d.asset_url }));
+        if (legacyRenders.length > 0) set({ customRenders: legacyRenders });
       }
 
       // Fetch Config State (GPS, Lighting, etc)

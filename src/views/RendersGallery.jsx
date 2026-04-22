@@ -7,36 +7,16 @@ export default function RendersGallery() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const displayImages = customRenders || [];
+  const displayImages = (customRenders || []).map(r => 
+    typeof r === 'string' ? { image_url: r, folder_name: 'Uncategorized' } : r
+  );
 
-  // Sync lightbox state globally so the main header hides itself
-  useEffect(() => {
-    setLightboxOpen(selectedIndex !== null);
-    return () => setLightboxOpen(false);
-  }, [selectedIndex, setLightboxOpen]);
+  // Extract unique folders
+  const folders = ['All', ...new Set(displayImages.map(r => r.folder_name))];
+  const [activeFolder, setActiveFolder] = useState('All');
 
-  // Close on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setSelectedIndex(null);
-        setIsPlaying(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Slideshow Auto-play Engine
-  useEffect(() => {
-    let timer;
-    if (isPlaying && selectedIndex !== null) {
-      timer = setInterval(() => {
-        setSelectedIndex((prev) => (prev + 1) % displayImages.length);
-      }, 4000);
-    }
-    return () => clearInterval(timer);
-  }, [isPlaying, selectedIndex, displayImages.length]);
+  // Filter images based on active folder
+  const filteredImages = displayImages.filter(r => activeFolder === 'All' || r.folder_name === activeFolder);
 
   if (displayImages.length === 0) {
     return (
@@ -50,8 +30,28 @@ export default function RendersGallery() {
   return (
     <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '300', margin: 0 }}>Photorealistic Renders</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h2 style={{ fontSize: '28px', fontWeight: '300', margin: '0 0 16px 0' }}>Photorealistic Renders</h2>
+          {/* Folder Category Filters */}
+          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px' }}>
+            {folders.map(folder => (
+              <button 
+                key={folder}
+                onClick={() => setActiveFolder(folder)}
+                style={{
+                  padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                  border: activeFolder === folder ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
+                  background: activeFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
+                  color: activeFolder === folder ? 'var(--accent-color)' : 'var(--text-secondary)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {folder}
+              </button>
+            ))}
+          </div>
+        </div>
         
         <button 
           onClick={() => { setSelectedIndex(0); setIsPlaying(true); }}
@@ -75,13 +75,14 @@ export default function RendersGallery() {
         gap: '24px',
         paddingBottom: '32px'
       }}>
-        {displayImages.map((src, i) => {
+        {filteredImages.map((render, i) => {
+          const src = render.image_url;
           const isRealImage = typeof src === 'string' && (src.startsWith('blob:') || src.startsWith('http'));
           return (
             <div 
               key={i} 
               className="hover-lift" 
-              onClick={() => isRealImage && setSelectedIndex(i)}
+              onClick={() => isRealImage && setSelectedIndex(displayImages.findIndex(r => r === render))}
               style={{ 
                  height: '250px', 
                  background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
@@ -89,7 +90,6 @@ export default function RendersGallery() {
                  color: 'rgba(255,255,255,0.2)', fontSize: '14px',
                  borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
                  position: 'relative'
-                 // Removed glass-panel to eliminate the white border framing the image
               }}
             >
               {!isRealImage && `Render Placeholder ${src}`}

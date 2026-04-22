@@ -314,20 +314,92 @@ export default function AssetManager() {
           {/* TAB: RENDERS */}
           {activeTab === 'renders' && (
             <>
-              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-color)', borderRadius: '12px', padding: '16px', marginBottom: '16px', color: 'white' }}>
-                <strong>Module 1: Coming Soon!</strong> We will upgrade this to support specific folders (Exteriors, Interiors).
+              <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '24px', background: 'var(--bg-panel)' }}>
+                <h3 style={{ fontSize: '20px', marginBottom: '16px' }}>Render Folders</h3>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  <input 
+                    type="text" 
+                    id="newFolderName"
+                    placeholder="e.g. 'Living Room' or 'Exteriors'"
+                    style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }}
+                  />
+                  <button 
+                    onClick={() => {
+                      const input = document.getElementById('newFolderName');
+                      if (input.value.trim()) {
+                        setFolderList([...folderList, input.value.trim()]);
+                        setSelectedFolder(input.value.trim());
+                        input.value = '';
+                      }
+                    }}
+                    style={{ padding: '10px 20px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                    + Add Folder
+                  </button>
+                </div>
+                
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {folderList.map(folder => (
+                    <button 
+                      key={folder}
+                      onClick={() => setSelectedFolder(folder)}
+                      style={{
+                        padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                        border: selectedFolder === folder ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
+                        background: selectedFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
+                        color: selectedFolder === folder ? 'var(--accent-color)' : 'var(--text-secondary)',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {folder}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <FileInput 
-                label="High-Res Renders (Images)" 
-                accept="image/*" 
-                multiple={true}
-                onDrop={handleUploadRenders} 
-                isUploaded={customRenders.length > 0} 
-                onClear={async () => {
-                  if (supabase) await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: 'render' });
-                  clearCustomRenders();
-                }}
-              />
+
+              <div style={{ position: 'relative', opacity: selectedFolder ? 1 : 0.5, pointerEvents: selectedFolder ? 'auto' : 'none' }}>
+                {!selectedFolder && (
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+                    <span style={{ background: 'rgba(0,0,0,0.8)', padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold' }}>Please select a folder first</span>
+                  </div>
+                )}
+                <FileInput 
+                  label={`Upload to '${selectedFolder || '...'}'`} 
+                  accept="image/*" 
+                  multiple={true}
+                  onDrop={async (files) => {
+                    if (!supabase) {
+                      files.forEach(f => addCustomRender({ id: uuidv4(), folder_name: selectedFolder, image_url: URL.createObjectURL(f) }));
+                      return;
+                    }
+                    setIsUploading(true);
+                    try {
+                      for (const file of files) {
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${uuidv4()}.${fileExt}`;
+                        const filePath = `renders/${fileName}`;
+                        
+                        const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                        if (uploadError) throw uploadError;
+                        
+                        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+                        
+                        const newRow = { project_id: 'demo_project', folder_name: selectedFolder, image_url: publicUrl };
+                        const { data: dbData, error: dbError } = await supabase.from('project_renders').insert(newRow).select().single();
+                        if (dbError) throw dbError;
+                        
+                        addCustomRender(dbData);
+                      }
+                      alert(`Successfully uploaded ${files.length} renders to '${selectedFolder}'!`);
+                    } catch (error) {
+                      console.error("Upload error:", error);
+                      alert(`Render Upload Failed: ${error.message}`);
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  }} 
+                  isUploaded={false} // Never show checkmark for multi-upload, always allow more
+                />
+              </div>
             </>
           )}
 

@@ -103,13 +103,24 @@ export default function PresentationApp({ forceAdmin = false }) {
             <TabButton active={activeTab === 'map'} icon={Map} label="Location" onClick={() => setActiveTab('map')} />
             <TabButton active={activeTab === 'panorama'} icon={Hexagon} label="360° Tours" onClick={() => setActiveTab('panorama')} />
             <TabButton active={activeTab === '3d'} icon={Component} label="3D Interactive" onClick={() => setActiveTab('3d')} />
-            <div style={{ width: '1px', background: 'var(--border-glass-light)', margin: '0 4px', flexShrink: 0 }}></div>
-            {isAdmin && <TabButton active={activeTab === 'manage'} icon={Settings} label="Manage" onClick={() => setActiveTab('manage')} />}
           </div>
         </div>
 
         {/* Global Controls - Top Right */}
         <div style={{ display: 'flex', gap: '12px', flexShrink: 0 }}>
+          {isAdmin && (
+            <button 
+              onClick={() => setActiveTab('manage')}
+              className="glass-panel hover-lift" 
+              style={{ 
+                display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', 
+                background: activeTab === 'manage' ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)', 
+                cursor: 'pointer', border: activeTab === 'manage' ? 'none' : '1px solid rgba(255,255,255,0.1)', 
+                color: 'white', fontWeight: 'bold' 
+              }}>
+              <Settings size={16} /> Manage
+            </button>
+          )}
           <button 
             onClick={() => setIsShareModalOpen(true)}
             className="glass-panel hover-lift" 
