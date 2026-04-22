@@ -12,7 +12,7 @@ export default function ProjectOverview({ onNavigate }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % images.length);
-    }, 12000); // 12 seconds per slide for a slow, majestic cinematic feel
+    }, 4000); // Faster 4-second interval for better engagement
     return () => clearInterval(timer);
   }, [images.length]);
 
@@ -25,20 +25,24 @@ export default function ProjectOverview({ onNavigate }) {
         const isString = typeof src === 'string';
         const bgImg = isString ? `url(${src})` : 'none';
         
+        // Alternate between 4 distinct cinematic movements
+        const animations = ['kenburnsPanRight', 'kenburnsPanLeft', 'kenburnsZoomOut', 'kenburnsZoomIn'];
+        const currentAnim = animations[index % animations.length];
+
         return (
           <div 
             key={index}
             style={{
-              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              position: 'absolute', top: '-5%', left: '-5%', width: '110%', height: '110%',
               opacity: index === currentSlide ? 1 : 0,
-              transition: 'opacity 2s ease-in-out',
+              transition: 'opacity 1.5s ease-in-out',
               zIndex: index === currentSlide ? 1 : 0,
             }}
           >
             <div style={{
               width: '100%', height: '100%',
               background: isString ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
-              animation: index === currentSlide ? 'kenburnsFade 14s linear forwards' : 'none',
+              animation: index === currentSlide ? `${currentAnim} 6s linear forwards` : 'none',
               willChange: 'transform'
             }} />
           </div>
