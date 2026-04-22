@@ -27,7 +27,7 @@ export default function MobileARView() {
 
   return (
     <div style={{ 
-      width: '100vw', height: '100vh', 
+      width: '100vw', height: '100dvh', 
       background: 'linear-gradient(to bottom, #1e1e24, #000000)',
       display: 'flex', flexDirection: 'column',
       fontFamily: 'Outfit, sans-serif'
@@ -67,7 +67,7 @@ export default function MobileARView() {
             }
           }}
           style={{ 
-            position: 'absolute', bottom: '32px', left: '50%', transform: 'translateX(-50%)',
+            position: 'absolute', bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', left: '50%', transform: 'translateX(-50%)',
             background: 'var(--accent-color)', color: 'white', border: 'none', 
             padding: '16px 32px', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px',
             fontFamily: 'Outfit, sans-serif', boxShadow: '0 8px 24px var(--accent-glow)',
