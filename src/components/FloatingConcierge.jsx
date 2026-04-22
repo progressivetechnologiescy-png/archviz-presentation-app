@@ -1,22 +1,75 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, MapPin, Phone } from 'lucide-react';
+import { MessageSquare, X, Send, Phone, MapPin } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
+
+// Haversine formula to calculate distance in miles
+function getDistanceInMiles(lat1, lon1, lat2, lon2) {
+  const R = 3958.8; // Radius of Earth in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+// Check if string contains coordinates
+function extractCoordinates(str) {
+  if (!str) return null;
+  // Try to parse standard "lat, lng" format
+  const match = str.match(/([+-]?\d+\.\d+)\s*,\s*([+-]?\d+\.\d+)/);
+  if (match) return { lat: parseFloat(match[1]), lon: parseFloat(match[2]) };
+  
+  // Try to parse from Google Maps iframe or share URL if present
+  const pbMatch = str.match(/!3d([+-]?\d+\.\d+)!4d([+-]?\d+\.\d+)/);
+  if (pbMatch) return { lat: parseFloat(pbMatch[1]), lon: parseFloat(pbMatch[2]) };
+  
+  return null;
+}
 
 export default function FloatingConcierge() {
   const { customGPS } = useViewerStore();
-  const locationName = customGPS || 'The Pinnacle Residence';
   
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [humanReadableLocation, setHumanReadableLocation] = useState(customGPS || 'The Pinnacle Residence');
+  const [coordinates, setCoordinates] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  
   const messagesEndRef = useRef(null);
 
-  // Dynamically update the greeting if the cloud database fetches a new GPS location
+  // Attempt to Reverse Geocode on Mount or GPS Change
+  useEffect(() => {
+    let active = true;
+    const coords = extractCoordinates(customGPS);
+    if (coords) {
+      setCoordinates(coords);
+      // Reverse Geocode using Nominatim
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${coords.lat}&lon=${coords.lon}`)
+        .then(r => r.json())
+        .then(data => {
+          if (!active) return;
+          const name = data.address?.city || data.address?.town || data.address?.suburb || data.address?.county || 'this area';
+          setHumanReadableLocation(name);
+        })
+        .catch(() => {
+          if (active) setHumanReadableLocation('this area');
+        });
+    } else {
+      setCoordinates(null);
+      setHumanReadableLocation(customGPS || 'The Pinnacle Residence');
+    }
+    return () => { active = false; };
+  }, [customGPS]);
+
+  // Update Initial Greeting
   useEffect(() => {
     if (messages.length === 0 || (messages.length === 1 && messages[0].role === 'agent')) {
-      setMessages([{ role: 'agent', text: `Hi! I am Emma, your digital concierge for the property at ${locationName}. How can I help you today?` }]);
+      setMessages([{ role: 'agent', text: `Hi! I am Emma, your digital concierge for the property at ${humanReadableLocation}. How can I help you today?` }]);
     }
-  }, [locationName]);
+  }, [humanReadableLocation]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -26,34 +79,103 @@ export default function FloatingConcierge() {
     scrollToBottom();
   }, [messages, isOpen]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  // Search Overpass API for nearest amenity
+  const searchNearby = async (amenity, fallbackTag, typeLabel) => {
+    if (!coordinates) return null;
+    try {
+      const radius = 5000; // 5km search radius
+      const query = `
+        [out:json];
+        (
+          node["amenity"="${amenity}"](around:${radius},${coordinates.lat},${coordinates.lon});
+          ${fallbackTag ? `node["${fallbackTag.k}"="${fallbackTag.v}"](around:${radius},${coordinates.lat},${coordinates.lon});` : ''}
+        );
+        out 1;
+      `;
+      const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      
+      if (data && data.elements && data.elements.length > 0) {
+        const place = data.elements[0];
+        const name = place.tags?.name || `A local ${typeLabel}`;
+        const distance = getDistanceInMiles(coordinates.lat, coordinates.lon, place.lat, place.lon);
+        return { name, distance: distance.toFixed(1) };
+      }
+      return null;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const handleSend = async () => {
+    if (!inputValue.trim() || isSearching) return;
 
     const userMsg = inputValue.trim();
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setInputValue('');
+    setIsSearching(true);
+    
+    // Add "Emma is thinking" indicator
+    setMessages(prev => [...prev, { role: 'agent', text: '...', isTyping: true }]);
 
-      // Simulate AI processing context
-      setTimeout(() => {
-        let response = `I'd be happy to connect you with our lead broker to discuss the ${locationName} property in detail!`;
-        const lowerReq = userMsg.toLowerCase();
+    const lowerReq = userMsg.toLowerCase();
+    let finalResponse = `I'd be happy to connect you with our lead broker to discuss the ${humanReadableLocation} property in detail!`;
 
-        if (lowerReq.includes('beach') || lowerReq.includes('ocean')) {
-          response = `Based on the property's location at ${locationName}, you are just a 5-minute drive from the nearest pristine coastline and private beach clubs.`;
-        } else if (lowerReq.includes('school')) {
-          response = `The residence at ${locationName} is located within a highly-rated school zone. The international prep academy is only 3 miles away!`;
-        } else if (lowerReq.includes('restaurant') || lowerReq.includes('food') || lowerReq.includes('eat')) {
-          response = `Since you're located at ${locationName}, there's an incredible Michelin-star restaurant and several premium cafes just a 5-10 minute walk away!`;
-        } else if (lowerReq.includes('neighborhood') || lowerReq.includes('area') || lowerReq.includes('location')) {
-          response = `The area around ${locationName} is extremely safe, featuring 24/7 private security patrols and exclusive neighborhood access.`;
-        } else if (lowerReq.includes('amenities') || lowerReq.includes('gym') || lowerReq.includes('pool')) {
-          response = 'The property features a private infinity pool, a state-of-the-art wellness center, and a 24/7 concierge.';
-        } else if (lowerReq.includes('price') || lowerReq.includes('cost')) {
-          response = 'Pricing starts at $1.25M for our 2-Bedroom layouts. You can view full pricing in the Availability tab!';
+    try {
+      if (lowerReq.includes('beach') || lowerReq.includes('ocean') || lowerReq.includes('sea')) {
+        const place = await searchNearby('NO_AMENITY', { k: 'natural', v: 'beach' }, 'beach');
+        if (place) {
+          finalResponse = `Based on the property's location, the nearest beach is **${place.name}**, located just ${place.distance} miles away!`;
+        } else {
+          finalResponse = `There don't appear to be any major public beaches immediately nearby the ${humanReadableLocation} property.`;
         }
+      } 
+      else if (lowerReq.includes('school') || lowerReq.includes('grammar') || lowerReq.includes('education')) {
+        const place = await searchNearby('school', null, 'grammar school');
+        if (place) {
+          finalResponse = `The property is in an excellent district! The nearest school is **${place.name}**, only ${place.distance} miles away.`;
+        } else {
+          finalResponse = `The residence is located within a highly-rated school zone, with several academies within a short driving distance.`;
+        }
+      } 
+      else if (lowerReq.includes('restaurant') || lowerReq.includes('food') || lowerReq.includes('eat') || lowerReq.includes('cafe')) {
+        const place = await searchNearby('restaurant', { k: 'amenity', v: 'cafe' }, 'dining option');
+        if (place) {
+          finalResponse = `Since you're located at ${humanReadableLocation}, there are incredible dining options nearby. The closest is **${place.name}**, just ${place.distance} miles away!`;
+        } else {
+          finalResponse = `Since you're located at ${humanReadableLocation}, there are incredible premium cafes and dining options just a 5-10 minute walk away!`;
+        }
+      } 
+      else if (lowerReq.includes('hospital') || lowerReq.includes('doctor') || lowerReq.includes('clinic')) {
+        const place = await searchNearby('hospital', { k: 'amenity', v: 'clinic' }, 'medical facility');
+        if (place) {
+          finalResponse = `For peace of mind, the nearest medical facility is **${place.name}**, located just ${place.distance} miles away.`;
+        } else {
+          finalResponse = `The property is located within 15 minutes of major regional healthcare facilities.`;
+        }
+      }
+      else if (lowerReq.includes('neighborhood') || lowerReq.includes('area') || lowerReq.includes('location') || lowerReq.includes('where')) {
+        finalResponse = `This property is located in ${humanReadableLocation}. It is an extremely safe area featuring 24/7 private security patrols and exclusive neighborhood access.`;
+      } 
+      else if (lowerReq.includes('amenities') || lowerReq.includes('gym') || lowerReq.includes('pool')) {
+        finalResponse = 'The property features a private infinity pool, a state-of-the-art wellness center, and a 24/7 concierge.';
+      } 
+      else if (lowerReq.includes('price') || lowerReq.includes('cost')) {
+        finalResponse = 'Pricing starts at $1.25M for our 2-Bedroom layouts. You can view full pricing in the Availability tab!';
+      }
+    } catch (e) {
+      console.error(e);
+    }
 
-        setMessages(prev => [...prev, { role: 'agent', text: response }]);
-      }, 1000);
+    setMessages(prev => {
+      const newMsgs = [...prev];
+      if (newMsgs[newMsgs.length - 1].isTyping) newMsgs.pop();
+      newMsgs.push({ role: 'agent', text: finalResponse });
+      return newMsgs;
+    });
+    
+    setIsSearching(false);
   };
 
   const handleKeyPress = (e) => {
@@ -68,7 +190,7 @@ export default function FloatingConcierge() {
         <div className="glass-panel" style={{ 
           width: '350px', height: '500px', marginBottom: '16px', borderRadius: '24px',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          backgroundColor: 'rgba(15, 20, 25, 0.95)', // Solid tint to prevent text bleed-through
+          backgroundColor: 'rgba(15, 20, 25, 0.95)',
           boxShadow: '0 24px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)'
         }}>
           
@@ -119,15 +241,17 @@ export default function FloatingConcierge() {
           <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.2)', flexShrink: 0 }}>
             <input 
               type="text" 
-              placeholder="Ask about location, schools..." 
+              placeholder={coordinates ? "Ask about nearby schools, restaurants..." : "Ask about the property..."} 
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
+              disabled={isSearching}
               style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '10px 16px', color: 'white', outline: 'none' }}
             />
             <button 
               onClick={handleSend}
-              style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+              disabled={isSearching}
+              style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: isSearching ? 0.5 : 1 }}
             >
               <Send size={16} />
             </button>
