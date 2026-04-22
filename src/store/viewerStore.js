@@ -261,6 +261,36 @@ export const useViewerStore = create((set) => ({
     }
   },
 
+  // Cinematic Videos
+  customVideos: [],
+  addCustomVideo: (videoObj) => set((state) => ({ customVideos: [...state.customVideos, videoObj] })),
+  deleteVideo: async (supabaseClient, id) => {
+    if (!supabaseClient || !id) return;
+    try {
+      const { error } = await supabaseClient.from('project_videos').delete().eq('id', id);
+      if (!error) {
+        set((state) => ({
+          customVideos: state.customVideos.filter(v => v.id !== id)
+        }));
+      }
+    } catch (e) {
+      console.error('Delete video failed', e);
+    }
+  },
+  updateVideoOrder: async (supabaseClient, id, newOrder) => {
+    if (!supabaseClient) return;
+    try {
+      const { error } = await supabaseClient.from('project_videos').update({ order_index: newOrder }).eq('id', id);
+      if (!error) {
+        set((state) => ({
+          customVideos: state.customVideos.map(v => v.id === id ? { ...v, order_index: newOrder } : v)
+        }));
+      }
+    } catch (e) {
+      console.error('Update video order failed', e);
+    }
+  },
+
   // CLOUD FETCHING PIPELINE
   isFetchingAssets: false,
   fetchCloudAssets: async (supabaseClient, projectId = "demo_project") => {
@@ -336,6 +366,17 @@ export const useViewerStore = create((set) => ({
         if (singleFloorplan) {
             set({ customFloorplan: singleFloorplan.asset_url });
         }
+      }
+
+      // Fetch Cinematic Videos
+      const { data: videoData, error: videoError } = await supabaseClient
+        .from('project_videos')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('order_index', { ascending: true });
+        
+      if (!videoError && videoData) {
+        set({ customVideos: videoData });
       }
 
       // Fetch Config State (GPS, Lighting, etc)

@@ -298,7 +298,7 @@ export default function AssetManager() {
 
         {/* Tab Navigation */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', overflowX: 'auto' }}>
-          {['models', 'renders', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
+          {['models', 'renders', 'cinematics', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -311,6 +311,7 @@ export default function AssetManager() {
             >
               {tab === 'models' && '3D Models & Scene'}
               {tab === 'renders' && 'Render Gallery'}
+              {tab === 'cinematics' && 'Cinematics'}
               {tab === 'floorplans' && 'Floorplans'}
               {tab === 'tours' && '360° Tours'}
               {tab === 'availability' && 'Availability Grid'}
@@ -611,6 +612,98 @@ export default function AssetManager() {
                 </div>
               </div>
             </>
+          )}
+
+          {/* TAB: CINEMATICS */}
+          {activeTab === 'cinematics' && (
+            <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>Cinematic Videos</h3>
+              </div>
+
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '32px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input id="new-video-title" type="text" placeholder="Video Title (e.g. Drone Flyover)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
+                  <input id="new-video-url" type="text" placeholder="YouTube Embed URL (e.g. https://www.youtube.com/embed/...)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
+                  <input id="new-video-thumb" type="text" placeholder="Thumbnail URL (Optional, defaults to black)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
+                </div>
+                <button 
+                  onClick={async () => {
+                    const title = document.getElementById('new-video-title').value.trim();
+                    const url = document.getElementById('new-video-url').value.trim();
+                    const thumb = document.getElementById('new-video-thumb').value.trim();
+                    if (!title || !url) {
+                      alert('Title and Video URL are required.');
+                      return;
+                    }
+                    const newVideo = { project_id: 'demo_project', title, video_url: url, thumbnail_url: thumb, order_index: useViewerStore.getState().customVideos?.length || 0 };
+                    const { data, error } = await supabase.from('project_videos').insert([newVideo]).select();
+                    if (!error && data) {
+                      useViewerStore.getState().addCustomVideo(data[0]);
+                      document.getElementById('new-video-title').value = '';
+                      document.getElementById('new-video-url').value = '';
+                      document.getElementById('new-video-thumb').value = '';
+                    } else {
+                      console.error('Failed to add video:', error);
+                    }
+                  }}
+                  className="hover-lift"
+                  style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', height: 'fit-content' }}>
+                  + Add Video
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {(useViewerStore.getState().customVideos || []).map((video) => (
+                  <div key={video.id} style={{ display: 'flex', gap: '16px', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', alignItems: 'center' }}>
+                    <div style={{ width: '120px', height: '68px', background: 'black', borderRadius: '8px', overflow: 'hidden' }}>
+                      {video.thumbnail_url ? (
+                        <img src={video.thumbnail_url} alt="Thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
+                          <span style={{ fontSize: '10px', color: '#999' }}>No Thumb</span>
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>{video.title}</h4>
+                      <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>{video.video_url}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setConfirmModal({
+                          isOpen: true,
+                          message: `Are you sure you want to delete the video "${video.title}"?`,
+                          onConfirm: () => useViewerStore.getState().deleteVideo(supabase, video.id)
+                        });
+                      }}
+                      className="hover-lift"
+                      style={{
+                        padding: '8px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', 
+                        border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '8px', cursor: 'pointer',
+                        backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#ef4444';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                        e.currentTarget.style.color = '#ef4444';
+                      }}
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ))}
+                {(!useViewerStore.getState().customVideos || useViewerStore.getState().customVideos.length === 0) && (
+                  <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                    No videos added yet.
+                  </div>
+                )}
+              </div>
+            </div>
           )}
 
           {/* TAB: FLOORPLANS */}

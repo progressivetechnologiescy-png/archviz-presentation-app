@@ -41,38 +41,17 @@ export function VideoModal({ videoUrl, title, onClose }) {
   );
 }
 
-const DUMMY_FILMS = [
-  {
-    id: 'f1',
-    title: 'The Pinnacle - Full Cinematic Tour',
-    duration: '03:15',
-    thumbnail: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' 
-  },
-  {
-    id: 'f2',
-    title: 'Golden Hour Drone Flyover',
-    duration: '01:45',
-    thumbnail: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200&auto=format&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4' 
-  },
-  {
-    id: 'f3',
-    title: 'Interior Design Showcase',
-    duration: '02:30',
-    thumbnail: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/LXb3EKWsInQ' 
-  }
-];
-
 export default function CinematicsTab() {
   const [activeVideo, setActiveVideo] = useState(null);
-  const { setLightboxOpen } = useViewerStore();
+  const { setLightboxOpen, customVideos } = useViewerStore();
 
   React.useEffect(() => {
     setLightboxOpen(!!activeVideo);
     return () => setLightboxOpen(false);
   }, [activeVideo, setLightboxOpen]);
+
+  // Use dynamic videos or fallback to an empty state
+  const videos = customVideos && customVideos.length > 0 ? customVideos : [];
 
   return (
     <>
@@ -86,58 +65,50 @@ export default function CinematicsTab() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px' }}>
-            {DUMMY_FILMS.map(film => (
-              <div 
-                key={film.id} 
-                className="hover-lift"
-                onClick={() => setActiveVideo(film)}
-                style={{ 
-                  borderRadius: '20px', overflow: 'hidden', cursor: 'pointer',
-                  boxShadow: '0 12px 32px rgba(0,0,0,0.3)',
-                  border: 'none',
-                  position: 'relative',
-                  aspectRatio: '16/9',
-                  background: `url(${film.thumbnail}) center/cover`
-                }}
-              >
-                {/* Play Button Overlay */}
-                <div style={{
-                  position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1))',
-                  display: 'flex', flexDirection: 'column', padding: '24px', transition: 'all 0.3s ease',
-                  justifyContent: 'space-between'
-                }}>
-                  
-                  <div style={{ alignSelf: 'flex-end', background: 'rgba(0,0,0,0.6)', padding: '6px 12px', borderRadius: '12px', backdropFilter: 'blur(4px)', fontWeight: 'bold', fontSize: '14px' }}>
-                    {film.duration}
-                  </div>
-
-                  <div>
-                    <div style={{ 
-                      width: '64px', height: '64px', borderRadius: '50%', background: 'var(--accent-color)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px',
-                      boxShadow: '0 8px 24px var(--accent-glow)'
-                    }}>
-                      <Play size={32} color="white" fill="white" style={{ marginLeft: '4px' }} />
+          {videos.length === 0 ? (
+            <div style={{ padding: '64px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+              <h3 style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '8px' }}>No Cinematic Videos Yet</h3>
+              <p style={{ color: 'rgba(255,255,255,0.4)' }}>Add YouTube or Vimeo URLs from the Admin CMS to populate this gallery.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px' }}>
+              {videos.map(film => (
+                <div 
+                  key={film.id} 
+                  className="hover-lift"
+                  onClick={() => setActiveVideo(film)}
+                  style={{ 
+                    borderRadius: '20px', overflow: 'hidden', cursor: 'pointer',
+                    boxShadow: '0 12px 32px rgba(0,0,0,0.3)',
+                    border: 'none',
+                    position: 'relative',
+                    aspectRatio: '16/9',
+                    background: film.thumbnail_url ? `url(${film.thumbnail_url}) center/cover` : '#111'
+                  }}
+                >
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px var(--accent-glow)' }}>
+                        <Play fill="white" size={20} />
+                      </div>
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{film.title}</h3>
+                        <p style={{ margin: '4px 0 0 0', color: 'var(--accent-color)', fontSize: '14px', fontWeight: 'bold' }}>Play Video</p>
+                      </div>
                     </div>
-                    <h3 style={{ margin: 0, fontSize: '24px', fontWeight: '500', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
-                      {film.title}
-                    </h3>
                   </div>
-                  
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
         </div>
       </div>
 
       {activeVideo && (
         <VideoModal 
-          videoUrl={activeVideo.videoUrl} 
-          title={activeVideo.title} 
+          title={activeVideo.title}
+          videoUrl={activeVideo.video_url} 
           onClose={() => setActiveVideo(null)} 
         />
       )}
