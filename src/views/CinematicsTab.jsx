@@ -83,10 +83,29 @@ export default function CinematicsTab() {
       <div 
         style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}
         onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
+        className="cinematics-container"
       >
+        <style>{`
+          .cinematics-container { padding: 120px 32px 32px !important; }
+          .cinematics-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; flex-wrap: wrap; gap: 16px; }
+          .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--grid-min), 1fr));
+            gap: 24px;
+            transition: all 0.3s ease;
+          }
+          @media (max-width: 768px) {
+            .cinematics-container { padding: 100px 16px 32px !important; }
+            .cinematics-header { flex-direction: column; align-items: stretch !important; gap: 16px; }
+            .gallery-grid {
+              grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)) !important;
+              gap: 16px;
+            }
+          }
+        `}</style>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="cinematics-header">
             <div>
               <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 12px 0' }}>Cinematic Films</h2>
               <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '18px' }}>
@@ -119,7 +138,7 @@ export default function CinematicsTab() {
               <p style={{ color: 'rgba(255,255,255,0.4)' }}>Add YouTube or Vimeo URLs from the Admin CMS to populate this gallery.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${gridMinMax}, 1fr))`, gap: '24px' }}>
+            <div className="gallery-grid" style={{ '--grid-min': gridMinMax }}>
               {[...videos].sort((a, b) => (a.order_index || 0) - (b.order_index || 0)).map(film => (
                 <div 
                   key={film.id} 
@@ -136,7 +155,7 @@ export default function CinematicsTab() {
                 >
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '24px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px var(--accent-glow)' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px var(--accent-glow)', flexShrink: 0 }}>
                         <Play fill="white" size={20} />
                       </div>
                       <div>

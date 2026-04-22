@@ -55,16 +55,35 @@ export default function AvailabilityTab() {
     <div 
       style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}
       onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
+      className="availability-container"
     >
+      <style>{`
+        .availability-container { padding: 120px 32px 32px !important; }
+        .availability-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .availability-filters { display: flex; gap: 4px; padding: 6px; border-radius: 40px; }
+        .financing-panel { display: flex; gap: 32px; align-items: center; }
+        .financing-left { flex: 1; padding-right: 32px; border-right: 1px solid rgba(255,255,255,0.1); }
+        .financing-right { flex: 1; }
+        
+        @media (max-width: 768px) {
+          .availability-container { padding: 100px 16px 32px !important; }
+          .availability-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+          .availability-filters { overflow-x: auto; max-width: 100vw; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+          .financing-panel { flex-direction: column; gap: 24px; align-items: stretch; }
+          .financing-left { padding-right: 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 24px; }
+          .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        }
+      `}</style>
+      
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div className="availability-header">
           <div>
             <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 8px 0' }}>Current Availability</h2>
             <p style={{ color: 'var(--text-secondary)', margin: 0 }}>View pricing and lock in your reservation.</p>
           </div>
 
-          <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px' }}>
+          <div className="glass-panel availability-filters">
             {['All', 'Available', 'Reserved', 'Sold'].map(status => (
               <button
                 key={status}
@@ -81,8 +100,8 @@ export default function AvailabilityTab() {
           </div>
         </div>
 
-        <div className="glass-panel" style={{ borderRadius: '16px', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="glass-panel table-wrapper" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
             <thead>
               <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Unit</th>
@@ -134,7 +153,8 @@ export default function AvailabilityTab() {
                       <td style={{ padding: '24px' }}>
                         <span style={{ 
                           padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px',
-                          background: getStatusColor(unit.status), color: getStatusTextColor(unit.status), border: `1px solid ${getStatusTextColor(unit.status)}40`
+                          background: getStatusColor(unit.status), color: getStatusTextColor(unit.status), border: `1px solid ${getStatusTextColor(unit.status)}40`,
+                          whiteSpace: 'nowrap'
                         }}>
                           {unit.status}
                         </span>
@@ -145,8 +165,8 @@ export default function AvailabilityTab() {
                     {isSelected && (
                       <tr style={{ background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <td colSpan="6" style={{ padding: '32px' }}>
-                          <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-                            <div style={{ flex: 1, paddingRight: '32px', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                          <div className="financing-panel">
+                            <div className="financing-left">
                               <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 Financing Estimator
                               </h3>
@@ -167,7 +187,7 @@ export default function AvailabilityTab() {
                               </div>
                             </div>
                             
-                            <div style={{ flex: 1 }}>
+                            <div className="financing-right">
                                {inquireStatus === 'idle' && (
                                  <>
                                    <p style={{ color: 'var(--text-secondary)', margin: '0 0 8px 0', fontSize: '14px' }}>Estimated Monthly Payment (30yr Fixed)</p>
@@ -246,7 +266,7 @@ export default function AvailabilityTab() {
               background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
               width: '48px', height: '48px', borderRadius: '50%',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '24px', transition: 'background 0.2s'
+              fontSize: '24px', transition: 'background 0.2s', zIndex: 10000
             }}
             onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
             onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}

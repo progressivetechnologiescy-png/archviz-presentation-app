@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video } from 'lucide-react';
+import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video, Menu, X, Maximize } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 import { supabase } from '../lib/supabase';
 import ProjectOverview from '../views/ProjectOverview';
@@ -14,7 +14,7 @@ import StandaloneView from './StandaloneView';
 import ShareModal from '../components/ShareModal';
 import FloatingConcierge from '../components/FloatingConcierge';
 
-const TabButton = ({ active, icon: Icon, label, onClick }) => {
+const TabButton = ({ active, icon: Icon, label, onClick, isMobile = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <button 
@@ -23,7 +23,7 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '30px',
+        display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: isMobile ? '16px' : '30px',
         background: active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'),
         border: 'none',
         color: 'white',
@@ -31,10 +31,16 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
         boxShadow: active ? '0 4px 12px var(--accent-glow)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
-        opacity: active ? 1 : (isHovered ? 1 : 0.85)
+        opacity: active ? 1 : (isHovered ? 1 : 0.85),
+        padding: isMobile ? '16px 24px' : undefined,
+        width: isMobile ? '100%' : 'auto',
+        justifyContent: isMobile ? 'flex-start' : 'center',
+        fontSize: isMobile ? '18px' : undefined,
+        gap: isMobile ? '16px' : undefined
       }}
     >
-      <Icon className="nav-tab-icon" /> <span className="nav-tab-label">{label}</span>
+      <Icon className="nav-tab-icon" style={isMobile ? { width: '24px', height: '24px', display: 'block' } : undefined} /> 
+      <span className="nav-tab-label">{label}</span>
     </button>
   );
 };
@@ -51,6 +57,7 @@ export default function PresentationApp({ forceAdmin = false }) {
   });
   const [activeTab, setActiveTab] = useState(isAdmin ? 'manage' : 'overview');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Automatically wire the client state to the Cloud Database on app load!
   useEffect(() => {
@@ -60,6 +67,7 @@ export default function PresentationApp({ forceAdmin = false }) {
   // Reset scroll state on tab switch
   useEffect(() => {
     useViewerStore.getState().setGlobalScrolled(false);
+    setIsMobileMenuOpen(false); // Close mobile menu on navigate
   }, [activeTab]);
 
   return (
@@ -70,9 +78,9 @@ export default function PresentationApp({ forceAdmin = false }) {
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'nowrap', gap: '24px',
-        background: isGlobalScrolled ? 'rgba(10, 12, 16, 0.85)' : 'transparent', 
-        backdropFilter: isGlobalScrolled ? 'blur(24px)' : 'none', 
-        borderBottom: isGlobalScrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
+        background: isGlobalScrolled || isMobileMenuOpen ? 'rgba(10, 12, 16, 0.95)' : 'transparent', 
+        backdropFilter: isGlobalScrolled || isMobileMenuOpen ? 'blur(24px)' : 'none', 
+        borderBottom: isGlobalScrolled || isMobileMenuOpen ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
         opacity: isLightboxOpen ? 0 : 1, 
         pointerEvents: isLightboxOpen ? 'none' : 'auto', 
         transition: 'all 0.3s ease',
@@ -89,14 +97,21 @@ export default function PresentationApp({ forceAdmin = false }) {
           @media (max-width: 1300px) {
             .desktop-logo-text { display: none !important; }
           }
-          @media (max-width: 1100px) {
-            .nav-tab-btn { padding: 8px 12px; font-size: 12px; gap: 4px; }
-            .nav-tab-icon { display: none; } /* Hide icons on small laptops to save space */
+          @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .mobile-nav-toggle { display: flex !important; }
+            .header-actions { display: none !important; }
+          }
+          @media (min-width: 1025px) {
+            .mobile-nav-toggle { display: none !important; }
+          }
+          @media (max-width: 600px) {
+            .header-container { padding: 16px !important; }
           }
         `}</style>
         
         {/* Floating Logo - Top Left */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, pointerEvents: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, pointerEvents: 'none', zIndex: 102 }}>
           <div style={{ 
             width: '48px', height: '48px', background: 'linear-gradient(135deg, var(--accent-color), #60a5fa)', 
             borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -110,16 +125,13 @@ export default function PresentationApp({ forceAdmin = false }) {
           </div>
         </div>
 
-        {/* Floating Navigation Pill - Center (Scrollable on tiny screens) */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
+        {/* Desktop Navigation Pill */}
+        <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
           <div className="glass-panel" style={{ 
             display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px',
-            background: 'rgba(10, 12, 16, 0.8)', // Dark override for high contrast on bright maps
-            boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)',
-            overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch',
-            maxWidth: '100%'
+            background: 'rgba(10, 12, 16, 0.8)',
+            boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
           }}>
-            <style>{`.glass-panel::-webkit-scrollbar { display: none; }`}</style>
             <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" onClick={() => setActiveTab('overview')} />
             <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" onClick={() => setActiveTab('renders')} />
             <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" onClick={() => setActiveTab('cinematics')} />
@@ -131,8 +143,8 @@ export default function PresentationApp({ forceAdmin = false }) {
           </div>
         </div>
 
-        {/* Global Controls - Top Right */}
-        <div style={{ display: 'flex', gap: '12px', flexShrink: 0 }}>
+        {/* Desktop Global Controls */}
+        <div className="header-actions" style={{ display: 'flex', gap: '12px', flexShrink: 0 }}>
           <button 
             onClick={() => {
               if (!document.fullscreenElement) {
@@ -143,7 +155,7 @@ export default function PresentationApp({ forceAdmin = false }) {
             }}
             className="glass-panel hover-lift" 
             style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            <Maximize size={16} />
             Fullscreen
           </button>
           
@@ -160,7 +172,68 @@ export default function PresentationApp({ forceAdmin = false }) {
               <Settings size={16} /> Manage
             </button>
           )}
+        </div>
+
+        {/* Mobile Hamburger Toggle */}
+        <button 
+          className="mobile-nav-toggle glass-panel"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          style={{ 
+            width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', 
+            border: '1px solid rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer',
+            alignItems: 'center', justifyContent: 'center', zIndex: 102
+          }}
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile Full-Screen Menu Overlay */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+        background: 'rgba(10, 12, 16, 0.98)', backdropFilter: 'blur(30px)',
+        zIndex: 101, display: 'flex', flexDirection: 'column',
+        padding: '100px 24px 40px', overflowY: 'auto',
+        opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
+        transition: 'opacity 0.3s ease, transform 0.3s ease',
+        transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(-20px)'
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+          <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" isMobile onClick={() => setActiveTab('overview')} />
+          <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" isMobile onClick={() => setActiveTab('renders')} />
+          <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" isMobile onClick={() => setActiveTab('cinematics')} />
+          <TabButton active={activeTab === 'floorplans'} icon={Layers} label="Floorplans" isMobile onClick={() => setActiveTab('floorplans')} />
+          <TabButton active={activeTab === 'availability'} icon={ListChecks} label="Availability" isMobile onClick={() => setActiveTab('availability')} />
+          <TabButton active={activeTab === 'map'} icon={Map} label="Location" isMobile onClick={() => setActiveTab('map')} />
+          <TabButton active={activeTab === 'panorama'} icon={Hexagon} label="360° Tours" isMobile onClick={() => setActiveTab('panorama')} />
+          <TabButton active={activeTab === '3d'} icon={Component} label="3D Interactive" isMobile onClick={() => setActiveTab('3d')} />
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
           <button 
+            onClick={() => {
+              if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+              } else {
+                document.exitFullscreen();
+              }
+              setIsMobileMenuOpen(false);
+            }}
+            className="glass-panel" 
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
+            <Maximize size={24} /> Fullscreen
+          </button>
+          
+          {isAdmin && (
+            <button 
+              onClick={() => setActiveTab('manage')}
+              className="glass-panel" 
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: activeTab === 'manage' ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)', border: activeTab === 'manage' ? 'none' : '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
+              <Settings size={24} /> Manage
+            </button>
+          )}
+        </div>
+      </div>   <button 
             onClick={() => setIsShareModalOpen(true)}
             className="glass-panel hover-lift" 
             style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>

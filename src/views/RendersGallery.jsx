@@ -70,9 +70,28 @@ export default function RendersGallery() {
     <div 
       style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}
       onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
+      className="gallery-container"
     >
+      <style>{`
+        .gallery-container { padding: 120px 32px 32px !important; }
+        .gallery-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+        .gallery-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(var(--grid-min), 1fr));
+          gap: 24px;
+          transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+          .gallery-container { padding: 100px 16px 32px !important; }
+          .gallery-header { flex-direction: column; align-items: stretch !important; gap: 16px; }
+          .gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)) !important;
+            gap: 16px;
+          }
+        }
+      `}</style>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="gallery-header">
         <div>
           <h2 style={{ fontSize: '28px', fontWeight: '300', margin: '0 0 16px 0' }}>Photorealistic Renders</h2>
           {/* Folder Category Filters */}
@@ -140,12 +159,10 @@ export default function RendersGallery() {
           return (
             <div key={folder}>
               {activeFolder === 'All' && <h3 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '16px', color: 'var(--text-secondary)' }}>{folder}</h3>}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: `repeat(auto-fill, minmax(${gridStyles.minMax}, 1fr))`, 
-                gap: '24px',
-                transition: 'all 0.3s ease'
-              }}>
+              <div 
+                className="gallery-grid"
+                style={{ '--grid-min': gridStyles.minMax }}
+              >
                 {folderImages.map((render, i) => {
                   const src = render.image_url;
                   const isRealImage = typeof src === 'string' && (src.startsWith('blob:') || src.startsWith('http'));

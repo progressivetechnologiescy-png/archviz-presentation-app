@@ -74,30 +74,43 @@ export default function ProjectOverview({ onNavigate }) {
         position: 'absolute', bottom: 0, left: 0, zIndex: 20,
         width: '100%'
       }}>
-        <div style={{ 
-          padding: '40px 32px', 
-          background: 'linear-gradient(to top, rgba(10, 12, 16, 0.8) 0%, transparent 100%)',
+        <style>{`
+          .overview-content { padding: 40px 32px; }
+          .overview-title { font-size: 48px; }
+          .overview-desc { font-size: 18px; padding: 0 16px; }
+          .overview-btn { font-size: 18px; padding: 16px 32px; }
+          
+          @media (max-width: 768px) {
+            .overview-content { padding: 32px 16px 100px; } /* Extra bottom padding for mobile menu clearance */
+            .overview-title { font-size: 32px; margin-bottom: 12px !important; }
+            .overview-desc { font-size: 15px; padding: 0; }
+            .overview-btn { font-size: 16px; padding: 14px 24px; }
+          }
+        `}</style>
+        
+        <div className="overview-content" style={{ 
+          background: 'linear-gradient(to top, rgba(10, 12, 16, 0.95) 0%, rgba(10, 12, 16, 0.6) 50%, transparent 100%)',
           textAlign: 'center',
           backdropFilter: 'blur(4px)',
           WebkitBackdropFilter: 'blur(4px)',
         }}>
-          <h1 style={{ fontSize: '48px', fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.5px' }}>
+          <h1 className="overview-title" style={{ fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.5px' }}>
             The Pinnacle Residence
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '18px', lineHeight: '1.6', maxWidth: '100%', margin: '0 auto 32px', padding: '0 16px' }}>
+          <p className="overview-desc" style={{ color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '100%', margin: '0 auto 32px' }}>
             Welcome to the ultimate expression of modern architectural design. 
             Nestled in the prestigious hills, this property features breathtaking panoramic 
             views, seamless indoor-outdoor living, and state-of-the-art cinematic finishes. 
           </p>
 
           <button 
-            className="hover-lift"
+            className="hover-lift overview-btn"
             onClick={() => onNavigate('3d')}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '12px',
-              padding: '16px 32px', borderRadius: '40px',
+              borderRadius: '40px',
               border: 'none', background: 'var(--accent-color)', color: 'white',
-              fontSize: '18px', fontWeight: '600', cursor: 'pointer',
+              fontWeight: '600', cursor: 'pointer',
               boxShadow: '0 8px 32px var(--accent-glow)'
             }}
           >
