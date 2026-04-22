@@ -78,10 +78,19 @@ export const useViewerStore = create((set) => ({
         if (renders.length > 0) set({ customRenders: renders });
 
         const modelFbx = data.find(d => d.asset_type === '3d_model_fbx');
-        if (modelFbx) set({ customFBX: modelFbx.asset_url });
-
         const modelGlb = data.find(d => d.asset_type === '3d_model_glb');
-        if (modelGlb) set({ customGLB: modelGlb.asset_url });
+
+        // Intelligently prioritize the MOST RECENTLY uploaded format (GLB vs FBX)
+        if (modelFbx && modelGlb) {
+          if (new Date(modelFbx.created_at) > new Date(modelGlb.created_at)) {
+            set({ customFBX: modelFbx.asset_url, customGLB: null });
+          } else {
+            set({ customGLB: modelGlb.asset_url, customFBX: null });
+          }
+        } else {
+          if (modelFbx) set({ customFBX: modelFbx.asset_url });
+          if (modelGlb) set({ customGLB: modelGlb.asset_url });
+        }
 
         const modelUsdz = data.find(d => d.asset_type === '3d_model_usdz');
         if (modelUsdz) set({ customUSDZ: modelUsdz.asset_url });

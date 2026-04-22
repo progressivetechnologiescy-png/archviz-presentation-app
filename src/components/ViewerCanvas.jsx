@@ -169,24 +169,24 @@ export default function ViewerCanvas() {
         
         <XR store={store}>
           <Suspense fallback={null}>
-            {/* Cinematic Photorealistic Soft Shadows */}
-            <SoftShadows size={25} samples={16} focus={0.5} />
+            {/* Reverted SoftShadows to BakeShadows to prevent shader crash */}
+            <BakeShadows />
             
             {customPanorama ? (
               <CustomEnvironment url={customPanorama} />
             ) : (
-              <Environment preset={preset} background={false} environmentIntensity={intensity * 1.5} />
+              <Environment preset={preset} background={false} environmentIntensity={intensity} />
             )}
             
-            {/* Photorealistic Lighting Setup (Low ambient to allow HDRI global illumination to work, strong directional sun) */}
-            <ambientLight intensity={intensity * 0.4} />
-            <hemisphereLight skyColor="#ffffff" groundColor="#aaaaaa" intensity={intensity * 0.6} />
+            {/* Failsafe, brilliant lighting setup so no model can ever be black */}
+            <ambientLight intensity={intensity * 1.5} />
+            <hemisphereLight skyColor="#ffffff" groundColor="#666666" intensity={intensity * 1.5} />
             <directionalLight 
-              position={[20, 40, 20]} 
-              intensity={intensity * 3.5} 
+              position={[20, 50, 20]} 
+              intensity={intensity * 2.5} 
               castShadow 
-              shadow-mapSize={[2048, 2048]}
-              shadow-bias={-0.0001}
+              shadow-mapSize={[1024, 1024]}
+              shadow-bias={-0.001}
             />
             
             <WalkEngine />
