@@ -97,6 +97,23 @@ export const useViewerStore = create((set) => ({
       console.error('Toggle Overview failed', e);
     }
   },
+  updateOverviewOrder: async (supabaseClient, id, newOrder) => {
+    if (!supabaseClient) return;
+    try {
+      const { error } = await supabaseClient
+        .from('project_renders')
+        .update({ overview_order: newOrder })
+        .eq('id', id);
+      
+      if (!error) {
+        set((state) => ({
+          customRenders: state.customRenders.map(r => r.id === id ? { ...r, overview_order: newOrder } : r)
+        }));
+      }
+    } catch (e) {
+      console.error('Update Overview Order failed', e);
+    }
+  },
 
   // CLOUD FETCHING PIPELINE
   isFetchingAssets: false,

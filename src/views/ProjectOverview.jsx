@@ -8,7 +8,9 @@ export default function ProjectOverview({ onNavigate }) {
 
   // Enforce pure database logic, NO dummy data
   let images = customRenders || [];
-  const slideshowRenders = images.filter(r => r.is_overview === true);
+  const slideshowRenders = images
+    .filter(r => r.is_overview === true)
+    .sort((a, b) => (a.overview_order || 0) - (b.overview_order || 0));
   
   if (slideshowRenders.length > 0) {
     images = slideshowRenders;

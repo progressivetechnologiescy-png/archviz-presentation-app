@@ -82,9 +82,9 @@ export default function AssetManager() {
   // Initialize folder list from existing database renders
   const [folderList, setFolderList] = useState(() => {
     const existing = (customRenders || []).map(r => typeof r === 'object' ? r.folder_name : null).filter(Boolean);
-    return [...new Set(['Overview', 'Interiors', 'Exteriors', ...existing])];
+    return [...new Set(['Interiors', 'Exteriors', ...existing])];
   });
-  const [selectedFolder, setSelectedFolder] = useState('Overview');
+  const [selectedFolder, setSelectedFolder] = useState('Interiors');
 
   // Sync the form field if Cloud DB fetches the GPS late
   useEffect(() => {
@@ -414,7 +414,7 @@ export default function AssetManager() {
                   {selectedFolder && customRenders && customRenders.filter(r => r.folder_name === selectedFolder).length > 0 && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '16px', marginTop: '16px' }}>
                       {customRenders.filter(r => r.folder_name === selectedFolder).map(render => (
-                        <div key={render.id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px' }}>
+                        <div key={render.id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px', border: render.is_overview ? '2px solid var(--accent-color)' : 'none' }}>
                           <img src={render.image_url} alt="render thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           <button
                             onClick={() => useViewerStore.getState().toggleOverviewRender(supabase, render.id, render.is_overview)}
@@ -424,11 +424,22 @@ export default function AssetManager() {
                               background: render.is_overview ? 'var(--accent-color)' : 'rgba(0,0,0,0.5)',
                               color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%',
                               width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              cursor: 'pointer', transition: 'all 0.2s', fontSize: '16px'
+                              cursor: 'pointer', transition: 'all 0.2s', fontSize: '16px', zIndex: 2
                             }}
                           >
                             ★
                           </button>
+                          {render.is_overview && (
+                            <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.7)', borderRadius: '4px', padding: '4px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 2 }}>
+                              <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Order:</span>
+                              <input 
+                                type="number" 
+                                defaultValue={render.overview_order || 0}
+                                onBlur={(e) => useViewerStore.getState().updateOverviewOrder(supabase, render.id, parseInt(e.target.value) || 0)}
+                                style={{ width: '32px', background: 'transparent', border: 'none', borderBottom: '1px solid white', color: 'white', fontSize: '12px', textAlign: 'center' }}
+                              />
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
