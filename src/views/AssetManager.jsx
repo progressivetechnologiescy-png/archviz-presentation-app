@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { UploadCloud, FileType, CheckCircle, MapPin } from 'lucide-react';
+import { UploadCloud, FileType, CheckCircle, MapPin, X } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 
 function FileInput({ label, accept, onDrop, isUploaded, multiple = false, onClear }) {
