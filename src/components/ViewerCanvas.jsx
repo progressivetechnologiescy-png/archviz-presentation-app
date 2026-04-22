@@ -61,10 +61,10 @@ function FBXModel({ url }) {
             mats.forEach((mat, index) => {
                let cleanColor = mat.color;
                
-               // Revit/CAD Exporter Bug Fix: Materials often export with a pure black base color (0,0,0).
-               // If color is black, it ruins textures (black * texture = black) and makes walls pitch black.
-               // We catch anything mathematically close to pure black and force it to white.
-               if (cleanColor && (cleanColor.r + cleanColor.g + cleanColor.b < 0.05)) {
+               // Revit/CAD Exporter Bug Fix: Materials often export with a pure or near-black base color.
+               // If color is extremely dark, it ruins textures (black * texture = black) and makes walls pitch black.
+               // We catch any abnormally dark export artifact and aggressively force it to white.
+               if (cleanColor && (cleanColor.r + cleanColor.g + cleanColor.b < 0.5)) {
                  cleanColor = new THREE.Color(0xffffff);
                }
                
