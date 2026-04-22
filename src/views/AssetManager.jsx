@@ -729,9 +729,44 @@ export default function AssetManager() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {(useViewerStore.getState().customVideos || []).map((video) => (
-                  <div key={video.id} style={{ display: 'flex', gap: '16px', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', alignItems: 'center' }}>
-                    <div style={{ width: '120px', height: '68px', background: 'black', borderRadius: '8px', overflow: 'hidden' }}>
+                {[...(useViewerStore.getState().customVideos || [])]
+                  .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+                  .map((video) => (
+                  <div 
+                    key={video.id} 
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData('text/plain', video.id);
+                      e.dataTransfer.effectAllowed = 'move';
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const draggedId = e.dataTransfer.getData('text/plain');
+                      if (draggedId === video.id) return;
+                      
+                      const videos = [...(useViewerStore.getState().customVideos || [])].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+                      const draggedIndex = videos.findIndex(v => v.id === draggedId);
+                      const targetIndex = videos.findIndex(v => v.id === video.id);
+                      
+                      if (draggedIndex > -1 && targetIndex > -1) {
+                        const [draggedItem] = videos.splice(draggedIndex, 1);
+                        videos.splice(targetIndex, 0, draggedItem);
+                        
+                        const videoMap = {};
+                        videos.forEach((v, index) => {
+                          videoMap[v.id] = index;
+                        });
+                        
+                        useViewerStore.getState().updateVideoOrdersBatch(supabase, videoMap);
+                      }
+                    }}
+                    style={{ display: 'flex', gap: '16px', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', alignItems: 'center', cursor: 'grab' }}
+                  >
+                    <div style={{ width: '120px', height: '68px', background: 'black', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
                       {video.thumbnail_url ? (
                         <img src={video.thumbnail_url} alt="Thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (

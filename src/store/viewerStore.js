@@ -264,6 +264,32 @@ export const useViewerStore = create((set) => ({
   // Cinematic Videos
   customVideos: [],
   addCustomVideo: (videoObj) => set((state) => ({ customVideos: [...state.customVideos, videoObj] })),
+  updateVideoOrdersBatch: async (supabaseClient, videoMap) => {
+    // videoMap is an object: { [video_id]: new_order_index }
+    if (!supabaseClient) return;
+    
+    // 1. Optimistic UI update instantly
+    set((state) => ({
+      customVideos: (state.customVideos || []).map(v => {
+        if (v.id && videoMap[v.id] !== undefined) {
+          return { ...v, order_index: videoMap[v.id] };
+        }
+        return v;
+      })
+    }));
+
+    // 2. Background database sync
+    try {
+      for (const [id, newOrder] of Object.entries(videoMap)) {
+        await supabaseClient
+          .from('project_videos')
+          .update({ order_index: newOrder })
+          .eq('id', id);
+      }
+    } catch (e) {
+      console.error('Batch update video orders failed', e);
+    }
+  },
   deleteVideo: async (supabaseClient, id) => {
     if (!supabaseClient || !id) return;
     try {

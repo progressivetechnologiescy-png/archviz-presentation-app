@@ -90,7 +90,7 @@ export default function CinematicsTab() {
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-              {videos.map(film => (
+              {[...videos].sort((a, b) => (a.order_index || 0) - (b.order_index || 0)).map(film => (
                 <div 
                   key={film.id} 
                   className="hover-lift"
