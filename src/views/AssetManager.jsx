@@ -139,7 +139,22 @@ export default function AssetManager() {
   };
 
   const handleSaveGPS = async () => {
-    setCustomGPS(gpsInput);
+    let inputStr = gpsInput.trim();
+    
+    // If the user pastes an entire <iframe> code from Google Maps, extract just the src URL
+    const iframeMatch = inputStr.match(/<iframe.*?src=["'](.*?)["']/i);
+    if (iframeMatch) {
+      inputStr = iframeMatch[1];
+    }
+
+    if (inputStr.match(/^https?:\/\//i)) {
+      if (!inputStr.includes('google.com/maps/embed') && !inputStr.includes('maps.google.com/maps?q=')) {
+        alert("To use a URL, you must use the 'Embed a map' link from Google Maps (or the <iframe> code). Standard share links like 'maps.app.goo.gl' cannot be embedded due to Google's security rules.\n\nAlternatively, just type the physical address text here!");
+        return;
+      }
+    }
+
+    setCustomGPS(inputStr);
     if (supabase) {
       const { error } = await supabase
         .from('properties_config')

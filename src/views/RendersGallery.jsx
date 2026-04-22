@@ -3,8 +3,14 @@ import { useViewerStore } from '../store/viewerStore';
 import { X, ZoomIn } from 'lucide-react';
 
 export default function RendersGallery() {
-  const { customRenders } = useViewerStore();
+  const { customRenders, setLightboxOpen } = useViewerStore();
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // Sync lightbox state globally so the main header hides itself
+  useEffect(() => {
+    setLightboxOpen(!!selectedImage);
+    return () => setLightboxOpen(false);
+  }, [selectedImage, setLightboxOpen]);
 
   // Close on Escape key
   useEffect(() => {

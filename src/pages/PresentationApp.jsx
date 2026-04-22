@@ -26,11 +26,12 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
         padding: '10px 20px', cursor: 'pointer', borderRadius: '30px',
         background: active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'),
         border: 'none',
-        color: active ? 'white' : (isHovered ? 'white' : 'var(--text-secondary)'),
+        color: 'white', // User requested main link text to be white
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600', fontSize: '14px',
         boxShadow: active ? '0 4px 12px var(--accent-glow)' : 'none',
         whiteSpace: 'nowrap',
-        flexShrink: 0
+        flexShrink: 0,
+        opacity: active ? 1 : (isHovered ? 1 : 0.85) // Slight opacity drop for inactive states, but still clearly white
       }}
     >
       <Icon size={16} /> {label}
@@ -39,7 +40,7 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
 };
 
 export default function PresentationApp({ forceAdmin = false }) {
-  const { fetchCloudAssets } = useViewerStore();
+  const { fetchCloudAssets, isLightboxOpen } = useViewerStore();
   const [activeTab, setActiveTab] = useState('overview');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAdmin] = useState(() => {
@@ -60,7 +61,8 @@ export default function PresentationApp({ forceAdmin = false }) {
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        flexWrap: 'nowrap', gap: '24px'
+        flexWrap: 'nowrap', gap: '24px',
+        opacity: isLightboxOpen ? 0 : 1, pointerEvents: isLightboxOpen ? 'none' : 'auto', transition: 'opacity 0.3s ease'
       }}>
         <style>{`
           @media (max-width: 1300px) {
@@ -73,13 +75,13 @@ export default function PresentationApp({ forceAdmin = false }) {
           <div style={{ 
             width: '48px', height: '48px', background: 'linear-gradient(135deg, var(--accent-color), #60a5fa)', 
             borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 8px 24px var(--accent-glow)'
+            boxShadow: '0 8px 24px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.5)'
           }}>
             <Hexagon size={28} color="#fff" />
           </div>
           <div className="desktop-logo-text">
-            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', textShadow: '0 2px 10px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>The Pinnacle Residence</h1>
-            <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', whiteSpace: 'nowrap' }}>ARCHVIZ STUDIO LTD.</p>
+            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)', whiteSpace: 'nowrap' }}>The Pinnacle Residence</h1>
+            <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textShadow: '0 1px 8px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>ARCHVIZ STUDIO LTD.</p>
           </div>
         </div>
 
@@ -87,7 +89,8 @@ export default function PresentationApp({ forceAdmin = false }) {
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
           <div className="glass-panel" style={{ 
             display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px',
-            boxShadow: '0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
+            background: 'rgba(10, 12, 16, 0.8)', // Dark override for high contrast on bright maps
+            boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)',
             overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch',
             maxWidth: '100%'
           }}>
@@ -110,7 +113,7 @@ export default function PresentationApp({ forceAdmin = false }) {
           <button 
             onClick={() => setIsShareModalOpen(true)}
             className="glass-panel hover-lift" 
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
             <Share2 size={16} /> Share
           </button>
         </div>

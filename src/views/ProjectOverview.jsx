@@ -5,6 +5,7 @@ import { Component, ArrowRight } from 'lucide-react';
 export default function ProjectOverview({ onNavigate }) {
   const { customRenders } = useViewerStore();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   // Enforce pure database logic, NO dummy data
   const images = customRenders || [];
@@ -16,8 +17,18 @@ export default function ProjectOverview({ onNavigate }) {
     return () => clearInterval(timer);
   }, [images.length]);
 
+  const handleMouseMove = (e) => {
+    // Normalize coordinates between -1 and 1
+    const x = (e.clientX / window.innerWidth) * 2 - 1;
+    const y = (e.clientY / window.innerHeight) * 2 - 1;
+    setMousePos({ x, y });
+  };
+
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: 'var(--bg-dark)' }}>
+    <div 
+      onMouseMove={handleMouseMove}
+      style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: 'var(--bg-dark)', perspective: '1000px' }}
+    >
       
       {/* Slideshow Background */}
       {images.map((src, index) => {
@@ -29,26 +40,50 @@ export default function ProjectOverview({ onNavigate }) {
           <div 
             key={index}
             style={{
-              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-              background: isString ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
+              position: 'absolute', top: '-5%', left: '-5%', width: '110%', height: '110%',
               opacity: index === currentSlide ? 1 : 0,
-              animation: index === currentSlide ? 'kenburnsFade 6.5s ease-in-out forwards' : 'none',
+              transform: `rotateX(${mousePos.y * -4}deg) rotateY(${mousePos.x * 4}deg)`,
+              transition: 'opacity 1.5s ease-in-out, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
               zIndex: index === currentSlide ? 1 : 0,
+              transformStyle: 'preserve-3d',
+              willChange: 'transform'
             }}
-          />
+          >
+            <div style={{
+              width: '100%', height: '100%',
+              background: isString ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
+              animation: index === currentSlide ? 'kenburnsFade 6.5s ease-in-out forwards' : 'none',
+              willChange: 'transform'
+            }} />
+          </div>
         );
       })}
+
+      {/* Film Grain Overlay */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
+        opacity: 0.04,
+        mixBlendMode: 'overlay',
+        zIndex: 2,
+        pointerEvents: 'none'
+      }} />
 
       {/* Dark Overlay for Readability */}
       <div style={{
         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-        background: 'radial-gradient(circle at center, rgba(10,12,16,0.3) 0%, rgba(10,12,16,0.8) 100%)',
-        zIndex: 2
+        background: 'radial-gradient(circle at center, rgba(10,12,16,0.2) 0%, rgba(10,12,16,0.85) 100%)',
+        zIndex: 3,
+        pointerEvents: 'none'
       }} />
+
+      {/* Cinematic Letterbox Bars */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '10vh', background: '#000', zIndex: 10, boxShadow: '0 20px 40px rgba(0,0,0,0.8)' }}></div>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '10vh', background: '#000', zIndex: 10, boxShadow: '0 -20px 40px rgba(0,0,0,0.8)' }}></div>
 
       {/* Content Block */}
       <div style={{
-        position: 'absolute', bottom: 0, left: 0, zIndex: 10,
+        position: 'absolute', bottom: '10vh', left: 0, zIndex: 20,
         width: '100%'
       }}>
         <div style={{ 

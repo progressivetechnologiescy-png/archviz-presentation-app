@@ -18,6 +18,10 @@ export const useViewerStore = create((set) => ({
   activeAnnotation: null,
   setActiveAnnotation: (id) => set({ activeAnnotation: id }),
 
+  // Fullscreen Lightbox State (for hiding headers)
+  isLightboxOpen: false,
+  setLightboxOpen: (isOpen) => set({ isLightboxOpen: isOpen }),
+
   // Walk Engine state (WASD / D-Pad)
   moveForward: false,
   moveBackward: false,
