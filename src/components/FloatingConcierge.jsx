@@ -112,7 +112,8 @@ export default function FloatingConcierge() {
     if (!inputValue.trim() || isSearching) return;
 
     const userMsg = inputValue.trim();
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    const newHistory = [...messages, { role: 'user', text: userMsg }];
+    setMessages(newHistory);
     setInputValue('');
     setIsSearching(true);
     
@@ -120,59 +121,92 @@ export default function FloatingConcierge() {
     setMessages(prev => [...prev, { role: 'agent', text: '...', isTyping: true }]);
 
     const lowerReq = userMsg.toLowerCase();
-    let finalResponse = `I'd be happy to connect you with our lead broker to discuss the ${humanReadableLocation} property in detail!`;
-
+    
+    // 1. Gather dynamic real-world context if the user asks about local amenities
+    let dynamicContext = "";
     try {
       if (lowerReq.includes('beach') || lowerReq.includes('ocean') || lowerReq.includes('sea')) {
         const place = await searchNearby('NO_AMENITY', { k: 'natural', v: 'beach' }, 'beach');
-        if (place) {
-          finalResponse = `Based on the property's location, the nearest beach is **${place.name}**, located just ${place.distance} miles away!`;
-        } else {
-          finalResponse = `There don't appear to be any major public beaches immediately nearby the ${humanReadableLocation} property.`;
-        }
+        if (place) dynamicContext += `\n[System Info: The nearest beach is ${place.name}, ${place.distance} miles away.]`;
       } 
-      else if (lowerReq.includes('school') || lowerReq.includes('grammar') || lowerReq.includes('education')) {
+      if (lowerReq.includes('school') || lowerReq.includes('grammar') || lowerReq.includes('education')) {
         const place = await searchNearby('school', null, 'grammar school');
-        if (place) {
-          finalResponse = `The property is in an excellent district! The nearest school is **${place.name}**, only ${place.distance} miles away.`;
-        } else {
-          finalResponse = `The residence is located within a highly-rated school zone, with several academies within a short driving distance.`;
-        }
+        if (place) dynamicContext += `\n[System Info: The nearest school is ${place.name}, ${place.distance} miles away.]`;
       } 
-      else if (lowerReq.includes('restaurant') || lowerReq.includes('food') || lowerReq.includes('eat') || lowerReq.includes('cafe')) {
+      if (lowerReq.includes('restaurant') || lowerReq.includes('food') || lowerReq.includes('eat') || lowerReq.includes('cafe')) {
         const place = await searchNearby('restaurant', { k: 'amenity', v: 'cafe' }, 'dining option');
-        if (place) {
-          finalResponse = `Since you're located at ${humanReadableLocation}, there are incredible dining options nearby. The closest is **${place.name}**, just ${place.distance} miles away!`;
-        } else {
-          finalResponse = `Since you're located at ${humanReadableLocation}, there are incredible premium cafes and dining options just a 5-10 minute walk away!`;
-        }
+        if (place) dynamicContext += `\n[System Info: The nearest restaurant is ${place.name}, ${place.distance} miles away.]`;
       } 
-      else if (lowerReq.includes('hospital') || lowerReq.includes('doctor') || lowerReq.includes('clinic')) {
+      if (lowerReq.includes('hospital') || lowerReq.includes('doctor') || lowerReq.includes('clinic')) {
         const place = await searchNearby('hospital', { k: 'amenity', v: 'clinic' }, 'medical facility');
-        if (place) {
-          finalResponse = `For peace of mind, the nearest medical facility is **${place.name}**, located just ${place.distance} miles away.`;
-        } else {
-          finalResponse = `The property is located within 15 minutes of major regional healthcare facilities.`;
-        }
-      }
-      else if (lowerReq.includes('neighborhood') || lowerReq.includes('area') || lowerReq.includes('location') || lowerReq.includes('where')) {
-        finalResponse = `This property is located in ${humanReadableLocation}. It is an extremely safe area featuring 24/7 private security patrols and exclusive neighborhood access.`;
-      } 
-      else if (lowerReq.includes('amenities') || lowerReq.includes('gym') || lowerReq.includes('pool')) {
-        finalResponse = 'The property features a private infinity pool, a state-of-the-art wellness center, and a 24/7 concierge.';
-      } 
-      else if (lowerReq.includes('price') || lowerReq.includes('cost')) {
-        finalResponse = 'Pricing starts at $1.25M for our 2-Bedroom layouts. You can view full pricing in the Availability tab!';
+        if (place) dynamicContext += `\n[System Info: The nearest medical facility is ${place.name}, ${place.distance} miles away.]`;
       }
     } catch (e) {
-      console.error(e);
+      console.error("Map search failed", e);
+    }
+
+    // 2. Fallback if Gemini is not configured
+    const { geminiApiKey, aiContext } = useViewerStore.getState();
+    let finalResponse = "";
+
+    if (!geminiApiKey || geminiApiKey.trim() === '') {
+      finalResponse = `I'd be happy to connect you with our lead broker to discuss the ${humanReadableLocation} property! (Note: The Administrator has not connected my AI Brain yet. Please enter a Google Gemini API Key in the Asset Manager).`;
+      if (dynamicContext) {
+         finalResponse += ` However, I did check the map: ${dynamicContext.replace(/\[System Info:\s*(.*?)\]/g, '$1')}`;
+      }
+    } else {
+      // 3. Call Google Gemini REST API
+      try {
+        const systemInstruction = `You are Emma, an elegant, professional, and highly knowledgeable luxury real estate concierge for the property located at ${humanReadableLocation}. 
+You answer client questions concisely and politely. Keep answers relatively short (1-3 sentences) unless they ask for a list. 
+If the user asks about pricing, materials, or details, use ONLY the following specifications provided by the real estate agent:
+---
+${aiContext || 'No specific details provided yet.'}
+---
+If the user asks about distances to amenities, use the [System Info] context provided in their latest message if available.`;
+
+        // Format history for Gemini (roles must be "user" or "model")
+        // Filter out the initial greeting to save tokens, or keep it if you want.
+        const geminiHistory = newHistory.map(msg => ({
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text: msg.text }]
+        }));
+
+        // Inject dynamic context invisibly into the user's latest prompt
+        if (dynamicContext) {
+          geminiHistory[geminiHistory.length - 1].parts[0].text += `\n\n${dynamicContext}`;
+        }
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemInstruction }] },
+            contents: geminiHistory
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+          console.error("Gemini API Error:", data.error);
+          finalResponse = `I'm having trouble connecting to my AI brain right now. (${data.error.message})`;
+        } else if (data.candidates && data.candidates.length > 0) {
+          finalResponse = data.candidates[0].content.parts[0].text;
+        } else {
+          finalResponse = "I'm sorry, I couldn't formulate a response. Could you rephrase that?";
+        }
+      } catch (e) {
+        console.error("Fetch error to Gemini:", e);
+        finalResponse = "Sorry, I lost my connection to the AI server. Please try again.";
+      }
     }
 
     setMessages(prev => {
-      const newMsgs = [...prev];
-      if (newMsgs[newMsgs.length - 1].isTyping) newMsgs.pop();
-      newMsgs.push({ role: 'agent', text: finalResponse });
-      return newMsgs;
+      const msgs = [...prev];
+      if (msgs[msgs.length - 1].isTyping) msgs.pop();
+      msgs.push({ role: 'agent', text: finalResponse });
+      return msgs;
     });
     
     setIsSearching(false);

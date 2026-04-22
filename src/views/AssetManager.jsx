@@ -71,6 +71,8 @@ export default function AssetManager() {
     customPanorama, setCustomPanorama, 
     customRenders, addCustomRender, clearCustomRenders,
     customGPS, setCustomGPS,
+    geminiApiKey, setGeminiApiKey,
+    aiContext, setAiContext,
     modelRoughness, modelMetalness, modelEnvMapIntensity, setModelProperties
   } = useViewerStore();
 
@@ -330,6 +332,76 @@ export default function AssetManager() {
                   background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
                 }}>
                 Save Location
+              </button>
+            </div>
+          </div>
+
+          {/* AI Configuration Section */}
+          <div className="hover-lift" style={{
+            border: '1px solid var(--border-glass)',
+            borderRadius: '16px', padding: '24px',
+            background: 'var(--bg-panel)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '20px' }}>E</div>
+              <div>
+                <h4 style={{ margin: '0 0 4px 0' }}>Emma AI Configuration</h4>
+                <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  Connect Emma to Google Gemini and provide property specifications.
+                </p>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>GOOGLE GEMINI API KEY (FREE)</label>
+                <input 
+                  type="password" 
+                  value={geminiApiKey || ''}
+                  onChange={(e) => setGeminiApiKey(e.target.value)}
+                  placeholder="AIzaSy..."
+                  style={{ 
+                    width: '100%', padding: '12px 16px', borderRadius: '8px',
+                    background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>PROPERTY SPECIFICATIONS (EMMA'S CONTEXT)</label>
+                <textarea 
+                  value={aiContext || ''}
+                  onChange={(e) => setAiContext(e.target.value)}
+                  placeholder="Paste pricing, square footage, materials, history, and any other details Emma should know..."
+                  style={{ 
+                    width: '100%', padding: '12px 16px', borderRadius: '8px', minHeight: '120px', resize: 'vertical',
+                    background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white', fontFamily: 'inherit'
+                  }}
+                />
+              </div>
+
+              <button 
+                onClick={async () => {
+                  if (supabase) {
+                    const { error } = await supabase.from('properties_config').upsert({
+                      project_id: 'demo_project',
+                      gemini_api_key: geminiApiKey,
+                      ai_context: aiContext
+                    });
+                    if (error) {
+                      console.error(error);
+                      alert("Failed to save AI config to Cloud DB. Make sure you ran this in the Supabase SQL Editor:\n\nALTER TABLE properties_config ADD COLUMN gemini_api_key text;\nALTER TABLE properties_config ADD COLUMN ai_context text;");
+                    } else {
+                      alert("Emma AI Configuration Saved to Cloud!");
+                    }
+                  }
+                }}
+                style={{ 
+                  padding: '12px 24px', borderRadius: '8px', alignSelf: 'flex-start',
+                  background: 'white', color: 'black', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
+                }}>
+                Save AI Settings
               </button>
             </div>
           </div>

@@ -40,6 +40,8 @@ export const useViewerStore = create((set) => ({
   
   customRenders: [],
   customGPS: 'Beverly Hills, CA',
+  geminiApiKey: '',
+  aiContext: '',
   
   setActiveFloorplanId: (id) => set({ activeFloorplanId: id }),
   primaryModel: null,
@@ -52,6 +54,8 @@ export const useViewerStore = create((set) => ({
   setCustomFloorplan: (url) => set({ customFloorplan: url }),
   setCustomPanorama: (url) => set({ customPanorama: url }),
   setCustomGPS: (addressOrCoords) => set({ customGPS: addressOrCoords }),
+  setGeminiApiKey: (key) => set({ geminiApiKey: key }),
+  setAiContext: (context) => set({ aiContext: context }),
   setActiveTourNodeId: (id) => set({ activeTourNodeId: id }),
   
   addCustomRender: (url) => set((state) => ({ customRenders: [...state.customRenders, url] })),
@@ -116,6 +120,8 @@ export const useViewerStore = create((set) => ({
         if (configData.gps_coordinates) set({ customGPS: configData.gps_coordinates });
         if (configData.lighting_preset) set({ lightingPreset: configData.lighting_preset });
         if (configData.active_material) set({ activeMaterial: configData.active_material });
+        if (configData.gemini_api_key) set({ geminiApiKey: configData.gemini_api_key });
+        if (configData.ai_context) set({ aiContext: configData.ai_context });
       }
     } catch (e) {
       console.error("Cloud Connection Failed:", e);
