@@ -88,33 +88,6 @@ export default function StandaloneView({ isNested }) {
         {/* Main Controls Container */}
         <div className="glass-panel interactive-controls">
           
-          {/* Lighting Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="lighting-label">
-              Lighting
-            </span>
-            <button 
-              onClick={() => setLightingPreset('morning')}
-              title="Morning"
-              style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', background: lightingPreset === 'morning' ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-              <Sunrise size={18} />
-            </button>
-            <button 
-              onClick={() => setLightingPreset('noon')}
-              title="Noon"
-              style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', background: lightingPreset === 'noon' ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-              <Sun size={18} />
-            </button>
-            <button 
-              onClick={() => setLightingPreset('night')}
-              title="Night"
-              style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', background: lightingPreset === 'night' ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-              <Moon size={18} />
-            </button>
-          </div>
-
-          <div className="divider" />
-
           {/* Cinematic Tour Button */}
           <button 
             onClick={toggleTouring}
