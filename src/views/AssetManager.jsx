@@ -441,16 +441,81 @@ export default function AssetManager() {
           {/* TAB: FLOORPLANS */}
           {activeTab === 'floorplans' && (
             <>
-              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-color)', borderRadius: '12px', padding: '16px', marginBottom: '16px', color: 'white' }}>
-                <strong>Module 2: Coming Soon!</strong> We will upgrade this to support multiple labeled floorplans.
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+                <FileInput 
+                  label="Upload New Floorplan Level" 
+                  accept="image/*,.pdf" 
+                  multiple={true}
+                  onDrop={async (files) => {
+                    if (!supabase) {
+                      files.forEach((f, i) => useViewerStore.getState().addCustomFloorplan({ id: uuidv4(), level_name: `Level ${i+1}`, image_url: URL.createObjectURL(f) }));
+                      return;
+                    }
+                    setIsUploading(true);
+                    try {
+                      for (const file of files) {
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${uuidv4()}.${fileExt}`;
+                        const filePath = `floorplans/${fileName}`;
+                        
+                        const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                        if (uploadError) throw uploadError;
+                        
+                        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+                        
+                        const newRow = { project_id: 'demo_project', level_name: 'New Level', image_url: publicUrl };
+                        const { data: dbData, error: dbError } = await supabase.from('project_floorplans').insert(newRow).select().single();
+                        if (dbError) throw dbError;
+                        
+                        useViewerStore.getState().addCustomFloorplan(dbData);
+                      }
+                      alert(`Successfully uploaded ${files.length} floorplans!`);
+                    } catch (error) {
+                      console.error("Upload error:", error);
+                      alert(`Floorplan Upload Failed: ${error.message}`);
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  }} 
+                  isUploaded={false}
+                />
+
+                {/* Floorplan List */}
+                {useViewerStore.getState().customFloorplans && useViewerStore.getState().customFloorplans.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Manage Levels</h3>
+                    {useViewerStore.getState().customFloorplans.map(plan => (
+                      <div key={plan.id} className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '12px' }}>
+                        <div style={{ width: '80px', height: '60px', borderRadius: '8px', background: `url(${plan.image_url}) center/cover no-repeat rgba(255,255,255,0.05)`, border: '1px solid rgba(255,255,255,0.1)' }} />
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Level Name (e.g. Ground Floor)</label>
+                          <input 
+                            type="text" 
+                            defaultValue={plan.level_name}
+                            onBlur={(e) => {
+                              if (e.target.value.trim() !== plan.level_name) {
+                                useViewerStore.getState().updateFloorplanLabel(supabase, plan.id, e.target.value.trim());
+                              }
+                            }}
+                            style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
+                          />
+                        </div>
+                        <button 
+                          onClick={async () => {
+                            if (window.confirm('Delete this floorplan?')) {
+                              if (supabase) await supabase.from('project_floorplans').delete().eq('id', plan.id);
+                              useViewerStore.getState().removeCustomFloorplan(plan.id);
+                            }
+                          }}
+                          style={{ background: 'rgba(255,50,50,0.1)', color: '#ff6b6b', border: '1px solid rgba(255,50,50,0.2)', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <FileInput 
-                label="2D Floorplan" 
-                accept="image/*,.pdf" 
-                onDrop={handleUploadFloorplan} 
-                isUploaded={!!customFloorplan} 
-                onClear={() => clearAsset('floorplan', setCustomFloorplan)}
-              />
             </>
           )}
 

@@ -44,6 +44,24 @@ export const useViewerStore = create((set) => ({
   aiContext: '',
   
   setActiveFloorplanId: (id) => set({ activeFloorplanId: id }),
+  addCustomFloorplan: (floorplanObj) => set((state) => ({ customFloorplans: [...state.customFloorplans, floorplanObj] })),
+  removeCustomFloorplan: (id) => set((state) => ({ 
+    customFloorplans: state.customFloorplans.filter(f => f.id !== id),
+    activeFloorplanId: state.activeFloorplanId === id ? (state.customFloorplans.find(f => f.id !== id)?.id || null) : state.activeFloorplanId
+  })),
+  updateFloorplanLabel: async (supabaseClient, id, newLabel) => {
+    if (!supabaseClient) return;
+    try {
+      const { error } = await supabaseClient.from('project_floorplans').update({ level_name: newLabel }).eq('id', id);
+      if (!error) {
+        set((state) => ({
+          customFloorplans: state.customFloorplans.map(f => f.id === id ? { ...f, level_name: newLabel } : f)
+        }));
+      }
+    } catch (e) {
+      console.error('Update floorplan label failed', e);
+    }
+  },
   primaryModel: null,
   customFBX: null,
   customGLB: null,
@@ -135,6 +153,26 @@ export const useViewerStore = create((set) => ({
         // Fallback: If the new table fails, load the legacy renders
         const legacyRenders = data.filter(d => d.asset_type === 'render').map(d => ({ id: d.id, folder_name: 'Uncategorized', image_url: d.asset_url }));
         if (legacyRenders.length > 0) set({ customRenders: legacyRenders });
+      }
+
+      // Fetch Multi-Layer Floorplans
+      const { data: floorplanData, error: floorplanError } = await supabaseClient
+        .from('project_floorplans')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('order_index', { ascending: true });
+
+      if (!floorplanError && floorplanData && floorplanData.length > 0) {
+        set({ customFloorplans: floorplanData });
+        if (floorplanData.length > 0) {
+            set({ activeFloorplanId: floorplanData[0].id });
+        }
+      } else if (data) {
+        // Fallback to legacy single floorplan
+        const singleFloorplan = data.find(d => d.asset_type === 'floorplan');
+        if (singleFloorplan) {
+            set({ customFloorplan: singleFloorplan.asset_url });
+        }
       }
 
       // Fetch Config State (GPS, Lighting, etc)

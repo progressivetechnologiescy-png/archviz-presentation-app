@@ -28,22 +28,43 @@ export default function FloorplanViewer() {
                   fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s ease',
                   boxShadow: activeFloorplanId === plan.id ? '0 4px 12px var(--accent-glow)' : 'none'
                 }}>
-                {plan.name}
+                {plan.level_name}
               </button>
             ))}
           </div>
         )}
       </div>
       
-      <div className="glass-panel" style={{ 
-        flex: 1, marginBottom: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: bgImage ? `url(${bgImage}) center/contain no-repeat rgba(255,255,255,0.02)` : 'rgba(255,255,255,0.02)',
-        borderRadius: '16px', overflow: 'hidden', transition: 'background 0.5s ease'
-      }}>
-        {!bgImage && (
-          <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📐</div>
-            <p>Interactive floorplan svg or image will render here.</p>
+      <div style={{ flex: 1, position: 'relative', marginBottom: '32px' }}>
+        {/* Render all plans absolutely with opacity transitions for smooth crossfading */}
+        {customFloorplans && customFloorplans.map(plan => (
+          <div 
+            key={plan.id}
+            className="glass-panel"
+            style={{
+              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              background: `url(${plan.image_url}) center/contain no-repeat rgba(255,255,255,0.02)`,
+              borderRadius: '16px', overflow: 'hidden',
+              opacity: activeFloorplanId === plan.id ? 1 : 0,
+              pointerEvents: activeFloorplanId === plan.id ? 'auto' : 'none',
+              transition: 'opacity 0.5s ease-in-out',
+              zIndex: activeFloorplanId === plan.id ? 2 : 1
+            }} 
+          />
+        ))}
+
+        {(!customFloorplans || customFloorplans.length === 0) && (
+          <div className="glass-panel" style={{ 
+            width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: bgImage ? `url(${bgImage}) center/contain no-repeat rgba(255,255,255,0.02)` : 'rgba(255,255,255,0.02)',
+            borderRadius: '16px', overflow: 'hidden'
+          }}>
+            {!bgImage && (
+              <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📐</div>
+                <p>Interactive floorplan will render here.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
