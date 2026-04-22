@@ -114,6 +114,23 @@ export const useViewerStore = create((set) => ({
       console.error('Update Overview Order failed', e);
     }
   },
+  renameFolder: async (supabaseClient, oldName, newName) => {
+    if (!supabaseClient || !oldName || !newName || oldName === newName) return;
+    try {
+      const { error } = await supabaseClient
+        .from('project_renders')
+        .update({ folder_name: newName })
+        .eq('folder_name', oldName);
+      
+      if (!error) {
+        set((state) => ({
+          customRenders: state.customRenders.map(r => r.folder_name === oldName ? { ...r, folder_name: newName } : r)
+        }));
+      }
+    } catch (e) {
+      console.error('Rename folder failed', e);
+    }
+  },
 
   // CLOUD FETCHING PIPELINE
   isFetchingAssets: false,

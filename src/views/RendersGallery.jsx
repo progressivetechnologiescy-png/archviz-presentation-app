@@ -70,35 +70,46 @@ export default function RendersGallery() {
         </button>
       </div>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-        gap: '24px',
-        paddingBottom: '32px'
-      }}>
-        {filteredImages.map((render, i) => {
-          const src = render.image_url;
-          const isRealImage = typeof src === 'string' && (src.startsWith('blob:') || src.startsWith('http'));
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px', paddingBottom: '32px' }}>
+        {folders.filter(f => f !== 'All' && (activeFolder === 'All' || activeFolder === f)).map(folder => {
+          const folderImages = displayImages.filter(r => r.folder_name === folder);
+          if (folderImages.length === 0) return null;
+          
           return (
-            <div 
-              key={i} 
-              className="hover-lift" 
-              onClick={() => {
-                if (isRealImage) {
-                  setSelectedIndex(displayImages.findIndex(r => r === render));
-                  setLightboxOpen(true);
-                }
-              }}
-              style={{ 
-                 height: '250px', 
-                 background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
-                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                 color: 'rgba(255,255,255,0.2)', fontSize: '14px',
-                 borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
-                 position: 'relative'
-              }}
-            >
-              {!isRealImage && `Render Placeholder ${src}`}
+            <div key={folder}>
+              {activeFolder === 'All' && <h3 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '16px', color: 'var(--text-secondary)' }}>{folder}</h3>}
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+                gap: '24px'
+              }}>
+                {folderImages.map((render, i) => {
+                  const src = render.image_url;
+                  const isRealImage = typeof src === 'string' && (src.startsWith('blob:') || src.startsWith('http'));
+                  return (
+                    <div 
+                      key={render.id || i} 
+                      className="hover-lift" 
+                      onClick={() => {
+                        if (isRealImage) {
+                          setSelectedIndex(displayImages.findIndex(r => r === render));
+                          setLightboxOpen(true);
+                        }
+                      }}
+                      style={{ 
+                         height: '250px', 
+                         background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
+                         display: 'flex', alignItems: 'center', justifyContent: 'center',
+                         color: 'rgba(255,255,255,0.2)', fontSize: '14px',
+                         borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
+                         position: 'relative'
+                      }}
+                    >
+                      {!isRealImage && `Render Placeholder ${src}`}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
