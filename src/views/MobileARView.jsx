@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 
 export default function MobileARView() {
-  const { customFBX } = useViewerStore();
+  const { customGLB, customUSDZ } = useViewerStore();
   
   // Dynamically inject Google's model-viewer script on mount
   useEffect(() => {
@@ -16,13 +16,9 @@ export default function MobileARView() {
     };
   }, []);
 
-  // Determine which model to use based on extension.
-  // If they uploaded a GLB, let Android/Desktop use it. If they uploaded a USDZ, let Apple use it!
-  const isGLB = customFBX && customFBX.toLowerCase().endsWith('.glb');
-  const isUSDZ = customFBX && customFBX.toLowerCase().endsWith('.usdz');
-
-  const androidSrc = isGLB ? customFBX : 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
-  const appleSrc = isUSDZ ? customFBX : 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz';
+  // Use the explicitly uploaded GLB for Android/WebXR, and USDZ for Apple AR QuickLook.
+  const androidSrc = customGLB || 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+  const appleSrc = customUSDZ || 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz';
 
   return (
     <div style={{ 
