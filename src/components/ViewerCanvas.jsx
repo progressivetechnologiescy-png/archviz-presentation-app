@@ -178,13 +178,15 @@ export default function ViewerCanvas() {
               <Environment preset={preset} background={false} environmentIntensity={intensity} />
             )}
             
-            {/* Soft lighting */}
-            <ambientLight intensity={intensity * 0.5} />
+            {/* Powerful default lighting for raw FBX models */}
+            <ambientLight intensity={intensity * 1.5} />
+            <hemisphereLight skyColor="#ffffff" groundColor="#444444" intensity={intensity * 1.2} />
             <directionalLight 
-              position={[5, 10, 5]} 
-              intensity={intensity} 
+              position={[10, 20, 10]} 
+              intensity={intensity * 2.5} 
               castShadow 
-              shadow-mapSize={[1024, 1024]}
+              shadow-mapSize={[2048, 2048]}
+              shadow-bias={-0.0001}
             />
             
             <WalkEngine />
