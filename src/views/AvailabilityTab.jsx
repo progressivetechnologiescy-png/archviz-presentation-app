@@ -64,14 +64,15 @@ export default function AvailabilityTab() {
         .financing-panel { display: flex; gap: 32px; align-items: center; }
         .financing-left { flex: 1; padding-right: 32px; border-right: 1px solid rgba(255,255,255,0.1); }
         .financing-right { flex: 1; }
+        .table-wrapper { overflow: hidden; }
         
         @media (max-width: 768px) {
           .availability-container { padding: 100px 16px 32px !important; }
           .availability-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-          .availability-filters { overflow-x: auto; max-width: 100vw; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+          .availability-filters { overflow-x: auto; max-width: 100%; white-space: nowrap; -webkit-overflow-scrolling: touch; width: 100%; }
           .financing-panel { flex-direction: column; gap: 24px; align-items: stretch; }
           .financing-left { padding-right: 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 24px; }
-          .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .table-wrapper { overflow-x: auto !important; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
         }
       `}</style>
       
@@ -100,7 +101,7 @@ export default function AvailabilityTab() {
           </div>
         </div>
 
-        <div className="glass-panel table-wrapper" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+        <div className="glass-panel table-wrapper" style={{ borderRadius: '16px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
             <thead>
               <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>

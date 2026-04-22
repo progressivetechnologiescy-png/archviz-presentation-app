@@ -61,18 +61,36 @@ export default function StandaloneView({ isNested }) {
       {/* Minimalist Floating UI overlaying the 3D Canvas */}
       <div style={{ position: 'absolute', bottom: '40px', left: '0', right: '0', pointerEvents: 'none', display: 'flex', justifyContent: 'center', zIndex: 10 }}>
         
+        <style>{`
+          .interactive-controls { 
+            display: flex; align-items: center; gap: 24px; padding: 12px 24px; 
+            border-radius: 40px; pointer-events: auto;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(10, 12, 16, 0.8);
+          }
+          .lighting-label { font-size: 12px; font-weight: bold; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-right: 8px; letter-spacing: 1px; }
+          .tour-btn { 
+            padding: 12px 24px; border-radius: 30px; border: none; 
+            cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold;
+          }
+          .divider { width: 1px; height: 32px; background: rgba(255,255,255,0.1); }
+          
+          @media (max-width: 768px) {
+            .interactive-controls { gap: 16px; padding: 12px 16px; border-radius: 30px; width: 90%; justify-content: space-between; }
+            .lighting-label { display: none; }
+            .tour-btn { padding: 12px; border-radius: 50%; }
+            .tour-btn-text { display: none; }
+            .divider { display: none; }
+          }
+        `}</style>
+
         {/* Main Controls Container */}
-        <div className="glass-panel" style={{ 
-          display: 'flex', alignItems: 'center', gap: '24px', padding: '12px 24px', 
-          borderRadius: '40px', pointerEvents: 'auto',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          background: 'rgba(10, 12, 16, 0.8)'
-        }}>
+        <div className="glass-panel interactive-controls">
           
           {/* Lighting Controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginRight: '8px', letterSpacing: '1px' }}>
+            <span className="lighting-label">
               Lighting
             </span>
             <button 
@@ -95,21 +113,19 @@ export default function StandaloneView({ isNested }) {
             </button>
           </div>
 
-          <div style={{ width: '1px', height: '32px', background: 'rgba(255,255,255,0.1)' }} />
+          <div className="divider" />
 
           {/* Cinematic Tour Button */}
           <button 
             onClick={toggleTouring}
-            className="hover-lift"
+            className="hover-lift tour-btn"
             style={{ 
-              padding: '12px 24px', borderRadius: '30px', border: 'none', 
               background: isTouring ? 'rgba(239, 68, 68, 0.2)' : 'white', 
               color: isTouring ? '#ef4444' : 'black', 
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold',
               boxShadow: isTouring ? 'inset 0 0 0 1px #ef4444' : '0 8px 16px rgba(255,255,255,0.2)'
             }}>
             {isTouring ? <Square size={18}/> : <Play size={18} fill="black" />}
-            {isTouring ? 'Stop Tour' : 'Play Cinematic Tour'}
+            <span className="tour-btn-text">{isTouring ? 'Stop Tour' : 'Play Cinematic Tour'}</span>
           </button>
           
         </div>

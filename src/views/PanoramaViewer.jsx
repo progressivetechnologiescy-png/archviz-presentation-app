@@ -1,8 +1,9 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, useTexture, Html } from '@react-three/drei';
+import { OrbitControls, DeviceOrientationControls, Environment, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useViewerStore } from '../store/viewerStore';
+import { Smartphone } from 'lucide-react';
 
 // An inverted sphere holding a 360 latlong image
 function SphericalPanorama() {
@@ -57,6 +58,30 @@ function SphericalPanorama() {
 }
 
 export default function PanoramaViewer() {
+  const [useGyro, setUseGyro] = useState(false);
+
+  const toggleGyro = () => {
+    if (useGyro) {
+      setUseGyro(false);
+      return;
+    }
+    
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            setUseGyro(true);
+          } else {
+            alert('Gyroscope access denied. Please enable it in your browser settings.');
+          }
+        })
+        .catch(console.error);
+    } else {
+      // Non-iOS 13+ devices
+      setUseGyro(true);
+    }
+  };
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div style={{ position: 'absolute', top: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
@@ -65,17 +90,37 @@ export default function PanoramaViewer() {
         </div>
       </div>
 
+      <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
+        <button 
+          onClick={toggleGyro}
+          className="glass-panel hover-lift"
+          style={{ 
+            display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', 
+            borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)',
+            background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)',
+            color: 'white', fontWeight: 'bold', cursor: 'pointer',
+            boxShadow: useGyro ? '0 8px 32px var(--accent-glow)' : '0 8px 32px rgba(0,0,0,0.5)'
+          }}
+        >
+          <Smartphone size={20} />
+          {useGyro ? 'Disable Gyroscope' : 'Enable Gyroscope'}
+        </button>
+      </div>
+
       <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }}>
         <Suspense fallback={null}>
           <SphericalPanorama />
           
-          {/* We use negative rotation speed to fix dragging inverse feeling inside a sphere */}
-          <OrbitControls 
-            enableZoom={false} 
-            enablePan={false} 
-            rotateSpeed={-0.5} 
-            makeDefault 
-          />
+          {useGyro ? (
+            <DeviceOrientationControls makeDefault />
+          ) : (
+            <OrbitControls 
+              enableZoom={false} 
+              enablePan={false} 
+              rotateSpeed={-0.5} 
+              makeDefault 
+            />
+          )}
         </Suspense>
       </Canvas>
     </div>

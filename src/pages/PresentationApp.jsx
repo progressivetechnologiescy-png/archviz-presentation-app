@@ -93,9 +93,11 @@ export default function PresentationApp({ forceAdmin = false }) {
           @media (max-width: 1400px) {
             .nav-tab-btn { padding: 8px 12px; font-size: 13px; gap: 4px; }
             .nav-tab-icon { width: 14px; height: 14px; }
-            .desktop-logo-text { display: none !important; }
             .action-text { display: none !important; }
             .header-actions button { padding: 12px !important; border-radius: 50% !important; }
+          }
+          @media (min-width: 1101px) and (max-width: 1400px) {
+            .desktop-logo-text { display: none !important; }
           }
           @media (max-width: 1100px) {
             .desktop-nav { display: none !important; }
