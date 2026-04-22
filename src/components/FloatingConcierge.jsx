@@ -68,7 +68,8 @@ export default function FloatingConcierge() {
         <div className="glass-panel" style={{ 
           width: '350px', height: '500px', marginBottom: '16px', borderRadius: '24px',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          boxShadow: '0 24px 48px rgba(0,0,0,0.5)'
+          backgroundColor: 'rgba(15, 20, 25, 0.95)', // Solid tint to prevent text bleed-through
+          boxShadow: '0 24px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)'
         }}>
           
           {/* Header */}
@@ -89,9 +90,9 @@ export default function FloatingConcierge() {
 
           {/* Quick Action WhatsApp Banner */}
           <a href="https://wa.me/15551234567" target="_blank" rel="noreferrer" style={{
-             background: 'rgba(37, 211, 102, 0.1)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
+             background: '#128C7E', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
              textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-             color: '#25D366', fontWeight: 'bold', fontSize: '13px'
+             color: 'white', fontWeight: 'bold', fontSize: '13px', flexShrink: 0
           }}>
              <Phone size={16} /> Connect with Sales on WhatsApp
           </a>
@@ -101,11 +102,12 @@ export default function FloatingConcierge() {
             {messages.map((msg, i) => (
               <div key={i} style={{ 
                 alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                background: msg.role === 'user' ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
+                background: msg.role === 'user' ? 'var(--accent-color)' : 'rgba(255,255,255,0.15)',
                 padding: '12px 16px', borderRadius: '16px', maxWidth: '85%',
                 borderBottomRightRadius: msg.role === 'user' ? '4px' : '16px',
                 borderBottomLeftRadius: msg.role === 'agent' ? '4px' : '16px',
-                color: 'white', fontSize: '14px', lineHeight: '1.4'
+                color: 'white', fontSize: '14px', lineHeight: '1.4',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
               }}>
                 {msg.text}
               </div>
@@ -114,18 +116,18 @@ export default function FloatingConcierge() {
           </div>
 
           {/* Input Area */}
-          <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '8px' }}>
+          <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.2)', flexShrink: 0 }}>
             <input 
               type="text" 
               placeholder="Ask about location, schools..." 
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
-              style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '10px 16px', color: 'white', outline: 'none' }}
+              style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '10px 16px', color: 'white', outline: 'none' }}
             />
             <button 
               onClick={handleSend}
-              style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
             >
               <Send size={16} />
             </button>
