@@ -40,10 +40,12 @@ export default function FloatingConcierge() {
   
   const messagesEndRef = useRef(null);
 
-  // Attempt to Reverse Geocode on Mount or GPS Change
+  // Attempt to Geocode/Reverse Geocode on Mount or GPS Change
   useEffect(() => {
     let active = true;
-    const coords = extractCoordinates(customGPS);
+    const str = customGPS || 'The Pinnacle Residence';
+    const coords = extractCoordinates(str);
+    
     if (coords) {
       setCoordinates(coords);
       // Reverse Geocode using Nominatim
@@ -58,8 +60,21 @@ export default function FloatingConcierge() {
           if (active) setHumanReadableLocation('this area');
         });
     } else {
-      setCoordinates(null);
-      setHumanReadableLocation(customGPS || 'The Pinnacle Residence');
+      setHumanReadableLocation(str);
+      // Forward Geocode the text string to get coordinates for map searches
+      fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(str)}&limit=1`)
+        .then(r => r.json())
+        .then(data => {
+          if (!active) return;
+          if (data && data.length > 0) {
+            setCoordinates({ lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) });
+          } else {
+            setCoordinates(null);
+          }
+        })
+        .catch(() => {
+          if (active) setCoordinates(null);
+        });
     }
     return () => { active = false; };
   }, [customGPS]);
@@ -246,7 +261,7 @@ If the user asks about distances to amenities, use the [System Info] context pro
 
           {/* Quick Action WhatsApp Banner */}
           <a href="https://wa.me/15551234567" target="_blank" rel="noreferrer" style={{
-             background: '#128C7E', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
+             background: '#25D366', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
              textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
              color: 'white', fontWeight: 'bold', fontSize: '13px', flexShrink: 0
           }}>
