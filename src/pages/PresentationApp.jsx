@@ -94,9 +94,7 @@ export default function PresentationApp({ forceAdmin = false }) {
             .nav-tab-btn { padding: 8px 12px; font-size: 13px; gap: 4px; }
             .nav-tab-icon { width: 14px; height: 14px; }
             .action-text { display: none !important; }
-            .share-btn-text { display: none !important; }
-            .share-btn { padding: 12px !important; border-radius: 50% !important; width: 48px; height: 48px; justify-content: center; }
-            .header-actions button { padding: 12px !important; border-radius: 50% !important; }
+            .header-actions button { padding: 12px !important; border-radius: 50% !important; width: 48px; height: 48px; justify-content: center; }
           }
           @media (max-width: 1350px) {
             .desktop-logo-text { display: none !important; }
@@ -112,9 +110,6 @@ export default function PresentationApp({ forceAdmin = false }) {
           @media (max-width: 600px) {
             .header-container { padding: 16px !important; }
           }
-          /* Hide scrollbar for nav but allow scrolling if needed */
-          .nav-scroll-container::-webkit-scrollbar { display: none; }
-          .nav-scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
         `}</style>
         
         {/* Floating Logo - Top Left */}
@@ -134,12 +129,10 @@ export default function PresentationApp({ forceAdmin = false }) {
 
         {/* Desktop Navigation Pill */}
         <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
-          <div className="glass-panel nav-scroll-container" style={{ 
+          <div className="glass-panel" style={{ 
             display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px',
             background: 'rgba(10, 12, 16, 0.8)',
-            boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)',
-            overflowX: 'auto',
-            maxWidth: '100%'
+            boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
           }}>
             <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" onClick={() => setActiveTab('overview')} />
             <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" onClick={() => setActiveTab('renders')} />
@@ -188,9 +181,14 @@ export default function PresentationApp({ forceAdmin = false }) {
           <button 
             onClick={() => setIsShareModalOpen(true)}
             className="glass-panel hover-lift share-btn" 
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
-            <Share2 size={16} />
-            <span className="share-btn-text">Share</span>
+            title="Share"
+            style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              width: '48px', height: '48px', padding: '0', 
+              borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', 
+              border: '1px solid rgba(255,255,255,0.1)', color: 'white' 
+            }}>
+            <Share2 size={18} />
           </button>
 
           {/* Mobile Hamburger Toggle */}
