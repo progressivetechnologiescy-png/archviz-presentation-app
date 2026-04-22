@@ -164,34 +164,32 @@ export default function MobileARView() {
           width: '100%', maxWidth: '350px'
         }}>
           
-          {/* Mode Selector (Only visible if at plot) */}
-          {isAtPlot && (
-            <div style={{ 
-              display: 'flex', background: 'rgba(0,0,0,0.5)', borderRadius: '20px', 
-              padding: '4px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' 
-            }}>
-              <button 
-                onClick={() => setArMode('plot')}
-                style={{
-                  background: arMode === 'plot' ? 'var(--accent-color)' : 'transparent',
-                  color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
-                  fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
-                }}
-              >
-                1:1 Real Size
-              </button>
-              <button 
-                onClick={() => setArMode('desk')}
-                style={{
-                  background: arMode === 'desk' ? 'var(--accent-color)' : 'transparent',
-                  color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
-                  fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
-                }}
-              >
-                1:100 Desk Model
-              </button>
-            </div>
-          )}
+          {/* Mode Selector (Always visible so user has full control regardless of GPS) */}
+          <div style={{ 
+            display: 'flex', background: 'rgba(0,0,0,0.5)', borderRadius: '20px', 
+            padding: '4px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' 
+          }}>
+            <button 
+              onClick={() => setArMode('plot')}
+              style={{
+                background: arMode === 'plot' ? 'var(--accent-color)' : 'transparent',
+                color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
+                fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
+              }}
+            >
+              1:1 Locked Scale
+            </button>
+            <button 
+              onClick={() => setArMode('desk')}
+              style={{
+                background: arMode === 'desk' ? 'var(--accent-color)' : 'transparent',
+                color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
+                fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
+              }}
+            >
+              Manual Scale (Pinch)
+            </button>
+          </div>
 
           {/* Custom AR Button */}
           <button 
@@ -210,7 +208,7 @@ export default function MobileARView() {
               cursor: 'pointer', zIndex: 1000, whiteSpace: 'nowrap', width: '100%'
             }}
           >
-            {arMode === 'plot' ? "Deploy on Plot of Land" : "Drop on Your Desk"}
+            Drop in AR
           </button>
         </div>
       </div>
