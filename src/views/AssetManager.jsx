@@ -73,13 +73,18 @@ export default function AssetManager() {
     setIsUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${uuidv4()}.${fileExt}`;
-      const filePath = `${assetType}/${fileName}`;
+      // Use deterministic filename to OVERWRITE old files and save space!
+      const fileName = `${assetType}.${fileExt}`;
+      const filePath = `demo_project/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+      // Upsert true overwrites the physical file in the bucket
+      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+      let { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+      
+      // Append a timestamp cache-buster so the browser doesn't load the old model!
+      publicUrl = `${publicUrl}?v=${new Date().getTime()}`;
 
       // Try to clean out existing single-asset for this project, but don't crash if RLS blocks delete!
       try {
