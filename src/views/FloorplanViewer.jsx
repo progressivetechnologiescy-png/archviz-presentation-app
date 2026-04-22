@@ -94,8 +94,9 @@ export default function FloorplanViewer() {
               className="glass-panel"
               style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                background: `url(${plan.image_url}) center/contain no-repeat rgba(255,255,255,0.02)`,
+                background: `url(${plan.image_url}) center/contain no-repeat rgba(10,12,16,0.5)`,
                 borderRadius: '16px', overflow: 'hidden',
+                boxShadow: 'inset 0 0 150px 80px rgba(10,12,16,1)',
                 opacity: activeFloorplanId === plan.id ? 1 : 0,
                 pointerEvents: activeFloorplanId === plan.id ? 'auto' : 'none',
                 transition: 'opacity 0.5s ease-in-out',
