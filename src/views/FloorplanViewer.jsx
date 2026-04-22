@@ -2,9 +2,12 @@ import React from 'react';
 import { useViewerStore } from '../store/viewerStore';
 
 export default function FloorplanViewer() {
-  const { customFloorplans, activeFloorplanId, setActiveFloorplanId } = useViewerStore();
+  const { customFloorplan, customFloorplans, activeFloorplanId, setActiveFloorplanId } = useViewerStore();
 
   const activePlan = customFloorplans?.find(f => f.id === activeFloorplanId);
+
+  // Use the specific active plan URL if selected, otherwise fallback to the single uploaded customFloorplan
+  const bgImage = activePlan ? activePlan.url : customFloorplan;
 
   return (
     <div style={{ padding: '120px 32px 32px', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -34,10 +37,10 @@ export default function FloorplanViewer() {
       
       <div className="glass-panel" style={{ 
         flex: 1, marginBottom: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: activePlan ? `url(${activePlan.url}) center/contain no-repeat rgba(255,255,255,0.02)` : 'rgba(255,255,255,0.02)',
+        background: bgImage ? `url(${bgImage}) center/contain no-repeat rgba(255,255,255,0.02)` : 'rgba(255,255,255,0.02)',
         borderRadius: '16px', overflow: 'hidden', transition: 'background 0.5s ease'
       }}>
-        {!activePlan && (
+        {!bgImage && (
           <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📐</div>
             <p>Interactive floorplan svg or image will render here.</p>
