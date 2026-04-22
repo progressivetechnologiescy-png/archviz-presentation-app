@@ -102,7 +102,7 @@ export default function AssetManager() {
       alert(`Successfully uploaded ${assetType} to Cloud Database!`);
     } catch (error) {
       console.error(`Upload error for ${assetType}:`, error);
-      alert(`Failed to upload ${assetType}.`);
+      alert(`Upload Failed: ${error.message || JSON.stringify(error)}\n\n(If this says 'new row violates row-level security', you need an INSERT/UPDATE policy in Supabase!)`);
     } finally {
       setIsUploading(false);
     }
@@ -142,7 +142,7 @@ export default function AssetManager() {
       alert(`Successfully uploaded ${files.length} renders to the Cloud Database!`);
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload renders.");
+      alert(`Render Upload Failed: ${error.message || JSON.stringify(error)}`);
     } finally {
       setIsUploading(false);
     }
