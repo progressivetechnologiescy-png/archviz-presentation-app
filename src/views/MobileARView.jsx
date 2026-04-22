@@ -122,13 +122,18 @@ export default function MobileARView() {
       </div>
 
       <div style={{ flex: 1, position: 'relative' }}>
+        {/* Status Indicator for debugging/user feedback */}
+        <div style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', zIndex: 10, whiteSpace: 'nowrap' }}>
+          {arStatus}
+        </div>
+
         <model-viewer 
           id="ar-viewer"
           src={androidSrc}
           ios-src={appleSrc}
           ar 
           ar-modes="webxr scene-viewer quick-look" 
-          ar-scale="auto"
+          ar-scale={isAtPlot ? "fixed" : "auto"}
           ar-placement="floor"
           scale="0.01 0.01 0.01"
           camera-controls 
@@ -157,10 +162,10 @@ export default function MobileARView() {
             background: 'var(--accent-color)', color: 'white', border: 'none', 
             padding: '16px 32px', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px',
             fontFamily: 'Outfit, sans-serif', boxShadow: '0 8px 24px var(--accent-glow)',
-            cursor: 'pointer', zIndex: 1000
+            cursor: 'pointer', zIndex: 1000, whiteSpace: 'nowrap'
           }}
         >
-          Drop on Your Desk
+          {isAtPlot ? "Deploy on Plot of Land" : "Drop on Your Desk"}
         </button>
       </div>
 
