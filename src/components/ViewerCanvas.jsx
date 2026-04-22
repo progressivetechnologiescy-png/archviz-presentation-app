@@ -1,5 +1,5 @@
 import React, { useRef, Suspense, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Environment, PointerLockControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, BakeShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
@@ -55,6 +55,13 @@ function FBXModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          // Force material to be reflective to show off HDRI
+          if (child.material) {
+            child.material.roughness = 0.1;
+            child.material.metalness = 0.6;
+            child.material.envMapIntensity = 2.0;
+            child.material.needsUpdate = true;
+          }
         }
       });
     }
@@ -84,6 +91,13 @@ function GLTFModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          // Force material to be reflective to show off HDRI
+          if (child.material) {
+            child.material.roughness = 0.1;
+            child.material.metalness = 0.6;
+            child.material.envMapIntensity = 2.0;
+            child.material.needsUpdate = true;
+          }
         }
       });
     }
@@ -123,8 +137,16 @@ function LoadedArchModel() {
 
 const store = createXRStore();
 
+// Wrapper for custom JPEG/PNG panoramas to act as HDRI Environment
+function CustomEnvironment({ url }) {
+  const texture = useLoader(THREE.TextureLoader, url);
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return <Environment map={texture} background backgroundBlurriness={0.2} environmentIntensity={1.2} />;
+}
+
 export default function ViewerCanvas() {
-  const { lightingPreset, isTouring } = useViewerStore();
+  const { lightingPreset, isTouring, customPanorama } = useViewerStore();
   // Dynamic scaling for smoothness
   const [dpr, setDpr] = useState(1.5);
   const [showQR, setShowQR] = useState(false);
@@ -163,7 +185,12 @@ export default function ViewerCanvas() {
           <Suspense fallback={null}>
             {/* BakeShadows prevents engine from recalculating shadowmaps every frame when static */}
             <BakeShadows />
-            <Environment preset={preset} background backgroundBlurriness={0.5} environmentIntensity={intensity} />
+            
+            {customPanorama ? (
+              <CustomEnvironment url={customPanorama} />
+            ) : (
+              <Environment preset={preset} background backgroundBlurriness={0.5} environmentIntensity={intensity} />
+            )}
             
             {/* Soft lighting */}
             <ambientLight intensity={intensity * 0.5} />
