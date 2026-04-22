@@ -163,7 +163,7 @@ export default function RendersGallery() {
           {/* High Res Image */}
           <img 
             key={selectedIndex} // Force re-render for simple transition
-            src={displayImages[selectedIndex]} 
+            src={displayImages[selectedIndex]?.image_url} 
             alt="Fullscreen Render"
             style={{
               maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain',
