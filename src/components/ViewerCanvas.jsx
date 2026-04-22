@@ -61,11 +61,17 @@ function FBXModel({ url }) {
             mats.forEach((mat, index) => {
                let cleanColor = mat.color;
                
-               // Revit/CAD Exporter Bug Fix: Materials often export with a pure or near-black base color.
-               // If color is extremely dark, it ruins textures (black * texture = black) and makes walls pitch black.
-               // We catch any abnormally dark export artifact and aggressively force it to white.
-               if (cleanColor && (cleanColor.r + cleanColor.g + cleanColor.b < 0.5)) {
-                 cleanColor = new THREE.Color(0xffffff);
+               // The "Inverted Colors" Fix:
+               // 1. In Three.js, a texture (map) multiplies with the base color. To see the texture perfectly, the base color MUST be white.
+               //    Revit often exports mapped materials with a black base color, which turns them invisible.
+               // 2. For untextured materials (like dark grey balconies), we MUST preserve the original base color.
+               if (mat.map) {
+                 cleanColor = new THREE.Color(0xffffff); // Force white so the texture renders naturally
+               } else {
+                 // Only intervene if an untextured material is mathematically pitch black (export error)
+                 if (cleanColor && (cleanColor.r + cleanColor.g + cleanColor.b < 0.05)) {
+                   cleanColor = new THREE.Color(0xffffff);
+                 }
                }
                
                const pbrMat = new THREE.MeshStandardMaterial({
