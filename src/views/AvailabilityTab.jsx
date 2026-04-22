@@ -97,7 +97,7 @@ export default function AvailabilityTab() {
                       <td style={{ padding: '24px', fontWeight: 'bold' }}>#{unit.id}</td>
                       <td style={{ padding: '24px', color: 'var(--text-secondary)' }}>{unit.type}</td>
                       <td style={{ padding: '24px' }}>{unit.sqft}</td>
-                      <td style={{ padding: '24px', fontFamily: 'monospace', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white' }}>{unit.price}</td>
+                      <td style={{ padding: '24px', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: '500' }}>{unit.price}</td>
                       <td style={{ padding: '24px' }}>
                         <span style={{ 
                           padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px',
