@@ -9,14 +9,15 @@ const DUMMY_UNITS = [
   { id: '301', type: 'Penthouse', sqft: 3500, price: '$4,500,000', status: 'Available' },
 ];
 
-export default function AvailabilityTab({ onNavigate }) {
+export default function AvailabilityTab() {
   const [filter, setFilter] = useState('All');
   const [activeUnitId, setActiveUnitId] = useState(null);
   const [downPaymentPct, setDownPaymentPct] = useState(20);
   const [interestRate, setInterestRate] = useState(6.5);
   const [inquireStatus, setInquireStatus] = useState('idle'); // idle, form, success
+  const [previewImageUrl, setPreviewImageUrl] = useState(null);
 
-  const { customFloorplans, setActiveFloorplanId } = useViewerStore();
+  const { customFloorplans } = useViewerStore();
 
   const filteredUnits = DUMMY_UNITS.filter(unit => filter === 'All' || unit.status === filter);
 
@@ -38,17 +39,16 @@ export default function AvailabilityTab({ onNavigate }) {
     }
   };
 
-  const handleViewFloorplan = (unit) => {
+  const handlePreviewFloorplan = (e, unit) => {
+    e.stopPropagation();
     if (customFloorplans && customFloorplans.length > 0) {
-      // Try to find a floorplan that mentions the unit type (e.g. '2 Bed') or unit ID
       const match = customFloorplans.find(f => 
         (f.level_name && unit.type && f.level_name.toLowerCase().includes(unit.type.toLowerCase().split(',')[0])) || 
         (f.level_name && f.level_name.includes(unit.id))
       );
-      if (match) setActiveFloorplanId(match.id);
-      else setActiveFloorplanId(customFloorplans[0].id); // fallback to first available
+      if (match) setPreviewImageUrl(match.image_url);
+      else setPreviewImageUrl(customFloorplans[0].image_url);
     }
-    if (onNavigate) onNavigate('floorplans');
   };
 
   return (
@@ -89,6 +89,7 @@ export default function AvailabilityTab({ onNavigate }) {
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Layout</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Sq. Ft.</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Price</th>
+                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center' }}>Plan</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Status</th>
               </tr>
             </thead>
@@ -113,6 +114,23 @@ export default function AvailabilityTab({ onNavigate }) {
                       <td style={{ padding: '24px', color: 'var(--text-secondary)' }}>{unit.type}</td>
                       <td style={{ padding: '24px' }}>{unit.sqft}</td>
                       <td style={{ padding: '24px', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: '500' }}>{unit.price}</td>
+                      <td style={{ padding: '24px', textAlign: 'center' }}>
+                        {customFloorplans && customFloorplans.length > 0 && (
+                          <button 
+                            onClick={(e) => handlePreviewFloorplan(e, unit)}
+                            className="hover-lift"
+                            style={{ 
+                              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', 
+                              borderRadius: '8px', padding: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
+                            }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                              <line x1="3" y1="9" x2="21" y2="9"></line>
+                              <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                          </button>
+                        )}
+                      </td>
                       <td style={{ padding: '24px' }}>
                         <span style={{ 
                           padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px',
@@ -126,7 +144,7 @@ export default function AvailabilityTab({ onNavigate }) {
                     {/* Live Financing Calculator Panel for Active Unit */}
                     {isSelected && (
                       <tr style={{ background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                        <td colSpan="5" style={{ padding: '32px' }}>
+                        <td colSpan="6" style={{ padding: '32px' }}>
                           <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
                             <div style={{ flex: 1, paddingRight: '32px', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
                               <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -171,47 +189,26 @@ export default function AvailabilityTab({ onNavigate }) {
                                        style={{ flex: 1, background: 'var(--accent-color)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
                                        Inquire Unit #{unit.id}
                                      </button>
-                                     {customFloorplans && customFloorplans.length > 0 && onNavigate && (
-                                       <button 
-                                         onClick={() => handleViewFloorplan(unit)}
-                                         className="hover-lift"
-                                         style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px 24px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>
-                                         View Floorplan
-                                       </button>
-                                     )}
                                    </div>
                                  </>
                                )}
 
                                {inquireStatus === 'form' && (
                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                   <p style={{ margin: 0, fontWeight: 'bold' }}>Reserve Unit #{unit.id}</p>
-                                   <input type="text" placeholder="Full Name" style={{ padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
-                                   <input type="email" placeholder="Email Address" style={{ padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
-                                   <input type="tel" placeholder="Phone Number" style={{ padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
-                                   <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                                     <button onClick={() => setInquireStatus('idle')} style={{ flex: 1, padding: '12px', borderRadius: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer' }}>Cancel</button>
-                                     <button 
-                                       onClick={() => {
-                                         // Mock API Submission
-                                         setInquireStatus('success');
-                                         setTimeout(() => setInquireStatus('idle'), 4000);
-                                       }} 
-                                       className="hover-lift"
-                                       style={{ flex: 2, padding: '12px', borderRadius: '8px', background: 'var(--accent-color)', border: 'none', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
-                                       Submit Inquiry
-                                     </button>
+                                   <input type="text" placeholder="Full Name" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '12px', borderRadius: '8px', fontSize: '14px', outline: 'none' }} />
+                                   <input type="email" placeholder="Email Address" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '12px', borderRadius: '8px', fontSize: '14px', outline: 'none' }} />
+                                   <div style={{ display: 'flex', gap: '8px' }}>
+                                     <button onClick={() => setInquireStatus('idle')} style={{ flex: 1, background: 'transparent', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
+                                     <button onClick={() => setInquireStatus('success')} className="hover-lift" style={{ flex: 1, background: 'var(--accent-color)', color: 'white', border: 'none', padding: '12px', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold' }}>Submit</button>
                                    </div>
                                  </div>
                                )}
 
                                {inquireStatus === 'success' && (
-                                 <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.2)', color: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    </div>
-                                    <h4 style={{ margin: '0 0 8px 0', fontSize: '18px' }}>Request Received</h4>
-                                    <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '14px' }}>Our brokerage team will contact you shortly regarding Unit #{unit.id}.</p>
+                                 <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '24px', textAlign: 'center' }}>
+                                   <div style={{ fontSize: '32px', marginBottom: '8px' }}>✅</div>
+                                   <h4 style={{ color: '#4ade80', margin: '0 0 8px 0' }}>Inquiry Sent</h4>
+                                   <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '14px' }}>Our sales team will contact you shortly about Unit #{unit.id}.</p>
                                  </div>
                                )}
                             </div>
@@ -222,17 +219,46 @@ export default function AvailabilityTab({ onNavigate }) {
                   </React.Fragment>
                 );
               }) : (
-                 <tr>
-                    <td colSpan="5" style={{ padding: '48px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                      No units found matching this filter.
-                    </td>
-                 </tr>
+                <tr>
+                  <td colSpan="6" style={{ padding: '48px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    No availability found.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
         </div>
-
       </div>
+
+      {/* Floorplan Lightbox Modal */}
+      {previewImageUrl && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.85)', zIndex: 9999,
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          backdropFilter: 'blur(10px)'
+        }} onClick={() => setPreviewImageUrl(null)}>
+          
+          <button 
+            onClick={() => setPreviewImageUrl(null)}
+            style={{
+              position: 'absolute', top: '32px', right: '32px',
+              background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
+              width: '48px', height: '48px', borderRadius: '50%',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '24px', transition: 'background 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+            onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}
+          >
+            ×
+          </button>
+          
+          <div style={{ maxWidth: '90vw', maxHeight: '90vh', position: 'relative' }} onClick={e => e.stopPropagation()}>
+            <img src={previewImageUrl} alt="Floorplan Preview" style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
