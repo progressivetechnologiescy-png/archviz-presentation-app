@@ -445,7 +445,13 @@ export default function AssetManager() {
 
                     <button
                       onClick={() => {
-                        if (window.confirm(`Are you sure you want to delete the folder "${selectedFolder}" AND all its images? This cannot be undone.`)) {
+                        const folderRenders = useViewerStore.getState().customRenders?.filter(r => r.folder_name === selectedFolder) || [];
+                        if (folderRenders.length > 0) {
+                          alert(`You cannot delete "${selectedFolder}" because it still contains ${folderRenders.length} images.\n\nPlease delete or move all images out of this folder first.`);
+                          return;
+                        }
+                        
+                        if (window.confirm(`Are you sure you want to delete the empty folder "${selectedFolder}"?`)) {
                           useViewerStore.getState().deleteFolder(supabase, selectedFolder);
                           
                           // Switch to a different folder visually
@@ -459,10 +465,18 @@ export default function AssetManager() {
                       style={{
                         padding: '8px 16px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', 
                         border: '1px solid rgba(239, 68, 68, 0.3)', cursor: 'pointer', fontWeight: 'bold',
-                        display: 'flex', alignItems: 'center', gap: '6px'
+                        display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#ef4444';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                        e.currentTarget.style.color = '#ef4444';
                       }}
                     >
-                      <X size={16} /> Delete Folder
+                      <X size={16} /> Delete Empty Folder
                     </button>
                   </div>
                 )}
@@ -544,10 +558,24 @@ export default function AssetManager() {
                             title="Delete Render"
                             style={{
                               position: 'absolute', top: '8px', right: '48px',
-                              background: 'rgba(0,0,0,0.5)',
-                              color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%',
-                              width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              backdropFilter: 'blur(4px)',
+                              color: '#ef4444', 
+                              border: '1px solid rgba(239, 68, 68, 0.4)', 
+                              borderRadius: '50%',
+                              width: '32px', height: '32px', 
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
                               cursor: 'pointer', transition: 'all 0.2s', zIndex: 2
+                            }}
+                            onMouseEnter={(e) => {
+                               e.currentTarget.style.background = '#ef4444';
+                               e.currentTarget.style.color = 'white';
+                               e.currentTarget.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.5)';
+                            }}
+                            onMouseLeave={(e) => {
+                               e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                               e.currentTarget.style.color = '#ef4444';
+                               e.currentTarget.style.boxShadow = 'none';
                             }}
                           >
                             <X size={16} />
