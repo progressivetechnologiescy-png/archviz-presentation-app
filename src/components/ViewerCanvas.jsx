@@ -59,22 +59,21 @@ function FBXModel({ url }) {
           if (child.material) {
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             mats.forEach((mat) => {
-               // 1. Non-invasive Revit Black Color Fix
-               // If the exporter set the base color to pitch black or extremely dark grey, fix it directly on the existing material
-               if (mat.color && (mat.color.r + mat.color.g + mat.color.b < 0.5)) {
-                   mat.color.setHex(0xffffff);
-               }
+               // 1. DESTROY CORRUPTED TEXTURES
+               // Revit FBX exports often include broken or missing diffuse maps that render as a pitch-black overlay.
+               // By stripping the map, we reveal the TRUE underlying material colors (e.g., white walls, dark balconies).
+               mat.map = null;
                
-               // 2. Enhance realism without destroying original maps/UVs
+               // 2. Apply photorealistic PBR lighting interaction to the true colors
                if (mat.isMeshStandardMaterial || mat.isMeshPhysicalMaterial) {
-                   mat.roughness = 0.2;
-                   mat.metalness = 0.1;
-                   mat.envMapIntensity = 1.5;
+                   mat.roughness = 0.2; // Clean architectural finish
+                   mat.metalness = 0.1; 
+                   mat.envMapIntensity = 1.0; // Reflect the sky realistically
                } else {
                    // Inject basic PBR traits for legacy materials
                    mat.roughness = 0.2;
                    mat.metalness = 0.1;
-                   mat.envMapIntensity = 1.5;
+                   mat.envMapIntensity = 1.0;
                }
                
                mat.needsUpdate = true;
