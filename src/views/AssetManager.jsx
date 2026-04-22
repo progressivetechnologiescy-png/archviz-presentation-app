@@ -440,22 +440,7 @@ export default function AssetManager() {
                       />
                     </div>
                     
-                    {/* Mobile fallback for sorting */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Sort Order:</h4>
-                      <input 
-                        key={`order-${selectedFolder}`}
-                        type="number" 
-                        defaultValue={
-                          useViewerStore.getState().customRenders?.find(r => r.folder_name === selectedFolder)?.folder_order || 0
-                        }
-                        onBlur={(e) => {
-                          useViewerStore.getState().updateFolderOrder(supabase, selectedFolder, parseInt(e.target.value) || 0);
-                        }}
-                        style={{ width: '40px', background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}
-                      />
-                    </div>
-
+                    
                     <div style={{ flex: 1 }} />
 
                     <button
