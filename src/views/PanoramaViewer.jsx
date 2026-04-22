@@ -90,7 +90,12 @@ export default function PanoramaViewer() {
         </div>
       </div>
 
-      <div style={{ position: 'absolute', bottom: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
+      <style>{`
+        @media (min-width: 1025px) {
+          .gyro-btn-wrapper { display: none !important; }
+        }
+      `}</style>
+      <div className="gyro-btn-wrapper" style={{ position: 'absolute', top: '180px', left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
         <button 
           onClick={toggleGyro}
           className="glass-panel hover-lift"

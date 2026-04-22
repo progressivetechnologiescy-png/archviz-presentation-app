@@ -71,7 +71,7 @@ export default function PresentationApp({ forceAdmin = false }) {
   }, [activeTab]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative', background: 'var(--bg-gradient)', overflow: 'hidden' }}>
+    <div style={{ width: '100vw', height: '100dvh', position: 'relative', background: 'var(--bg-gradient)', overflow: 'hidden' }}>
       
       {/* Global Responsive Header */}
       <div style={{
