@@ -82,6 +82,8 @@ export default function PanoramaViewer() {
     }
   };
 
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div style={{ position: 'absolute', top: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
@@ -90,27 +92,24 @@ export default function PanoramaViewer() {
         </div>
       </div>
 
-      <style>{`
-        @media (min-width: 1025px) {
-          .gyro-btn-wrapper { display: none !important; }
-        }
-      `}</style>
-      <div className="gyro-btn-wrapper" style={{ position: 'absolute', top: '180px', left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
-        <button 
-          onClick={toggleGyro}
-          className="glass-panel hover-lift"
-          style={{ 
-            display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', 
-            borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)',
-            background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)',
-            color: 'white', fontWeight: 'bold', cursor: 'pointer',
-            boxShadow: useGyro ? '0 8px 32px var(--accent-glow)' : '0 8px 32px rgba(0,0,0,0.5)'
-          }}
-        >
-          <Smartphone size={20} />
-          {useGyro ? 'Disable Gyroscope' : 'Enable Gyroscope'}
-        </button>
-      </div>
+      {isTouchDevice && (
+        <div className="gyro-btn-wrapper" style={{ position: 'absolute', top: '180px', left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
+          <button 
+            onClick={toggleGyro}
+            className="glass-panel hover-lift"
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', 
+              borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)',
+              background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)',
+              color: 'white', fontWeight: 'bold', cursor: 'pointer',
+              boxShadow: useGyro ? '0 8px 32px var(--accent-glow)' : '0 8px 32px rgba(0,0,0,0.5)'
+            }}
+          >
+            <Smartphone size={20} />
+            {useGyro ? 'Disable Gyroscope' : 'Enable Gyroscope'}
+          </button>
+        </div>
+      )}
 
       <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }}>
         <Suspense fallback={null}>
