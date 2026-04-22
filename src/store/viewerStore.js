@@ -42,6 +42,7 @@ export const useViewerStore = create((set) => ({
   customGPS: 'Beverly Hills, CA',
   
   setActiveFloorplanId: (id) => set({ activeFloorplanId: id }),
+  primaryModel: null,
   customFBX: null,
   customGLB: null,
   customUSDZ: null,
@@ -80,16 +81,18 @@ export const useViewerStore = create((set) => ({
         const modelFbx = data.find(d => d.asset_type === '3d_model_fbx');
         const modelGlb = data.find(d => d.asset_type === '3d_model_glb');
 
-        // Intelligently prioritize the MOST RECENTLY uploaded format (GLB vs FBX)
+        // Intelligently prioritize the MOST RECENTLY uploaded format (GLB vs FBX) for the PC Viewer,
+        // while preserving BOTH URLs so the AR Viewer (which strictly requires GLB) doesn't break!
         if (modelFbx && modelGlb) {
+          set({ customFBX: modelFbx.asset_url, customGLB: modelGlb.asset_url });
           if (new Date(modelFbx.created_at) > new Date(modelGlb.created_at)) {
-            set({ customFBX: modelFbx.asset_url, customGLB: null });
+            set({ primaryModel: modelFbx.asset_url });
           } else {
-            set({ customGLB: modelGlb.asset_url, customFBX: null });
+            set({ primaryModel: modelGlb.asset_url });
           }
         } else {
-          if (modelFbx) set({ customFBX: modelFbx.asset_url });
-          if (modelGlb) set({ customGLB: modelGlb.asset_url });
+          if (modelFbx) set({ customFBX: modelFbx.asset_url, primaryModel: modelFbx.asset_url });
+          if (modelGlb) set({ customGLB: modelGlb.asset_url, primaryModel: modelGlb.asset_url });
         }
 
         const modelUsdz = data.find(d => d.asset_type === '3d_model_usdz');

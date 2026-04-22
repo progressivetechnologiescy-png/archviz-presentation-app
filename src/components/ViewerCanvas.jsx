@@ -128,10 +128,10 @@ function GLTFModel({ url }) {
 
 // Parent Router
 function LoadedArchModel() {
-  const { customFBX, customGLB } = useViewerStore();
+  const { customFBX, customGLB, primaryModel } = useViewerStore();
   
-  // Prioritize GLB for WebGL, fallback to FBX, then default
-  const modelUrl = customGLB || customFBX || '/3D FINAL.fbx';
+  // Prioritize newest uploaded model, fallback to GLB, then FBX, then default
+  const modelUrl = primaryModel || customGLB || customFBX || '/3D FINAL.fbx';
   const isGLTF = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
 
   return (
