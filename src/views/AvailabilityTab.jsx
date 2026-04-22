@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 
 const DUMMY_UNITS = [
-  { id: '101', type: '2 Bed, 2 Bath', sqft: 1450, price: '$1,250,000', status: 'Sold' },
-  { id: '102', type: '3 Bed, 3 Bath', sqft: 2100, price: '$1,850,000', status: 'Available' },
-  { id: '201', type: '2 Bed, 2 Bath', sqft: 1500, price: '$1,350,000', status: 'Available' },
-  { id: '202', type: '3 Bed, 3.5 Bath', sqft: 2200, price: '$2,100,000', status: 'Reserved' },
-  { id: '301', type: 'Penthouse', sqft: 3500, price: '$4,500,000', status: 'Available' },
+  { id: '101', type: '2 Bed, 2 Bath', sqft: 1450, price: '€1,250,000', status: 'Sold' },
+  { id: '102', type: '3 Bed, 3 Bath', sqft: 2100, price: '€1,850,000', status: 'Available' },
+  { id: '201', type: '2 Bed, 2 Bath', sqft: 1500, price: '€1,350,000', status: 'Available' },
+  { id: '202', type: '3 Bed, 3.5 Bath', sqft: 2200, price: '€2,100,000', status: 'Reserved' },
+  { id: '301', type: 'Penthouse', sqft: 3500, price: '€4,500,000', status: 'Available' },
 ];
 
 export default function AvailabilityTab() {
@@ -154,7 +154,7 @@ export default function AvailabilityTab() {
                               <div style={{ marginBottom: '16px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>
                                   <span>Down Payment ({downPaymentPct}%)</span>
-                                  <span>${(numericPrice * (downPaymentPct / 100)).toLocaleString()}</span>
+                                  <span>€{(numericPrice * (downPaymentPct / 100)).toLocaleString()}</span>
                                 </div>
                                 <input type="range" min="10" max="100" step="5" value={downPaymentPct} onChange={(e) => setDownPaymentPct(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent-color)' }} />
                               </div>
@@ -172,7 +172,7 @@ export default function AvailabilityTab() {
                                  <>
                                    <p style={{ color: 'var(--text-secondary)', margin: '0 0 8px 0', fontSize: '14px' }}>Estimated Monthly Payment (30yr Fixed)</p>
                                    <div style={{ fontSize: '48px', fontWeight: '300', color: 'var(--accent-color)' }}>
-                                     ${(() => {
+                                     €{(() => {
                                         const principal = numericPrice - (numericPrice * (downPaymentPct / 100));
                                         if (principal === 0) return '0';
                                         const r = (interestRate / 100) / 12;
