@@ -59,8 +59,8 @@ function SphericalPanorama() {
 export default function PanoramaViewer() {
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div style={{ position: 'absolute', top: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-        <div className="glass-panel" style={{ padding: '8px 24px', borderRadius: '30px' }}>
+      <div style={{ position: 'absolute', top: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
+        <div className="glass-panel" style={{ padding: '8px 24px', borderRadius: '30px', animation: 'fadeOutOld 10s ease-in forwards' }}>
           Drag to look around 360°
         </div>
       </div>
