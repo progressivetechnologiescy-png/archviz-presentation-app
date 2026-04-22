@@ -384,14 +384,16 @@ export default function AssetManager() {
               <button 
                 onClick={async () => {
                   if (supabase) {
-                    const { error } = await supabase.from('properties_config').upsert({
-                      project_id: 'demo_project',
-                      gemini_api_key: geminiApiKey,
-                      ai_context: aiContext
-                    });
+                    const { error } = await supabase.from('properties_config')
+                      .update({
+                        gemini_api_key: geminiApiKey,
+                        ai_context: aiContext
+                      })
+                      .match({ project_id: 'demo_project' });
+                      
                     if (error) {
                       console.error(error);
-                      alert("Failed to save AI config to Cloud DB. Make sure you ran this in the Supabase SQL Editor:\n\nALTER TABLE properties_config ADD COLUMN gemini_api_key text;\nALTER TABLE properties_config ADD COLUMN ai_context text;");
+                      alert(`Failed to save AI config to Cloud DB.\n\nError: ${error.message}\n\nPlease make sure you ran the SQL script to add the columns!`);
                     } else {
                       alert("Emma AI Configuration Saved to Cloud!");
                     }
