@@ -144,13 +144,11 @@ export default function MobileARView() {
           ar-modes="webxr scene-viewer quick-look" 
           ar-scale={arMode === 'plot' ? "fixed" : "auto"}
           ar-placement="floor"
-          scale={arMode === 'plot' ? "0.01 0.01 0.01" : "0.0001 0.0001 0.0001"}
+          scale={arMode === 'plot' ? "0.01 0.01 0.01" : undefined}
           camera-controls 
           touch-action="pan-y"
           auto-rotate
-          environment-image="neutral"
-          exposure="1.2"
-          shadow-intensity="1.5"
+          shadow-intensity="0.5"
           shadow-softness="1"
           style={{ width: '100%', height: '100%', '--poster-color': 'transparent' }}
         >
