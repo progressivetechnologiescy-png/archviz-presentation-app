@@ -268,8 +268,11 @@ export default function AssetManager() {
                   background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
                 }}>
                 Save Location
-        </div>
+              </button>
+            </div>
+          </div>
 
+        </div>
       </div>
     </div>
   );
