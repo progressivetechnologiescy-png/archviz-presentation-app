@@ -47,6 +47,7 @@ export default function PresentationApp({ forceAdmin = false }) {
     return params.get('admin') === 'true';
   });
   const [activeTab, setActiveTab] = useState(isAdmin ? 'manage' : 'overview');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Automatically wire the client state to the Cloud Database on app load!
   useEffect(() => {
