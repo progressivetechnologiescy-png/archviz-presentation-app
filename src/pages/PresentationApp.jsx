@@ -176,7 +176,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         {activeTab === 'cinematics' && <CinematicsTab />}
         {activeTab === 'renders' && <RendersGallery />}
         {activeTab === 'floorplans' && <FloorplanViewer />}
-        {activeTab === 'availability' && <AvailabilityTab />}
+        {activeTab === 'availability' && <AvailabilityTab onNavigate={setActiveTab} />}
         {activeTab === 'map' && <ProjectMap />}
         {activeTab === 'panorama' && <PanoramaViewer />}
         {activeTab === 'manage' && isAdmin && <AssetManager />}

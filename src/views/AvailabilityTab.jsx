@@ -9,12 +9,14 @@ const DUMMY_UNITS = [
   { id: '301', type: 'Penthouse', sqft: 3500, price: '$4,500,000', status: 'Available' },
 ];
 
-export default function AvailabilityTab() {
+export default function AvailabilityTab({ onNavigate }) {
   const [filter, setFilter] = useState('All');
   const [activeUnitId, setActiveUnitId] = useState(null);
   const [downPaymentPct, setDownPaymentPct] = useState(20);
   const [interestRate, setInterestRate] = useState(6.5);
   const [inquireStatus, setInquireStatus] = useState('idle'); // idle, form, success
+
+  const { customFloorplans, setActiveFloorplanId } = useViewerStore();
 
   const filteredUnits = DUMMY_UNITS.filter(unit => filter === 'All' || unit.status === filter);
 
@@ -34,6 +36,19 @@ export default function AvailabilityTab() {
       case 'Sold': return '#f87171';
       default: return 'white';
     }
+  };
+
+  const handleViewFloorplan = (unit) => {
+    if (customFloorplans && customFloorplans.length > 0) {
+      // Try to find a floorplan that mentions the unit type (e.g. '2 Bed') or unit ID
+      const match = customFloorplans.find(f => 
+        (f.level_name && unit.type && f.level_name.toLowerCase().includes(unit.type.toLowerCase().split(',')[0])) || 
+        (f.level_name && f.level_name.includes(unit.id))
+      );
+      if (match) setActiveFloorplanId(match.id);
+      else setActiveFloorplanId(customFloorplans[0].id); // fallback to first available
+    }
+    if (onNavigate) onNavigate('floorplans');
   };
 
   return (
@@ -149,12 +164,22 @@ export default function AvailabilityTab() {
                                      })()}
                                      <span style={{ fontSize: '16px', color: 'var(--text-secondary)', marginLeft: '8px' }}>/ mo</span>
                                    </div>
-                                   <button 
-                                     onClick={() => setInquireStatus('form')}
-                                     className="hover-lift"
-                                     style={{ marginTop: '16px', background: 'var(--accent-color)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
-                                     Inquire Unit #{unit.id}
-                                   </button>
+                                   <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                                     <button 
+                                       onClick={() => setInquireStatus('form')}
+                                       className="hover-lift"
+                                       style={{ flex: 1, background: 'var(--accent-color)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
+                                       Inquire Unit #{unit.id}
+                                     </button>
+                                     {customFloorplans && customFloorplans.length > 0 && onNavigate && (
+                                       <button 
+                                         onClick={() => handleViewFloorplan(unit)}
+                                         className="hover-lift"
+                                         style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '12px 24px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>
+                                         View Floorplan
+                                       </button>
+                                     )}
+                                   </div>
                                  </>
                                )}
 
