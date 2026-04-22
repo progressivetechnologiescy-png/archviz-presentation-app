@@ -53,7 +53,7 @@ export default function AvailabilityTab() {
 
   return (
     <div 
-      style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
+      style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' }}
       onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
       className="availability-container"
     >
