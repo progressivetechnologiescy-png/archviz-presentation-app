@@ -42,7 +42,12 @@ export const useViewerStore = create((set) => ({
   customGPS: 'Beverly Hills, CA',
   
   setActiveFloorplanId: (id) => set({ activeFloorplanId: id }),
+  customFBX: null,
+  customGLB: null,
+  customUSDZ: null,
   setCustomFBX: (url) => set({ customFBX: url }),
+  setCustomGLB: (url) => set({ customGLB: url }),
+  setCustomUSDZ: (url) => set({ customUSDZ: url }),
   setCustomFloorplan: (url) => set({ customFloorplan: url }),
   setCustomPanorama: (url) => set({ customPanorama: url }),
   setCustomGPS: (addressOrCoords) => set({ customGPS: addressOrCoords }),
@@ -69,8 +74,14 @@ export const useViewerStore = create((set) => ({
         const renders = data.filter(d => d.asset_type === 'render').map(d => d.asset_url);
         if (renders.length > 0) set({ customRenders: renders });
 
-        const model = data.find(d => d.asset_type === '3d_model');
-        if (model) set({ customFBX: model.asset_url });
+        const modelFbx = data.find(d => d.asset_type === '3d_model_fbx');
+        if (modelFbx) set({ customFBX: modelFbx.asset_url });
+
+        const modelGlb = data.find(d => d.asset_type === '3d_model_glb');
+        if (modelGlb) set({ customGLB: modelGlb.asset_url });
+
+        const modelUsdz = data.find(d => d.asset_type === '3d_model_usdz');
+        if (modelUsdz) set({ customUSDZ: modelUsdz.asset_url });
 
         const floorplan = data.find(d => d.asset_type === 'floorplan');
         if (floorplan) set({ customFloorplan: floorplan.asset_url });

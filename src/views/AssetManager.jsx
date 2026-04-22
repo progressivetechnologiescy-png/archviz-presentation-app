@@ -45,6 +45,8 @@ import { v4 as uuidv4 } from 'uuid';
 export default function AssetManager() {
   const { 
     customFBX, setCustomFBX, 
+    customGLB, setCustomGLB,
+    customUSDZ, setCustomUSDZ,
     customFloorplan, setCustomFloorplan, 
     customPanorama, setCustomPanorama, 
     customRenders, addCustomRender, clearCustomRenders,
@@ -100,7 +102,9 @@ export default function AssetManager() {
     }
   };
 
-  const handleUploadFBX = (file) => uploadSingleFile(file, '3d_model', setCustomFBX);
+  const handleUploadFBX = (file) => uploadSingleFile(file, '3d_model_fbx', setCustomFBX);
+  const handleUploadGLB = (file) => uploadSingleFile(file, '3d_model_glb', setCustomGLB);
+  const handleUploadUSDZ = (file) => uploadSingleFile(file, '3d_model_usdz', setCustomUSDZ);
   const handleUploadFloorplan = (file) => uploadSingleFile(file, 'floorplan', setCustomFloorplan);
   const handleUploadPanorama = (file) => uploadSingleFile(file, 'panorama', setCustomPanorama);
   
@@ -188,10 +192,22 @@ export default function AssetManager() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <FileInput 
-            label="3D Model (FBX, GLB, USDZ)" 
-            accept=".fbx,.glb,.usdz" 
+            label="Original 3D Model (FBX)" 
+            accept=".fbx" 
             onDrop={handleUploadFBX} 
             isUploaded={!!customFBX} 
+          />
+          <FileInput 
+            label="WebGL Optimized Model (GLB/GLTF)" 
+            accept=".glb,.gltf" 
+            onDrop={handleUploadGLB} 
+            isUploaded={!!customGLB} 
+          />
+          <FileInput 
+            label="Apple AR Model (USDZ)" 
+            accept=".usdz" 
+            onDrop={handleUploadUSDZ} 
+            isUploaded={!!customUSDZ} 
           />
           
           <FileInput 

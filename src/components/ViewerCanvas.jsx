@@ -1,6 +1,6 @@
 import React, { useRef, Suspense, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Environment, OrbitControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, BakeShadows } from '@react-three/drei';
+import { Environment, PointerLockControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, BakeShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
@@ -16,6 +16,9 @@ function WalkEngine() {
   const speed = 15;
 
   useFrame((state, delta) => {
+    // Lock camera height to "Eye Level" so the user is stuck to the floor plane like a game!
+    state.camera.position.y = 1.6;
+
     if (!moveForward && !moveBackward && !moveLeft && !moveRight) return;
 
     // Calculate movement intent based on key combinations
@@ -28,24 +31,16 @@ function WalkEngine() {
     // Orient the movement direction to match where the camera is looking
     direction.applyEuler(new THREE.Euler(0, state.camera.rotation.y, 0));
 
-    // Optional: lock Y axis to prevent "flying"
-    direction.y = 0;
-
     // Translate the camera's physical position
     state.camera.position.add(direction);
-    
-    // Crucial: also translate OrbitControl's target, otherwise it anchors like a rubber band!
-    if (state.controls && state.controls.target) {
-      state.controls.target.add(direction);
-    }
-    
-    // Process Look Direction (Virtual Rotation Pad)
+
+    // Process Look Direction (Virtual Rotation Pad for Mobile)
     const storeState = useViewerStore.getState();
-    if (state.controls && (storeState.lookLeft || storeState.lookRight)) {
-      const azm = state.controls.getAzimuthalAngle();
-      const lookSpeed = Math.PI * delta * 0.5; // rotate smoothly
-      if (storeState.lookLeft) state.controls.setAzimuthalAngle(azm + lookSpeed);
-      if (storeState.lookRight) state.controls.setAzimuthalAngle(azm - lookSpeed);
+    if (storeState.lookLeft || storeState.lookRight) {
+      const lookSpeed = delta * 1.5;
+      // PointerLockControls uses Euler rotation order YXZ
+      if (storeState.lookLeft) state.camera.rotation.y += lookSpeed;
+      if (storeState.lookRight) state.camera.rotation.y -= lookSpeed;
     }
   });
 
@@ -53,28 +48,20 @@ function WalkEngine() {
 }
 
 // Load FBX Model
-function FBXModel({ url, activeMaterial }) {
+function FBXModel({ url }) {
   const fbx = useFBX(url);
   const groupRef = React.useRef();
 
   React.useEffect(() => {
     if (fbx) {
-      let color = '#ffffff';
-      if (activeMaterial === 'wood') color = '#cd853f';
-      if (activeMaterial === 'marble') color = '#f0f4f8';
-      if (activeMaterial === 'concrete') color = '#808080';
-
       fbx.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          if(child.material && child.material.color) {
-             child.material.color.set(color);
-          }
         }
       });
     }
-  }, [fbx, activeMaterial]);
+  }, [fbx]);
 
   useFrame(() => {
     if (useViewerStore.getState().isTouring && groupRef.current) {
@@ -90,28 +77,20 @@ function FBXModel({ url, activeMaterial }) {
 }
 
 // Load GLTF/GLB Model
-function GLTFModel({ url, activeMaterial }) {
+function GLTFModel({ url }) {
   const { scene } = useGLTF(url);
   const groupRef = React.useRef();
 
   React.useEffect(() => {
     if (scene) {
-      let color = '#ffffff';
-      if (activeMaterial === 'wood') color = '#cd853f';
-      if (activeMaterial === 'marble') color = '#f0f4f8';
-      if (activeMaterial === 'concrete') color = '#808080';
-
       scene.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          if(child.material && child.material.color) {
-             child.material.color.set(color);
-          }
         }
       });
     }
-  }, [scene, activeMaterial]);
+  }, [scene]);
 
   useFrame(() => {
     if (useViewerStore.getState().isTouring && groupRef.current) {
@@ -128,21 +107,19 @@ function GLTFModel({ url, activeMaterial }) {
 
 // Parent Router
 function LoadedArchModel() {
-  const { activeMaterial, customFBX } = useViewerStore();
-  const modelUrl = customFBX || '/3D FINAL.fbx';
+  const { customFBX, customGLB } = useViewerStore();
+  
+  // Prioritize GLB for WebGL, fallback to FBX, then default
+  const modelUrl = customGLB || customFBX || '/3D FINAL.fbx';
   const isGLTF = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
 
   return (
     <group key={modelUrl}>
       {isGLTF ? (
-        <GLTFModel url={modelUrl} activeMaterial={activeMaterial} />
+        <GLTFModel url={modelUrl} />
       ) : (
-        <FBXModel url={modelUrl} activeMaterial={activeMaterial} />
+        <FBXModel url={modelUrl} />
       )}
-      <Html position={[2, 2.5, 2]} className="hotspot-annotation">
-        <h4 style={{ margin: 0, fontSize: '14px', marginBottom: '4px' }}>Premium Finish</h4>
-        <p style={{ margin: 0, fontSize: '12px', opacity: 0.7 }}>Real-time color applied to {activeMaterial}.</p>
-      </Html>
     </group>
   );
 }
@@ -205,15 +182,8 @@ export default function ViewerCanvas() {
 
             <ContactShadows resolution={512} scale={20} blur={2} opacity={0.5} far={10} color="#000000" />
             
-            {/* Switched to robust OrbitControls for smoother zooming and panning */}
-            <OrbitControls 
-              makeDefault 
-              enableDamping 
-              dampingFactor={0.05} 
-              maxPolarAngle={Math.PI / 2 + 0.1} 
-              minDistance={1}
-              maxDistance={100}
-            />
+            {/* True First-Person Game Camera */}
+            <PointerLockControls makeDefault />
           </Suspense>
         </XR>
       </Canvas>
