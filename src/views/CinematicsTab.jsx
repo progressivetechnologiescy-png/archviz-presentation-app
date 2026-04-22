@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Play, X } from 'lucide-react';
+import { useViewerStore } from '../store/viewerStore';
 
 export function VideoModal({ videoUrl, title, onClose }) {
   if (!videoUrl) return null;
