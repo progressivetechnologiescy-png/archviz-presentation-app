@@ -72,27 +72,42 @@ export default function AssetManager() {
     }
     setIsUploading(true);
     try {
+      // 1. Fetch existing asset to clean up its physical file later
+      const { data: oldAssets } = await supabase.from('presentation_assets')
+        .select('asset_url')
+        .match({ project_id: 'demo_project', asset_type: assetType });
+
+      // 2. Upload using pure unique UUID to bypass strict UPSERT security policies
       const fileExt = file.name.split('.').pop();
-      // Use deterministic filename to OVERWRITE old files and save space!
-      const fileName = `${assetType}.${fileExt}`;
+      const fileName = `${uuidv4()}.${fileExt}`;
       const filePath = `demo_project/${fileName}`;
 
-      // Upsert true overwrites the physical file in the bucket
-      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file, { upsert: true });
+      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
       if (uploadError) throw uploadError;
 
-      let { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
-      
-      // Append a timestamp cache-buster so the browser doesn't load the old model!
-      publicUrl = `${publicUrl}?v=${new Date().getTime()}`;
+      const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
 
-      // Try to clean out existing single-asset for this project, but don't crash if RLS blocks delete!
+      // 3. Delete old physical files from the storage bucket to save space!
+      if (oldAssets && oldAssets.length > 0) {
+        for (const asset of oldAssets) {
+          try {
+             // Extract relative path from the public URL
+             const oldPath = asset.asset_url.split('/archviz_models/')[1]?.split('?')[0];
+             if (oldPath) await supabase.storage.from('archviz_models').remove([oldPath]);
+          } catch (e) {
+             console.warn("Could not delete old physical file", e);
+          }
+        }
+      }
+
+      // 4. Clean out old database rows
       try {
         await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: assetType });
       } catch (delErr) {
         console.warn("Delete policy blocked old asset removal, proceeding with insert anyway.");
       }
 
+      // 5. Insert new database row
       const { error: dbError } = await supabase.from('presentation_assets').insert({
         project_id: 'demo_project', asset_type: assetType, asset_url: publicUrl
       });
