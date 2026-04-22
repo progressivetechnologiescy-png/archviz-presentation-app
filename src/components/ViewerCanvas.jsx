@@ -1,6 +1,6 @@
 import React, { useRef, Suspense, useState } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { Environment, PointerLockControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, SoftShadows } from '@react-three/drei';
+import { Environment, PointerLockControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, SoftShadows, BakeShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
