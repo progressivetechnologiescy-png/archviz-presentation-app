@@ -62,6 +62,15 @@ function FileInput({ label, accept, onDrop, isUploaded, multiple = false, onClea
 import { supabase } from '../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
+function extractYoutubeThumb(url) {
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length === 11) {
+    return `https://img.youtube.com/vi/${match[2]}/maxresdefault.jpg`;
+  }
+  return null;
+}
+
 export default function AssetManager() {
   const { 
     customFBX, setCustomFBX, 
@@ -79,6 +88,28 @@ export default function AssetManager() {
   const [gpsInput, setGpsInput] = useState(customGPS || '');
   const [isUploading, setIsUploading] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, message: '', onConfirm: null });
+  const [pendingVideoThumb, setPendingVideoThumb] = useState(null);
+
+  const handleUploadVideoThumb = async (file) => {
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
+      const filePath = `video_thumbs/${fileName}`;
+      
+      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+      if (!uploadError) {
+        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+        setPendingVideoThumb(publicUrl);
+      } else {
+        console.error('Video thumb upload error:', uploadError);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Initialize folder list from existing database renders
   const [folderList, setFolderList] = useState([]);
@@ -625,31 +656,56 @@ export default function AssetManager() {
                 <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <input id="new-video-title" type="text" placeholder="Video Title (e.g. Drone Flyover)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
                   <input id="new-video-url" type="text" placeholder="YouTube Embed URL (e.g. https://www.youtube.com/embed/...)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
-                  <input id="new-video-thumb" type="text" placeholder="Thumbnail URL (Optional, defaults to black)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div style={{ flex: 1 }}>
+                      <FileInput 
+                        label="Upload Custom Thumbnail (Optional)" 
+                        accept="image/*" 
+                        onDrop={handleUploadVideoThumb} 
+                        isUploaded={!!pendingVideoThumb} 
+                      />
+                    </div>
+                    {pendingVideoThumb && (
+                      <div style={{ position: 'relative', width: '120px', height: '68px', borderRadius: '8px', overflow: 'hidden' }}>
+                        <img src={pendingVideoThumb} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button 
+                          onClick={() => setPendingVideoThumb(null)} 
+                          style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', borderRadius: '50%', cursor: 'pointer' }}
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button 
                   onClick={async () => {
                     const title = document.getElementById('new-video-title').value.trim();
                     const url = document.getElementById('new-video-url').value.trim();
-                    const thumb = document.getElementById('new-video-thumb').value.trim();
                     if (!title || !url) {
                       alert('Title and Video URL are required.');
                       return;
                     }
-                    const newVideo = { project_id: 'demo_project', title, video_url: url, thumbnail_url: thumb, order_index: useViewerStore.getState().customVideos?.length || 0 };
+                    
+                    let finalThumb = pendingVideoThumb;
+                    if (!finalThumb) {
+                       finalThumb = extractYoutubeThumb(url) || '';
+                    }
+
+                    const newVideo = { project_id: 'demo_project', title, video_url: url, thumbnail_url: finalThumb, order_index: useViewerStore.getState().customVideos?.length || 0 };
                     const { data, error } = await supabase.from('project_videos').insert([newVideo]).select();
                     if (!error && data) {
                       useViewerStore.getState().addCustomVideo(data[0]);
                       document.getElementById('new-video-title').value = '';
                       document.getElementById('new-video-url').value = '';
-                      document.getElementById('new-video-thumb').value = '';
+                      setPendingVideoThumb(null);
                     } else {
                       console.error('Failed to add video:', error);
                     }
                   }}
                   className="hover-lift"
                   style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', height: 'fit-content' }}>
-                  + Add Video
+                  {isUploading ? 'Uploading...' : '+ Add Video'}
                 </button>
               </div>
 
