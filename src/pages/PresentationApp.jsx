@@ -159,6 +159,14 @@ export default function PresentationApp({ forceAdmin = false }) {
             <span className="action-text">Fullscreen</span>
           </button>
           
+          <button 
+            onClick={() => setIsShareModalOpen(true)}
+            className="glass-panel hover-lift" 
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
+            <Share2 size={16} />
+            <span className="action-text">Share</span>
+          </button>
+          
           {isAdmin && (
             <button 
               onClick={() => setActiveTab('manage')}
