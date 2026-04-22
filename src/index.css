@@ -69,30 +69,29 @@ body {
   min-width: 150px;
 }
 
-/* Cinematic Slideshow Animations (Drone/Slider mimics) */
-@keyframes kenburnsPanRight {
-  0% { transform: scale(1.15) translate(-3%, 0); opacity: 0; }
-  5% { opacity: 1; }
-  95% { opacity: 1; }
-  100% { transform: scale(1.15) translate(3%, 0); opacity: 0; }
+/* Cinematic Slideshow Animations */
+@keyframes focusPullReveal {
+  0% { 
+    filter: blur(24px) brightness(0.4) saturate(0.2);
+    transform: scale(1.2) translateY(5%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  35% { 
+    filter: blur(0px) brightness(1) saturate(1);
+    transform: scale(1.05) translateY(0);
+  }
+  100% { 
+    filter: blur(0px) brightness(1) saturate(1);
+    transform: scale(1.0) translateY(0);
+    opacity: 1;
+  }
 }
-@keyframes kenburnsPanLeft {
-  0% { transform: scale(1.15) translate(3%, 0); opacity: 0; }
-  5% { opacity: 1; }
-  95% { opacity: 1; }
-  100% { transform: scale(1.15) translate(-3%, 0); opacity: 0; }
-}
-@keyframes kenburnsZoomOut {
-  0% { transform: scale(1.2) translate(0, 0); opacity: 0; }
-  5% { opacity: 1; }
-  95% { opacity: 1; }
-  100% { transform: scale(1.0) translate(0, 0); opacity: 0; }
-}
-@keyframes kenburnsZoomIn {
-  0% { transform: scale(1.0) translate(0, 0); opacity: 0; }
-  5% { opacity: 1; }
-  95% { opacity: 1; }
-  100% { transform: scale(1.2) translate(0, 0); opacity: 0; }
+@keyframes fadeOutOld {
+  0% { opacity: 1; filter: blur(0px); transform: scale(1.0); }
+  100% { opacity: 0; filter: blur(12px); transform: scale(0.95); }
 }
 
 .hotspot-annotation.hidden {

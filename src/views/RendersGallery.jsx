@@ -1,27 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
-import { X, ZoomIn } from 'lucide-react';
+import { X, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function RendersGallery() {
   const { customRenders, setLightboxOpen } = useViewerStore();
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const displayImages = customRenders || [];
 
   // Sync lightbox state globally so the main header hides itself
   useEffect(() => {
-    setLightboxOpen(!!selectedImage);
+    setLightboxOpen(selectedIndex !== null);
     return () => setLightboxOpen(false);
-  }, [selectedImage, setLightboxOpen]);
+  }, [selectedIndex, setLightboxOpen]);
 
   // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setSelectedImage(null);
+      if (e.key === 'Escape') {
+        setSelectedIndex(null);
+        setIsPlaying(false);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const displayImages = customRenders;
+  // Slideshow Auto-play Engine
+  useEffect(() => {
+    let timer;
+    if (isPlaying && selectedIndex !== null) {
+      timer = setInterval(() => {
+        setSelectedIndex((prev) => (prev + 1) % displayImages.length);
+      }, 4000);
+    }
+    return () => clearInterval(timer);
+  }, [isPlaying, selectedIndex, displayImages.length]);
 
   if (displayImages.length === 0) {
     return (
@@ -34,7 +49,26 @@ export default function RendersGallery() {
 
   return (
     <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
-      <h2 style={{ marginBottom: '24px', fontSize: '28px', fontWeight: '300' }}>Photorealistic Renders</h2>
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '28px', fontWeight: '300', margin: 0 }}>Photorealistic Renders</h2>
+        
+        <button 
+          onClick={() => { setSelectedIndex(0); setIsPlaying(true); }}
+          className="hover-lift"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '12px 24px', borderRadius: '30px',
+            background: 'var(--accent-color)', color: 'white', border: 'none',
+            fontSize: '15px', fontWeight: 'bold', cursor: 'pointer',
+            boxShadow: '0 8px 24px var(--accent-glow)'
+          }}
+        >
+          <Play size={18} fill="white" />
+          Play Slideshow
+        </button>
+      </div>
+
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
@@ -46,8 +80,8 @@ export default function RendersGallery() {
           return (
             <div 
               key={i} 
-              className="glass-panel hover-lift" 
-              onClick={() => isRealImage && setSelectedImage(src)}
+              className="hover-lift" 
+              onClick={() => isRealImage && setSelectedIndex(i)}
               style={{ 
                  height: '250px', 
                  background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
@@ -55,6 +89,7 @@ export default function RendersGallery() {
                  color: 'rgba(255,255,255,0.2)', fontSize: '14px',
                  borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
                  position: 'relative'
+                 // Removed glass-panel to eliminate the white border framing the image
               }}
             >
               {!isRealImage && `Render Placeholder ${src}`}
@@ -64,35 +99,77 @@ export default function RendersGallery() {
       </div>
 
       {/* Fullscreen Lightbox Engine */}
-      {selectedImage && (
+      {selectedIndex !== null && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 99999,
-          background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(20px)',
+          background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(20px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           animation: 'fadeIn 0.2s ease-out'
         }}>
-          {/* Close Button */}
+          {/* Header Controls */}
+          <div style={{ position: 'absolute', top: '32px', right: '32px', display: 'flex', gap: '16px', zIndex: 3 }}>
+            <button 
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="hover-lift"
+              style={{
+                background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                color: 'white', width: '48px', height: '48px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+              title={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? <Pause size={24} /> : <Play size={24} fill="white" />}
+            </button>
+            <button 
+              onClick={() => { setSelectedIndex(null); setIsPlaying(false); }}
+              className="hover-lift"
+              style={{
+                background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                color: 'white', width: '48px', height: '48px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          {/* Navigation Controls */}
           <button 
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1))}
             className="hover-lift"
             style={{
-              position: 'absolute', top: '32px', right: '32px',
+              position: 'absolute', left: '32px', top: '50%', transform: 'translateY(-50%)',
               background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-              color: 'white', width: '48px', height: '48px', borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 2
+              color: 'white', width: '56px', height: '56px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 3
             }}
           >
-            <X size={24} />
+            <ChevronLeft size={32} />
+          </button>
+          
+          <button 
+            onClick={() => setSelectedIndex((prev) => (prev + 1) % displayImages.length)}
+            className="hover-lift"
+            style={{
+              position: 'absolute', right: '32px', top: '50%', transform: 'translateY(-50%)',
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+              color: 'white', width: '56px', height: '56px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 3
+            }}
+          >
+            <ChevronRight size={32} />
           </button>
 
           {/* High Res Image */}
           <img 
-            src={selectedImage} 
+            key={selectedIndex} // Force re-render for simple transition
+            src={displayImages[selectedIndex]} 
             alt="Fullscreen Render"
             style={{
               maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain',
               borderRadius: '8px', boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
-              userSelect: 'none'
+              userSelect: 'none',
+              animation: 'fadeIn 0.5s ease-out'
             }}
           />
         </div>

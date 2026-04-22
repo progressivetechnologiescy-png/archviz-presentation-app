@@ -12,7 +12,7 @@ export default function ProjectOverview({ onNavigate }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % images.length);
-    }, 4000); // Faster 4-second interval for better engagement
+    }, 8000); // 8 seconds allows the focus pull to resolve elegantly
     return () => clearInterval(timer);
   }, [images.length]);
 
@@ -21,29 +21,24 @@ export default function ProjectOverview({ onNavigate }) {
       
       {/* Slideshow Background */}
       {images.map((src, index) => {
-        // Build background string inline if it's a blob object URL or string
         const isString = typeof src === 'string';
         const bgImg = isString ? `url(${src})` : 'none';
-        
-        // Alternate between 4 distinct cinematic movements
-        const animations = ['kenburnsPanRight', 'kenburnsPanLeft', 'kenburnsZoomOut', 'kenburnsZoomIn'];
-        const currentAnim = animations[index % animations.length];
+        const isActive = index === currentSlide;
 
         return (
           <div 
             key={index}
             style={{
-              position: 'absolute', top: '-5%', left: '-5%', width: '110%', height: '110%',
-              opacity: index === currentSlide ? 1 : 0,
-              transition: 'opacity 1.5s ease-in-out',
-              zIndex: index === currentSlide ? 1 : 0,
+              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              zIndex: isActive ? 1 : 0,
+              pointerEvents: 'none'
             }}
           >
             <div style={{
               width: '100%', height: '100%',
               background: isString ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
-              animation: index === currentSlide ? `${currentAnim} 6s linear forwards` : 'none',
-              willChange: 'transform'
+              animation: isActive ? 'focusPullReveal 8.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' : 'fadeOutOld 1.5s ease-out forwards',
+              willChange: 'transform, filter, opacity'
             }} />
           </div>
         );
