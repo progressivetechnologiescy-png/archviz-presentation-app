@@ -94,15 +94,28 @@ export default function FloorplanViewer() {
               className="glass-panel"
               style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                background: `url(${plan.image_url}) center/contain no-repeat rgba(10,12,16,0.5)`,
                 borderRadius: '16px', overflow: 'hidden',
-                boxShadow: 'inset 0 0 150px 80px rgba(10,12,16,1)',
                 opacity: activeFloorplanId === plan.id ? 1 : 0,
                 pointerEvents: activeFloorplanId === plan.id ? 'auto' : 'none',
                 transition: 'opacity 0.5s ease-in-out',
                 zIndex: activeFloorplanId === plan.id ? 2 : 1
               }} 
-            />
+            >
+              {/* Image Layer */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                background: `url(${plan.image_url}) center/contain no-repeat rgba(10,12,16,0.5)`,
+                zIndex: 1
+              }} />
+              
+              {/* Horizontal Fade Overlay (Left and Right edges only) */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'linear-gradient(to right, rgba(10,12,16,1) 0%, rgba(10,12,16,0) 15%, rgba(10,12,16,0) 85%, rgba(10,12,16,1) 100%)',
+                pointerEvents: 'none',
+                zIndex: 2
+              }} />
+            </div>
           ))
         ) : (
           <div className="glass-panel" style={{ 
