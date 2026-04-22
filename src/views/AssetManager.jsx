@@ -455,6 +455,30 @@ export default function AssetManager() {
                         style={{ width: '40px', background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}
                       />
                     </div>
+
+                    <div style={{ flex: 1 }} />
+
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to delete the folder "${selectedFolder}" AND all its images? This cannot be undone.`)) {
+                          useViewerStore.getState().deleteFolder(supabase, selectedFolder);
+                          
+                          // Switch to a different folder visually
+                          setFolderList(prev => {
+                            const newList = prev.filter(f => f !== selectedFolder);
+                            setSelectedFolder(newList.length > 0 ? newList[0] : null);
+                            return newList;
+                          });
+                        }
+                      }}
+                      style={{
+                        padding: '8px 16px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', 
+                        border: '1px solid rgba(239, 68, 68, 0.3)', cursor: 'pointer', fontWeight: 'bold',
+                        display: 'flex', alignItems: 'center', gap: '6px'
+                      }}
+                    >
+                      <X size={16} /> Delete Folder
+                    </button>
                   </div>
                 )}
               </div>
@@ -534,14 +558,14 @@ export default function AssetManager() {
                             }}
                             title="Delete Render"
                             style={{
-                              position: 'absolute', top: '48px', right: '8px',
-                              background: 'rgba(239, 68, 68, 0.8)',
+                              position: 'absolute', top: '8px', right: '48px',
+                              background: 'rgba(0,0,0,0.5)',
                               color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%',
                               width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px', zIndex: 2
+                              cursor: 'pointer', transition: 'all 0.2s', zIndex: 2
                             }}
                           >
-                            🗑️
+                            <X size={16} />
                           </button>
                           {render.is_overview && (
                             <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.7)', borderRadius: '4px', padding: '4px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 2 }}>

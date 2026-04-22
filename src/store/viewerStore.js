@@ -174,6 +174,32 @@ export const useViewerStore = create((set) => ({
       console.error('Update folder order failed', e);
     }
   },
+  updateFolderOrdersBatch: async (supabaseClient, folderMap) => {
+    // folderMap is an object: { 'Interiors': 0, 'Exteriors': 1 }
+    if (!supabaseClient) return;
+    
+    // 1. Optimistic UI update instantly
+    set((state) => ({
+      customRenders: state.customRenders.map(r => {
+        if (r.folder_name && folderMap[r.folder_name] !== undefined) {
+          return { ...r, folder_order: folderMap[r.folder_name] };
+        }
+        return r;
+      })
+    }));
+
+    // 2. Background database sync
+    try {
+      for (const [folderName, newOrder] of Object.entries(folderMap)) {
+        await supabaseClient
+          .from('project_renders')
+          .update({ folder_order: newOrder })
+          .eq('folder_name', folderName);
+      }
+    } catch (e) {
+      console.error('Batch update folder orders failed', e);
+    }
+  },
   moveRender: async (supabaseClient, id, newFolderName) => {
     if (!supabaseClient || !newFolderName) return;
     try {
@@ -202,6 +228,20 @@ export const useViewerStore = create((set) => ({
       }
     } catch (e) {
       console.error('Delete render failed', e);
+    }
+  },
+  deleteFolder: async (supabaseClient, folderName) => {
+    if (!supabaseClient || !folderName) return;
+    
+    // Optimistic UI update
+    set((state) => ({
+      customRenders: state.customRenders.filter(r => r.folder_name !== folderName)
+    }));
+    
+    try {
+      await supabaseClient.from('project_renders').delete().eq('folder_name', folderName);
+    } catch (e) {
+      console.error('Delete folder failed', e);
     }
   },
   deleteFloorplan: async (supabaseClient, id) => {
