@@ -142,7 +142,7 @@ export default function MobileARView() {
           ios-src={appleSrc}
           ar 
           ar-modes="webxr scene-viewer quick-look" 
-          ar-scale="fixed"
+          ar-scale={arMode === 'plot' ? "fixed" : "auto"}
           ar-placement="floor"
           scale={arMode === 'plot' ? "0.01 0.01 0.01" : "0.0001 0.0001 0.0001"}
           camera-controls 
