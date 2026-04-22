@@ -50,7 +50,7 @@ export default function VirtualRemote() {
 
       {/* Secondary Camera Rotation Pad (Right Side Joystick) */}
       <div className="glass-panel" style={{
-        position: 'absolute', bottom: '30px', right: '30px', zIndex: 100,
+        position: 'absolute', bottom: '110px', right: '30px', zIndex: 100,
         padding: '12px 16px', borderRadius: '24px',
         display: 'flex', gap: '8px', alignItems: 'center'
       }}>

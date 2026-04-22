@@ -158,7 +158,7 @@ export default function ViewerCanvas() {
 
       {showQR && <QRModal onClose={() => setShowQR(false)} />}
 
-      <Canvas shadows dpr={dpr} camera={{ position: [5, 5, 5], fov: 45 }}>
+      <Canvas shadows dpr={dpr} camera={{ position: [0, 1.6, 12], fov: 55 }}>
         {/* Drops pixel ratio if PC is lagging */}
         <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
         
