@@ -55,6 +55,30 @@ function FBXModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          
+          if (child.material) {
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((mat, index) => {
+               // Smart Material Standardizer for FBX
+               // If there's no texture, CAD exporters often leave it pitch black. We force it to clean white!
+               const cleanColor = mat.map ? mat.color : 0xffffff;
+               
+               const pbrMat = new THREE.MeshStandardMaterial({
+                 color: cleanColor,
+                 map: mat.map || null,
+                 normalMap: mat.normalMap || null,
+                 roughness: 0.2, // Sleek architectural finish
+                 metalness: 0.1, 
+                 envMapIntensity: 1.5 // Perfectly reflects the Morning/Noon HDRI maps
+               });
+               
+               if (Array.isArray(child.material)) {
+                 child.material[index] = pbrMat;
+               } else {
+                 child.material = pbrMat;
+               }
+            });
+          }
         }
       });
     }
