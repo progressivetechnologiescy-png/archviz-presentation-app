@@ -62,13 +62,26 @@ function FileInput({ label, accept, onDrop, isUploaded, multiple = false, onClea
 import { supabase } from '../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
-function extractYoutubeThumb(url) {
+function extractYoutubeId(url) {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
-  if (match && match[2].length === 11) {
-    return `https://img.youtube.com/vi/${match[2]}/maxresdefault.jpg`;
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function extractYoutubeThumb(url) {
+  const videoId = extractYoutubeId(url);
+  if (videoId) {
+    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
   }
   return null;
+}
+
+function convertToEmbedUrl(url) {
+  const videoId = extractYoutubeId(url);
+  if (videoId) {
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  return url;
 }
 
 export default function AssetManager() {
@@ -691,8 +704,10 @@ export default function AssetManager() {
                     if (!finalThumb) {
                        finalThumb = extractYoutubeThumb(url) || '';
                     }
+                    
+                    const finalUrl = convertToEmbedUrl(url);
 
-                    const newVideo = { project_id: 'demo_project', title, video_url: url, thumbnail_url: finalThumb, order_index: useViewerStore.getState().customVideos?.length || 0 };
+                    const newVideo = { project_id: 'demo_project', title, video_url: finalUrl, thumbnail_url: finalThumb, order_index: useViewerStore.getState().customVideos?.length || 0 };
                     const { data, error } = await supabase.from('project_videos').insert([newVideo]).select();
                     if (!error && data) {
                       useViewerStore.getState().addCustomVideo(data[0]);

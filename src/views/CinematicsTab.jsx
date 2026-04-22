@@ -28,7 +28,7 @@ export function VideoModal({ videoUrl, title, onClose }) {
       
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5%' }}>
         {/* We use an aggressive aspect-ratio wrapper for cinematic 21:9 or 16:9 feel */}
-        <div style={{ width: '100%', maxWidth: '1400px', aspectRatio: '16/9', background: 'black', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.8)' }}>
+        <div style={{ width: '100%', maxWidth: '1000px', aspectRatio: '16/9', background: 'black', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.8)' }}>
           <iframe 
             src={videoUrl + "?autoplay=1&muted=0&controls=1&rel=0&showinfo=0"} 
             style={{ width: '100%', height: '100%', border: 'none' }}
