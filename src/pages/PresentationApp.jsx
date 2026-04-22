@@ -102,7 +102,8 @@ export default function PresentationApp({ forceAdmin = false }) {
           @media (max-width: 1100px) {
             .desktop-nav { display: none !important; }
             .mobile-nav-toggle { display: flex !important; }
-            .header-actions { display: none !important; }
+            .header-manage-btn { display: none !important; }
+            .fullscreen-btn { display: none !important; }
           }
           @media (min-width: 1101px) {
             .mobile-nav-toggle { display: none !important; }
@@ -146,7 +147,18 @@ export default function PresentationApp({ forceAdmin = false }) {
         </div>
 
         {/* Desktop Global Controls */}
-        <div className="header-actions" style={{ display: 'flex', gap: '12px', flexShrink: 0 }}>
+        <div className="header-actions-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 102, flexShrink: 0 }}>
+          
+          {isAdmin && (
+            <button 
+              onClick={() => setActiveTab('manage')}
+              className="glass-panel hover-lift header-manage-btn" 
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'var(--accent-color)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
+              <Settings size={16} />
+              <span className="action-text">Manage</span>
+            </button>
+          )}
+
           <button 
             onClick={() => {
               if (!document.fullscreenElement) {
@@ -155,32 +167,21 @@ export default function PresentationApp({ forceAdmin = false }) {
                 document.exitFullscreen();
               }
             }}
-            className="glass-panel hover-lift" 
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
-            <Maximize size={16} />
-            <span className="action-text">Fullscreen</span>
+            className="glass-panel hover-lift icon-action-btn fullscreen-btn" 
+            title="Fullscreen"
+            style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              width: '48px', height: '48px', padding: '0', 
+              borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', 
+              border: '1px solid rgba(255,255,255,0.1)', color: 'white' 
+            }}>
+            <Maximize size={18} />
           </button>
-          
-          {isAdmin && (
-            <button 
-              onClick={() => setActiveTab('manage')}
-              className="glass-panel hover-lift" 
-              style={{ 
-                display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', 
-                background: activeTab === 'manage' ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)', 
-                cursor: 'pointer', border: activeTab === 'manage' ? 'none' : '1px solid rgba(255,255,255,0.1)', 
-                color: 'white', fontWeight: 'bold' 
-              }}>
-              <Settings size={16} /> <span className="action-text">Manage</span>
-            </button>
-          )}
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 102 }}>
           {/* Always Visible Share Button */}
           <button 
             onClick={() => setIsShareModalOpen(true)}
-            className="glass-panel hover-lift share-btn" 
+            className="glass-panel hover-lift icon-action-btn" 
             title="Share"
             style={{ 
               display: 'flex', alignItems: 'center', justifyContent: 'center', 
@@ -193,7 +194,7 @@ export default function PresentationApp({ forceAdmin = false }) {
 
           {/* Mobile Hamburger Toggle */}
           <button 
-            className="mobile-nav-toggle glass-panel"
+            className="mobile-nav-toggle glass-panel icon-action-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             style={{ 
               width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', 
