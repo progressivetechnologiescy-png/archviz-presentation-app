@@ -91,18 +91,18 @@ export default function PresentationApp({ forceAdmin = false }) {
           .nav-tab-icon { width: 16px; height: 16px; }
           
           @media (max-width: 1400px) {
-            .nav-tab-btn { padding: 8px 14px; font-size: 13px; gap: 6px; }
+            .nav-tab-btn { padding: 8px 12px; font-size: 13px; gap: 4px; }
             .nav-tab-icon { width: 14px; height: 14px; }
-          }
-          @media (max-width: 1300px) {
             .desktop-logo-text { display: none !important; }
+            .action-text { display: none !important; }
+            .header-actions button { padding: 12px !important; border-radius: 50% !important; }
           }
-          @media (max-width: 1024px) {
+          @media (max-width: 1100px) {
             .desktop-nav { display: none !important; }
             .mobile-nav-toggle { display: flex !important; }
             .header-actions { display: none !important; }
           }
-          @media (min-width: 1025px) {
+          @media (min-width: 1101px) {
             .mobile-nav-toggle { display: none !important; }
           }
           @media (max-width: 600px) {
@@ -156,7 +156,7 @@ export default function PresentationApp({ forceAdmin = false }) {
             className="glass-panel hover-lift" 
             style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
             <Maximize size={16} />
-            Fullscreen
+            <span className="action-text">Fullscreen</span>
           </button>
           
           {isAdmin && (
@@ -169,7 +169,7 @@ export default function PresentationApp({ forceAdmin = false }) {
                 cursor: 'pointer', border: activeTab === 'manage' ? 'none' : '1px solid rgba(255,255,255,0.1)', 
                 color: 'white', fontWeight: 'bold' 
               }}>
-              <Settings size={16} /> Manage
+              <Settings size={16} /> <span className="action-text">Manage</span>
             </button>
           )}
         </div>
@@ -187,6 +187,7 @@ export default function PresentationApp({ forceAdmin = false }) {
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
+
 
       {/* Mobile Full-Screen Menu Overlay */}
       <div style={{
@@ -224,6 +225,13 @@ export default function PresentationApp({ forceAdmin = false }) {
             <Maximize size={24} /> Fullscreen
           </button>
           
+          <button 
+            onClick={() => { setIsShareModalOpen(true); setIsMobileMenuOpen(false); }}
+            className="glass-panel" 
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
+            <Share2 size={24} /> Share
+          </button>
+
           {isAdmin && (
             <button 
               onClick={() => setActiveTab('manage')}
@@ -233,14 +241,6 @@ export default function PresentationApp({ forceAdmin = false }) {
             </button>
           )}
         </div>
-      </div>   <button 
-            onClick={() => setIsShareModalOpen(true)}
-            className="glass-panel hover-lift" 
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
-            <Share2 size={16} /> Share
-          </button>
-        </div>
-
       </div>
 
       {/* Main Content Viewport */}
