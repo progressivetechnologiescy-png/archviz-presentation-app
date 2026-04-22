@@ -109,6 +109,13 @@ export default function MobileARView() {
     return () => viewer.removeEventListener('load', handleLoad);
   }, [androidSrc]);
 
+  // If user is at the plot, default to 'plot' mode, otherwise 'desk'
+  const [arMode, setArMode] = useState('desk');
+  useEffect(() => {
+    if (isAtPlot) setArMode('plot');
+    else setArMode('desk');
+  }, [isAtPlot]);
+
   return (
     <div style={{ 
       width: '100vw', height: '100dvh', 
@@ -137,7 +144,7 @@ export default function MobileARView() {
           ar-modes="webxr scene-viewer quick-look" 
           ar-scale="fixed"
           ar-placement="floor"
-          scale={isAtPlot ? "0.01 0.01 0.01" : "0.0001 0.0001 0.0001"}
+          scale={arMode === 'plot' ? "0.01 0.01 0.01" : "0.0001 0.0001 0.0001"}
           camera-controls 
           touch-action="pan-y"
           auto-rotate
@@ -149,26 +156,63 @@ export default function MobileARView() {
         >
         </model-viewer>
 
-        {/* Custom AR Button GUARANTEED to be visible */}
-        <button 
-          onClick={() => {
-            const viewer = document.getElementById('ar-viewer');
-            if (viewer && viewer.activateAR) {
-              viewer.activateAR();
-            } else {
-              alert("AR is initializing or not supported on this specific device/browser.");
-            }
-          }}
-          style={{ 
-            position: 'absolute', bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', left: '50%', transform: 'translateX(-50%)',
-            background: 'var(--accent-color)', color: 'white', border: 'none', 
-            padding: '16px 32px', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px',
-            fontFamily: 'Outfit, sans-serif', boxShadow: '0 8px 24px var(--accent-glow)',
-            cursor: 'pointer', zIndex: 1000, whiteSpace: 'nowrap'
-          }}
-        >
-          {isAtPlot ? "Deploy on Plot of Land" : "Drop on Your Desk"}
-        </button>
+        {/* AR Controls Area */}
+        <div style={{ 
+          position: 'absolute', bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', 
+          left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px',
+          width: '100%', maxWidth: '350px'
+        }}>
+          
+          {/* Mode Selector (Only visible if at plot) */}
+          {isAtPlot && (
+            <div style={{ 
+              display: 'flex', background: 'rgba(0,0,0,0.5)', borderRadius: '20px', 
+              padding: '4px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' 
+            }}>
+              <button 
+                onClick={() => setArMode('plot')}
+                style={{
+                  background: arMode === 'plot' ? 'var(--accent-color)' : 'transparent',
+                  color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
+                  fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
+                }}
+              >
+                1:1 Real Size
+              </button>
+              <button 
+                onClick={() => setArMode('desk')}
+                style={{
+                  background: arMode === 'desk' ? 'var(--accent-color)' : 'transparent',
+                  color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
+                  fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
+                }}
+              >
+                1:100 Desk Model
+              </button>
+            </div>
+          )}
+
+          {/* Custom AR Button */}
+          <button 
+            onClick={() => {
+              const viewer = document.getElementById('ar-viewer');
+              if (viewer && viewer.activateAR) {
+                viewer.activateAR();
+              } else {
+                alert("AR is initializing or not supported on this specific device/browser.");
+              }
+            }}
+            style={{ 
+              background: 'var(--accent-color)', color: 'white', border: 'none', 
+              padding: '16px 32px', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px',
+              fontFamily: 'Outfit, sans-serif', boxShadow: '0 8px 24px var(--accent-glow)',
+              cursor: 'pointer', zIndex: 1000, whiteSpace: 'nowrap', width: '100%'
+            }}
+          >
+            {arMode === 'plot' ? "Deploy on Plot of Land" : "Drop on Your Desk"}
+          </button>
+        </div>
       </div>
 
     </div>
