@@ -7,7 +7,13 @@ export default function ProjectOverview({ onNavigate }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Enforce pure database logic, NO dummy data
-  const images = customRenders || [];
+  // Try to find renders tagged for 'Overview' or 'Slideshow', otherwise fallback to all images
+  let images = customRenders || [];
+  const slideshowRenders = images.filter(r => r.folder_name && (r.folder_name.toLowerCase() === 'overview' || r.folder_name.toLowerCase() === 'slideshow'));
+  
+  if (slideshowRenders.length > 0) {
+    images = slideshowRenders;
+  }
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -21,8 +27,8 @@ export default function ProjectOverview({ onNavigate }) {
       
       {/* Slideshow Background */}
       {images.map((src, index) => {
-        const isString = typeof src === 'string';
-        const bgImg = isString ? `url(${src})` : 'none';
+        const url = typeof src === 'string' ? src : src.image_url;
+        const bgImg = url ? `url(${url})` : 'none';
         const isActive = index === currentSlide;
 
         return (
@@ -36,7 +42,7 @@ export default function ProjectOverview({ onNavigate }) {
           >
             <div style={{
               width: '100%', height: '100%',
-              background: isString ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
+              background: url ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
               animation: isActive ? 'focusPullReveal 8.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' : 'fadeOutOld 1.5s ease-out forwards',
               willChange: 'transform, filter, opacity'
             }} />
