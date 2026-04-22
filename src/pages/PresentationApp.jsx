@@ -289,7 +289,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         </a>
       </div>
 
-      <FloatingConcierge />
+      {activeTab !== 'standalone' && <FloatingConcierge />}
       {isShareModalOpen && <ShareModal onClose={() => setIsShareModalOpen(false)} />}
     </div>
   );
