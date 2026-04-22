@@ -70,6 +70,9 @@ export const useViewerStore = create((set) => ({
       if (error) {
         console.error("Cloud DB Error assets:", error);
       } else if (data) {
+        // Sort by newest first to ensure we always load the most recently uploaded asset
+        data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
         // Map all dynamic asset types from Database
         const renders = data.filter(d => d.asset_type === 'render').map(d => d.asset_url);
         if (renders.length > 0) set({ customRenders: renders });
