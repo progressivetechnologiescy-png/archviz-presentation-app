@@ -87,7 +87,7 @@ export default function AvailabilityTab() {
               <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Unit</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Layout</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Sq. Ft.</th>
+                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Sq. M.</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Price</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center' }}>Plan</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Status</th>
