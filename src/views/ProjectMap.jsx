@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 
 export default function ProjectMap() {
   const { customGPS } = useViewerStore();
+  const [mapMode, setMapMode] = useState('dark'); // 'dark' or 'light'
   
   let srcUrl = '';
 
@@ -24,13 +25,43 @@ export default function ProjectMap() {
     srcUrl = `https://maps.google.com/maps?q=${query}&t=m&z=15&ie=UTF8&output=embed`;
   }
 
+  // Zero-API Dark Mode hack for Google Maps (Inverts brightness, restores hue)
+  const filterStyle = mapMode === 'dark' 
+    ? 'invert(100%) hue-rotate(180deg) contrast(100%) grayscale(20%)' 
+    : 'none';
+
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative', background: 'var(--bg-main)' }}>
+      
+      {/* Floating Map Controls */}
+      <div style={{ 
+        position: 'absolute', top: '120px', right: '32px', zIndex: 10, 
+        display: 'flex', gap: '4px', background: 'rgba(10,12,16,0.7)', 
+        padding: '6px', borderRadius: '40px', backdropFilter: 'blur(10px)', 
+        border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' 
+      }}>
+        {['dark', 'light'].map(mode => (
+          <button
+            key={mode}
+            onClick={() => setMapMode(mode)}
+            style={{
+               padding: '8px 24px', borderRadius: '30px', border: 'none',
+               background: mapMode === mode ? 'var(--text-primary)' : 'transparent',
+               color: mapMode === mode ? 'var(--bg-dark)' : 'var(--text-secondary)',
+               fontWeight: 'bold', cursor: 'pointer', textTransform: 'capitalize',
+               transition: 'all 0.3s ease'
+            }}
+          >
+             {mode}
+          </button>
+        ))}
+      </div>
+
       {/* Zero-API Google Maps Embedding */}
       <iframe 
         width="100%" 
         height="100%" 
-        style={{ border: 0 }}
+        style={{ border: 0, filter: filterStyle, transition: 'filter 0.5s ease' }}
         loading="lazy" 
         allowFullScreen 
         src={srcUrl}
