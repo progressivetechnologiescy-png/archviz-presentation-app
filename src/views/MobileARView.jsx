@@ -51,7 +51,10 @@ export default function MobileARView() {
           camera-controls 
           touch-action="pan-y"
           auto-rotate
-          shadow-intensity="1"
+          environment-image="neutral"
+          exposure="1.2"
+          shadow-intensity="1.5"
+          shadow-softness="1"
           style={{ width: '100%', height: '100%', '--poster-color': 'transparent' }}
         >
         </model-viewer>

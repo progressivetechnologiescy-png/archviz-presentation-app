@@ -1,6 +1,6 @@
 import React, { useRef, Suspense, useState } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { Environment, PointerLockControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, BakeShadows } from '@react-three/drei';
+import { Environment, PointerLockControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, SoftShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
@@ -169,21 +169,21 @@ export default function ViewerCanvas() {
         
         <XR store={store}>
           <Suspense fallback={null}>
-            {/* BakeShadows prevents engine from recalculating shadowmaps every frame when static */}
-            <BakeShadows />
+            {/* Cinematic Photorealistic Soft Shadows */}
+            <SoftShadows size={25} samples={16} focus={0.5} />
             
             {customPanorama ? (
               <CustomEnvironment url={customPanorama} />
             ) : (
-              <Environment preset={preset} background={false} environmentIntensity={intensity} />
+              <Environment preset={preset} background={false} environmentIntensity={intensity * 1.5} />
             )}
             
-            {/* Powerful default lighting for raw FBX models */}
-            <ambientLight intensity={intensity * 1.5} />
-            <hemisphereLight skyColor="#ffffff" groundColor="#444444" intensity={intensity * 1.2} />
+            {/* Photorealistic Lighting Setup (Low ambient to allow HDRI global illumination to work, strong directional sun) */}
+            <ambientLight intensity={intensity * 0.4} />
+            <hemisphereLight skyColor="#ffffff" groundColor="#aaaaaa" intensity={intensity * 0.6} />
             <directionalLight 
-              position={[10, 20, 10]} 
-              intensity={intensity * 2.5} 
+              position={[20, 40, 20]} 
+              intensity={intensity * 3.5} 
               castShadow 
               shadow-mapSize={[2048, 2048]}
               shadow-bias={-0.0001}
