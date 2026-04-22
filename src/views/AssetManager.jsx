@@ -603,7 +603,7 @@ export default function AssetManager() {
                               borderRadius: '50%',
                               width: '32px', height: '32px', 
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              cursor: 'pointer', transition: 'all 0.2s', zIndex: 2
+                              cursor: 'pointer', transition: 'all 0.2s', zIndex: 2, outline: 'none'
                             }}
                             onMouseEnter={(e) => {
                                e.currentTarget.style.background = '#ef4444';
@@ -939,6 +939,45 @@ export default function AssetManager() {
 
         </div>
       </div>
+
+      {/* CUSTOM CONFIRMATION MODAL */}
+      {confirmModal.isOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 99999,
+          background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          <div className="glass-panel" style={{
+            background: 'var(--bg-panel)', padding: '32px', borderRadius: '16px',
+            width: '90%', maxWidth: '400px', border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.5)', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 16px 0', color: 'white' }}>Confirm Action</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', lineHeight: '1.5' }}>{confirmModal.message}</p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setConfirmModal({ isOpen: false, message: '', onConfirm: null })}
+                className="hover-lift"
+                style={{ padding: '10px 24px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  if (confirmModal.onConfirm) confirmModal.onConfirm();
+                  setConfirmModal({ isOpen: false, message: '', onConfirm: null });
+                }}
+                className="hover-lift"
+                style={{ padding: '10px 24px', borderRadius: '8px', background: '#ef4444', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
