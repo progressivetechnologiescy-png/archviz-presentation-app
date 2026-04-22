@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
+import { supabase } from '../lib/supabase';
 
 export default function MobileARView() {
-  const { customGLB, customUSDZ } = useViewerStore();
+  const { customGLB, customUSDZ, fetchCloudAssets } = useViewerStore();
+  
+  useEffect(() => {
+    fetchCloudAssets(supabase);
+  }, [fetchCloudAssets]);
   
   // Dynamically inject Google's model-viewer script on mount
   useEffect(() => {

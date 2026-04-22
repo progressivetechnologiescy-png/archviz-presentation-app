@@ -10,6 +10,12 @@ export const useViewerStore = create((set) => ({
   activeMaterial: 'marble', // 'marble', 'wood', 'concrete'
   setActiveMaterial: (material) => set({ activeMaterial: material }),
 
+  // Material Properties override
+  modelRoughness: 0.1,
+  modelMetalness: 0.6,
+  modelEnvMapIntensity: 2.0,
+  setModelProperties: (props) => set((state) => ({ ...state, ...props })),
+
   // Camera Tour Mode
   isTouring: false,
   toggleTouring: () => set((state) => ({ isTouring: !state.isTouring })),

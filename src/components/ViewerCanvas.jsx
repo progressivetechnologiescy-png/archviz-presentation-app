@@ -48,6 +48,7 @@ function WalkEngine() {
 function FBXModel({ url }) {
   const fbx = useFBX(url);
   const groupRef = React.useRef();
+  const { modelRoughness, modelMetalness, modelEnvMapIntensity } = useViewerStore();
 
   React.useEffect(() => {
     if (fbx) {
@@ -55,17 +56,17 @@ function FBXModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // Force material to be reflective to show off HDRI
+          // Dynamically apply material overrides
           if (child.material) {
-            child.material.roughness = 0.1;
-            child.material.metalness = 0.6;
-            child.material.envMapIntensity = 2.0;
+            child.material.roughness = modelRoughness;
+            child.material.metalness = modelMetalness;
+            child.material.envMapIntensity = modelEnvMapIntensity;
             child.material.needsUpdate = true;
           }
         }
       });
     }
-  }, [fbx]);
+  }, [fbx, modelRoughness, modelMetalness, modelEnvMapIntensity]);
 
   useFrame(() => {
     if (useViewerStore.getState().isTouring && groupRef.current) {
@@ -84,6 +85,7 @@ function FBXModel({ url }) {
 function GLTFModel({ url }) {
   const { scene } = useGLTF(url);
   const groupRef = React.useRef();
+  const { modelRoughness, modelMetalness, modelEnvMapIntensity } = useViewerStore();
 
   React.useEffect(() => {
     if (scene) {
@@ -91,17 +93,17 @@ function GLTFModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // Force material to be reflective to show off HDRI
+          // Dynamically apply material overrides
           if (child.material) {
-            child.material.roughness = 0.1;
-            child.material.metalness = 0.6;
-            child.material.envMapIntensity = 2.0;
+            child.material.roughness = modelRoughness;
+            child.material.metalness = modelMetalness;
+            child.material.envMapIntensity = modelEnvMapIntensity;
             child.material.needsUpdate = true;
           }
         }
       });
     }
-  }, [scene]);
+  }, [scene, modelRoughness, modelMetalness, modelEnvMapIntensity]);
 
   useFrame(() => {
     if (useViewerStore.getState().isTouring && groupRef.current) {
@@ -142,7 +144,7 @@ function CustomEnvironment({ url }) {
   const texture = useLoader(THREE.TextureLoader, url);
   texture.mapping = THREE.EquirectangularReflectionMapping;
   texture.colorSpace = THREE.SRGBColorSpace;
-  return <Environment map={texture} background backgroundBlurriness={0.2} environmentIntensity={1.2} />;
+  return <Environment map={texture} background={false} environmentIntensity={1.2} />;
 }
 
 export default function ViewerCanvas() {
@@ -189,7 +191,7 @@ export default function ViewerCanvas() {
             {customPanorama ? (
               <CustomEnvironment url={customPanorama} />
             ) : (
-              <Environment preset={preset} background backgroundBlurriness={0.5} environmentIntensity={intensity} />
+              <Environment preset={preset} background={false} environmentIntensity={intensity} />
             )}
             
             {/* Soft lighting */}
