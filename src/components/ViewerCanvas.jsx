@@ -55,6 +55,38 @@ function FBXModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          
+          if (child.material) {
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((mat, index) => {
+              // 1. Exporter Failsafe: Revit/Maya often export materials with a pure black base color.
+              // In Three.js, base color MULTIPLIES with the texture. If color is black, the texture goes pitch black!
+              if (mat.color && (mat.color.r + mat.color.g + mat.color.b < 0.05)) {
+                 mat.color.setHex(0xdddddd); // Reset to off-white so textures and lighting become visible
+              }
+
+              // 2. Photorealism Upgrade: Convert legacy diffuse materials to PBR materials
+              if (mat.type === 'MeshPhongMaterial' || mat.type === 'MeshLambertMaterial') {
+                const pbrMat = new THREE.MeshStandardMaterial({
+                  color: mat.color,
+                  map: mat.map || null,
+                  normalMap: mat.normalMap || null,
+                  roughness: 0.7, // Realistic default for architecture walls
+                  metalness: 0.1,
+                });
+                
+                if (Array.isArray(child.material)) {
+                  child.material[index] = pbrMat;
+                } else {
+                  child.material = pbrMat;
+                }
+              } else if (mat.isMeshStandardMaterial || mat.isMeshPhysicalMaterial) {
+                // If it's already PBR, just ensure it can receive environment reflections
+                mat.envMapIntensity = 1.0;
+                mat.needsUpdate = true;
+              }
+            });
+          }
         }
       });
     }
