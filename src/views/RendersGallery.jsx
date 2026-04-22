@@ -67,7 +67,10 @@ export default function RendersGallery() {
   }[thumbnailSize];
 
   return (
-    <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
+    <div 
+      style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}
+      onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
+    >
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>

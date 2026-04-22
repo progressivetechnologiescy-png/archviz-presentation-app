@@ -33,73 +33,79 @@ export default function FloorplanViewer() {
   const bgImage = activePlan ? activePlan.image_url : customFloorplan;
 
   return (
-    <div style={{ padding: '120px 32px 32px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div 
+      style={{ padding: '120px 32px 32px', height: '100%', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}
+      onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
+    >
       
-      {/* Top-Level Property Type Menu */}
-      {propertyTypes.length > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-          <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px', background: 'rgba(0,0,0,0.4)' }}>
-            {propertyTypes.map(type => (
-              <button
-                key={type}
-                onClick={() => setActivePropertyType(type)}
-                style={{
-                  padding: '8px 24px', borderRadius: '30px', border: 'none',
-                  background: activePropertyType === type ? 'var(--text-primary)' : 'transparent',
-                  color: activePropertyType === type ? 'var(--bg-main)' : 'var(--text-secondary)',
-                  fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s ease',
-                  fontSize: '15px'
-                }}>
-                {type}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '300', margin: 0 }}>
-          {propertyTypes.length > 1 ? activePropertyType : 'Level Floorplans'}
-        </h2>
-        
-        {/* Secondary Level Controller */}
-        {filteredFloorplans && filteredFloorplans.length > 0 && (
-          <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px' }}>
-            {filteredFloorplans.map(plan => (
-              <button
-                key={plan.id}
-                onClick={() => setActiveFloorplanId(plan.id)}
-                style={{
-                  padding: '8px 16px', borderRadius: '30px', border: 'none',
-                  background: activeFloorplanId === plan.id ? 'var(--accent-color)' : 'transparent',
-                  color: activeFloorplanId === plan.id ? 'white' : 'var(--text-secondary)',
-                  fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s ease',
-                  boxShadow: activeFloorplanId === plan.id ? '0 4px 12px var(--accent-glow)' : 'none'
-                }}>
-                {plan.level_name}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      
-      <div style={{ flex: 1, position: 'relative', marginBottom: '32px' }}>
-        {/* Render all plans absolutely with opacity transitions for smooth crossfading */}
+      {/* FULLSCREEN BACKGROUND IMAGE */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
         {customFloorplans && customFloorplans.map(plan => (
           <div 
             key={plan.id}
-            className="glass-panel"
             style={{
               position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-              background: `url(${plan.image_url}) center/contain no-repeat rgba(255,255,255,0.02)`,
-              borderRadius: '16px', overflow: 'hidden',
+              background: `url(${plan.image_url}) center/contain no-repeat`,
               opacity: activeFloorplanId === plan.id ? 1 : 0,
-              pointerEvents: activeFloorplanId === plan.id ? 'auto' : 'none',
               transition: 'opacity 0.5s ease-in-out',
-              zIndex: activeFloorplanId === plan.id ? 2 : 1
             }} 
           />
         ))}
+        {/* Legacy single fallback */}
+        {!activePlan && customFloorplan && (
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: `url(${customFloorplan}) center/contain no-repeat`, opacity: 1 }} />
+        )}
+      </div>
+
+      {/* UI Overlay */}
+      <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', height: '100%' }}>
+        {/* Top-Level Property Type Menu */}
+        {(propertyTypes.length > 1 || (propertyTypes.length === 1 && propertyTypes[0] !== 'Default Property')) && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+            <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px', background: 'rgba(0,0,0,0.4)' }}>
+              {propertyTypes.map(type => (
+                <button
+                  key={type}
+                  onClick={() => setActivePropertyType(type)}
+                  style={{
+                    padding: '8px 24px', borderRadius: '30px', border: 'none',
+                    background: activePropertyType === type ? 'var(--text-primary)' : 'transparent',
+                    color: activePropertyType === type ? 'var(--bg-main)' : 'var(--text-secondary)',
+                    fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s ease',
+                    fontSize: '15px'
+                  }}>
+                  {type}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: '300', margin: 0 }}>
+            {propertyTypes.length > 1 ? activePropertyType : 'Level Floorplans'}
+          </h2>
+          
+          {/* Secondary Level Controller */}
+          {filteredFloorplans && filteredFloorplans.length > 0 && (
+            <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px' }}>
+              {filteredFloorplans.map(plan => (
+                <button
+                  key={plan.id}
+                  onClick={() => setActiveFloorplanId(plan.id)}
+                  style={{
+                    padding: '8px 16px', borderRadius: '30px', border: 'none',
+                    background: activeFloorplanId === plan.id ? 'var(--accent-color)' : 'transparent',
+                    color: activeFloorplanId === plan.id ? 'white' : 'var(--text-secondary)',
+                    fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s ease',
+                    boxShadow: activeFloorplanId === plan.id ? '0 4px 12px var(--accent-glow)' : 'none'
+                  }}>
+                  {plan.level_name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {(!customFloorplans || customFloorplans.length === 0) && (
           <div className="glass-panel" style={{ 

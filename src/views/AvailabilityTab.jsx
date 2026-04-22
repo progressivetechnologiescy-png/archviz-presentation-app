@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useViewerStore } from '../store/viewerStore';
 
 const DUMMY_UNITS = [
   { id: '101', type: '2 Bed, 2 Bath', sqft: 1450, price: '$1,250,000', status: 'Sold' },
@@ -36,7 +37,10 @@ export default function AvailabilityTab() {
   };
 
   return (
-    <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
+    <div 
+      style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}
+      onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
+    >
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>

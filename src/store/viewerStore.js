@@ -88,6 +88,32 @@ export const useViewerStore = create((set) => ({
       console.error('Update floorplan order failed', e);
     }
   },
+  updateFloorplanOrdersBatch: async (supabaseClient, floorplanMap) => {
+    // floorplanMap is an object: { [id]: new_order_index }
+    if (!supabaseClient) return;
+    
+    // 1. Optimistic UI update instantly
+    set((state) => ({
+      customFloorplans: (state.customFloorplans || []).map(f => {
+        if (f.id && floorplanMap[f.id] !== undefined) {
+          return { ...f, order_index: floorplanMap[f.id] };
+        }
+        return f;
+      })
+    }));
+
+    // 2. Background database sync
+    try {
+      for (const [id, newOrder] of Object.entries(floorplanMap)) {
+        await supabaseClient
+          .from('project_floorplans')
+          .update({ order_index: newOrder })
+          .eq('id', id);
+      }
+    } catch (e) {
+      console.error('Batch update floorplan orders failed', e);
+    }
+  },
   primaryModel: null,
   customFBX: null,
   customGLB: null,
@@ -101,6 +127,8 @@ export const useViewerStore = create((set) => ({
   setGeminiApiKey: (key) => set({ geminiApiKey: key }),
   setAiContext: (context) => set({ aiContext: context }),
   setActiveTourNodeId: (id) => set({ activeTourNodeId: id }),
+  isGlobalScrolled: false,
+  setGlobalScrolled: (val) => set({ isGlobalScrolled: val }),
   
   // Complex Renders Array [{ id, folder_name, image_url }]
   customRenders: [],

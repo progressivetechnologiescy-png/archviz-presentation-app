@@ -42,6 +42,7 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
 export default function PresentationApp({ forceAdmin = false }) {
   const fetchCloudAssets = useViewerStore(state => state.fetchCloudAssets);
   const isLightboxOpen = useViewerStore(state => state.isLightboxOpen);
+  const isGlobalScrolled = useViewerStore(state => state.isGlobalScrolled);
   
   const [isAdmin] = useState(() => {
     if (forceAdmin) return true;
@@ -56,6 +57,11 @@ export default function PresentationApp({ forceAdmin = false }) {
     fetchCloudAssets(supabase);
   }, [fetchCloudAssets]);
 
+  // Reset scroll state on tab switch
+  useEffect(() => {
+    useViewerStore.getState().setGlobalScrolled(false);
+  }, [activeTab]);
+
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', background: 'var(--bg-gradient)', overflow: 'hidden' }}>
       
@@ -64,7 +70,9 @@ export default function PresentationApp({ forceAdmin = false }) {
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'nowrap', gap: '24px',
-        background: 'rgba(10, 12, 16, 0.85)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(255,255,255,0.05)',
+        background: isGlobalScrolled ? 'rgba(10, 12, 16, 0.85)' : 'transparent', 
+        backdropFilter: isGlobalScrolled ? 'blur(24px)' : 'none', 
+        borderBottom: isGlobalScrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
         opacity: isLightboxOpen ? 0 : 1, 
         pointerEvents: isLightboxOpen ? 'none' : 'auto', 
         transition: 'all 0.3s ease',
@@ -125,6 +133,20 @@ export default function PresentationApp({ forceAdmin = false }) {
 
         {/* Global Controls - Top Right */}
         <div style={{ display: 'flex', gap: '12px', flexShrink: 0 }}>
+          <button 
+            onClick={() => {
+              if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+              } else {
+                document.exitFullscreen();
+              }
+            }}
+            className="glass-panel hover-lift" 
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            Fullscreen
+          </button>
+          
           {isAdmin && (
             <button 
               onClick={() => setActiveTab('manage')}

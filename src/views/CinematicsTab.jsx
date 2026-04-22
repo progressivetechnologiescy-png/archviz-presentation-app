@@ -71,16 +71,46 @@ export default function CinematicsTab() {
   // Use dynamic videos or fallback to an empty state
   const videos = customVideos && customVideos.length > 0 ? customVideos : [];
 
+  const [thumbnailSize, setThumbnailSize] = useState('medium'); // small, medium, large
+  const gridMinMax = {
+    small: '200px',
+    medium: '320px',
+    large: '500px'
+  }[thumbnailSize];
+
   return (
     <>
-      <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
+      <div 
+        style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}
+        onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
+      >
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           
-          <div style={{ marginBottom: '40px' }}>
-            <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 12px 0' }}>Cinematic Films</h2>
-            <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '18px' }}>
-              Experience the property through ultra high-definition drone flyovers and narrative tours.
-            </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 12px 0' }}>Cinematic Films</h2>
+              <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '18px' }}>
+                Experience the property through ultra high-definition drone flyovers and narrative tours.
+              </p>
+            </div>
+            
+            {/* Thumbnail Size Toggle */}
+            <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '20px' }}>
+              {['small', 'medium', 'large'].map(size => (
+                <button
+                  key={size}
+                  onClick={() => setThumbnailSize(size)}
+                  style={{
+                    padding: '6px 16px', borderRadius: '16px', border: 'none',
+                    background: thumbnailSize === size ? 'var(--accent-color)' : 'transparent',
+                    color: thumbnailSize === size ? 'white' : 'var(--text-secondary)',
+                    fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s',
+                    textTransform: 'capitalize', fontSize: '12px'
+                  }}>
+                  {size.charAt(0).toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
 
           {videos.length === 0 ? (
@@ -89,7 +119,7 @@ export default function CinematicsTab() {
               <p style={{ color: 'rgba(255,255,255,0.4)' }}>Add YouTube or Vimeo URLs from the Admin CMS to populate this gallery.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${gridMinMax}, 1fr))`, gap: '24px' }}>
               {[...videos].sort((a, b) => (a.order_index || 0) - (b.order_index || 0)).map(film => (
                 <div 
                   key={film.id} 

@@ -817,115 +817,200 @@ export default function AssetManager() {
           )}
 
           {/* TAB: FLOORPLANS */}
-          {activeTab === 'floorplans' && (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
-                <FileInput 
-                  label="Upload New Floorplan Level" 
-                  accept="image/*,.pdf" 
-                  multiple={true}
-                  onDrop={async (files) => {
-                    if (!supabase) {
-                      files.forEach((f, i) => useViewerStore.getState().addCustomFloorplan({ id: uuidv4(), level_name: `Level ${i+1}`, image_url: URL.createObjectURL(f) }));
-                      return;
-                    }
-                    setIsUploading(true);
-                    try {
-                      for (const file of files) {
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `${uuidv4()}.${fileExt}`;
-                        const filePath = `floorplans/${fileName}`;
-                        
-                        const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
-                        if (uploadError) throw uploadError;
-                        
-                        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
-                        
-                        const newRow = { project_id: 'demo_project', level_name: 'New Level', image_url: publicUrl };
-                        const { data: dbData, error: dbError } = await supabase.from('project_floorplans').insert(newRow).select().single();
-                        if (dbError) throw dbError;
-                        
-                        useViewerStore.getState().addCustomFloorplan(dbData);
+          {activeTab === 'floorplans' && (() => {
+            const floorplans = useViewerStore.getState().customFloorplans || [];
+            const propertyTypes = [...new Set(floorplans.map(f => f.property_type || 'Default Property'))];
+            if (propertyTypes.length === 0) propertyTypes.push('Default Property');
+            
+            // We use activeFolder state to represent active Property Block for simplicity, since it's only active in this tab.
+            // Or we just map through propertyTypes and show them all as distinct blocks.
+            return (
+              <>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                  <input 
+                    type="text" 
+                    id="newPropertyBlock"
+                    placeholder="e.g. 'Block A' or 'Villa Type 2'"
+                    style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }}
+                  />
+                  <button 
+                    onClick={() => {
+                      const input = document.getElementById('newPropertyBlock');
+                      if (input.value.trim()) {
+                        // Adding a dummy floorplan just to create the group, or just relying on user uploading one.
+                        // Actually, we can just use selectedFolder state!
+                        setSelectedFolder(input.value.trim());
+                        input.value = '';
                       }
-                      alert(`Successfully uploaded ${files.length} floorplans!`);
-                    } catch (error) {
-                      console.error("Upload error:", error);
-                      alert(`Floorplan Upload Failed: ${error.message}`);
-                    } finally {
-                      setIsUploading(false);
-                    }
-                  }} 
-                  isUploaded={false}
-                />
+                    }}
+                    style={{ padding: '10px 20px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                    + Create Property Block
+                  </button>
+                </div>
 
-                {/* Floorplan List */}
-                {useViewerStore.getState().customFloorplans && useViewerStore.getState().customFloorplans.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Manage Levels</h3>
-                    {useViewerStore.getState().customFloorplans.map(plan => (
-                      <div key={plan.id} className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '12px' }}>
-                        <div style={{ width: '80px', height: '60px', borderRadius: '8px', background: `url(${plan.image_url}) center/cover no-repeat rgba(255,255,255,0.05)`, border: '1px solid rgba(255,255,255,0.1)' }} />
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Level Name (e.g. Ground Floor)</label>
-                              <input 
-                                type="text" 
-                                defaultValue={plan.level_name}
-                                onBlur={(e) => {
-                                  if (e.target.value.trim() !== plan.level_name) {
-                                    useViewerStore.getState().updateFloorplanLabel(supabase, plan.id, e.target.value.trim());
-                                  }
-                                }}
-                                style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
-                              />
-                            </div>
-                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Property Type (e.g. Villa Type A)</label>
-                              <input 
-                                type="text" 
-                                defaultValue={plan.property_type || 'Default Property'}
-                                onBlur={(e) => {
-                                  if (e.target.value.trim() !== (plan.property_type || 'Default Property')) {
-                                    useViewerStore.getState().updateFloorplanPropertyType(supabase, plan.id, e.target.value.trim());
-                                  }
-                                }}
-                                style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
-                              />
-                            </div>
-                            <div style={{ width: '80px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Sort Order</label>
-                              <input 
-                                type="number" 
-                                defaultValue={plan.order_index || 0}
-                                onBlur={(e) => {
-                                  if (parseInt(e.target.value) !== (plan.order_index || 0)) {
-                                    useViewerStore.getState().updateFloorplanOrder(supabase, plan.id, parseInt(e.target.value) || 0);
-                                  }
-                                }}
-                                style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={async () => {
-                            if (window.confirm('Delete this floorplan?')) {
-                              if (supabase) await supabase.from('project_floorplans').delete().eq('id', plan.id);
-                              useViewerStore.getState().removeCustomFloorplan(plan.id);
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px' }}>
+                  {Array.from(new Set([...propertyTypes, selectedFolder === 'All' ? 'Default Property' : selectedFolder])).map(type => (
+                    <button 
+                      key={type}
+                      onClick={() => setSelectedFolder(type)}
+                      style={{
+                        padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                        border: selectedFolder === type ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
+                        background: selectedFolder === type ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
+                        color: selectedFolder === type ? 'var(--accent-color)' : 'var(--text-secondary)',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+                  <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.2)' }}>
+                    <h3 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-secondary)' }}>Upload to: <strong style={{color: 'white'}}>{selectedFolder === 'All' ? 'Default Property' : selectedFolder}</strong></h3>
+                    <FileInput 
+                      label={`Drop floorplans for ${selectedFolder === 'All' ? 'Default Property' : selectedFolder}`}
+                      accept="image/*,.pdf" 
+                      multiple={true}
+                      onDrop={async (files) => {
+                        const targetProperty = selectedFolder === 'All' ? 'Default Property' : selectedFolder;
+                        if (!supabase) {
+                          files.forEach((f, i) => useViewerStore.getState().addCustomFloorplan({ id: uuidv4(), property_type: targetProperty, level_name: `Level ${i+1}`, image_url: URL.createObjectURL(f), order_index: 0 }));
+                          return;
+                        }
+                        setIsUploading(true);
+                        try {
+                          for (const file of files) {
+                            const fileExt = file.name.split('.').pop();
+                            const fileName = `${uuidv4()}.${fileExt}`;
+                            const filePath = `floorplans/${fileName}`;
+                            
+                            const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                            if (uploadError) throw uploadError;
+                            
+                            const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+                            
+                            const newRow = { project_id: 'demo_project', property_type: targetProperty, level_name: 'New Level', image_url: publicUrl, order_index: 0 };
+                            const { data: dbData, error: dbError } = await supabase.from('project_floorplans').insert(newRow).select().single();
+                            if (dbError) throw dbError;
+                            
+                            useViewerStore.getState().addCustomFloorplan(dbData);
+                          }
+                          setAlertModal({ isOpen: true, message: `Successfully uploaded ${files.length} floorplans to '${targetProperty}'!` });
+                        } catch (error) {
+                          console.error("Upload error:", error);
+                          setAlertModal({ isOpen: true, message: `Floorplan Upload Failed: ${error.message}` });
+                        } finally {
+                          setIsUploading(false);
+                        }
+                      }} 
+                      isUploaded={false}
+                    />
+                  </div>
+
+                  {/* Floorplan List for Selected Property */}
+                  {floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Default Property' : selectedFolder)).length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Manage Levels for {selectedFolder === 'All' ? 'Default Property' : selectedFolder}</h3>
+                      {[...floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Default Property' : selectedFolder))]
+                        .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+                        .map(plan => (
+                        <div 
+                          key={plan.id} 
+                          className="glass-panel" 
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('text/plain', plan.id);
+                            e.dataTransfer.effectAllowed = 'move';
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'move';
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const draggedId = e.dataTransfer.getData('text/plain');
+                            if (draggedId === plan.id) return;
+                            
+                            const plans = [...floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Default Property' : selectedFolder))].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+                            const draggedIndex = plans.findIndex(f => f.id === draggedId);
+                            const targetIndex = plans.findIndex(f => f.id === plan.id);
+                            
+                            if (draggedIndex > -1 && targetIndex > -1) {
+                              const [draggedItem] = plans.splice(draggedIndex, 1);
+                              plans.splice(targetIndex, 0, draggedItem);
+                              
+                              const planMap = {};
+                              plans.forEach((f, index) => {
+                                planMap[f.id] = index;
+                              });
+                              
+                              useViewerStore.getState().updateFloorplanOrdersBatch(supabase, planMap);
                             }
                           }}
-                          style={{ background: 'rgba(255,50,50,0.1)', color: '#ff6b6b', border: '1px solid rgba(255,50,50,0.2)', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '12px', cursor: 'grab' }}
                         >
-                          Delete
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+                          <div style={{ width: '80px', height: '60px', borderRadius: '8px', background: `url(${plan.image_url}) center/cover no-repeat rgba(255,255,255,0.05)`, border: '1px solid rgba(255,255,255,0.1)' }} />
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Level Name (e.g. Ground Floor)</label>
+                                <input 
+                                  type="text" 
+                                  defaultValue={plan.level_name}
+                                  onBlur={(e) => {
+                                    if (e.target.value.trim() !== plan.level_name) {
+                                      useViewerStore.getState().updateFloorplanLabel(supabase, plan.id, e.target.value.trim());
+                                    }
+                                  }}
+                                  style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
+                                />
+                              </div>
+                              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Move to Block</label>
+                                <select 
+                                  value={plan.property_type || 'Default Property'}
+                                  onChange={(e) => {
+                                    useViewerStore.getState().updateFloorplanPropertyType(supabase, plan.id, e.target.value);
+                                  }}
+                                  style={{ background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white', padding: '6px', borderRadius: '6px' }}
+                                >
+                                  {Array.from(new Set([...propertyTypes, selectedFolder === 'All' ? 'Default Property' : selectedFolder])).map(t => (
+                                    <option key={t} value={t}>{t}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={async () => {
+                              setConfirmModal({
+                                isOpen: true,
+                                message: `Are you sure you want to delete "${plan.level_name}"?`,
+                                onConfirm: () => {
+                                  useViewerStore.getState().deleteFloorplan(supabase, plan.id);
+                                }
+                              });
+                            }}
+                            className="hover-lift"
+                            style={{ 
+                              padding: '8px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', 
+                              border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '8px', cursor: 'pointer',
+                              backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              transition: 'all 0.2s' 
+                            }}
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
 
           {/* TAB: TOURS */}
           {activeTab === 'tours' && (
