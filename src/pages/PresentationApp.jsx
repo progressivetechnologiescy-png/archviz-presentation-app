@@ -18,36 +18,35 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <button 
+      className="nav-tab-btn"
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        display: 'flex', alignItems: 'center', gap: '8px',
-        padding: '10px 20px', cursor: 'pointer', borderRadius: '30px',
+        display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '30px',
         background: active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'),
         border: 'none',
-        color: 'white', // User requested main link text to be white
-        transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600', fontSize: '14px',
+        color: 'white',
+        transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600',
         boxShadow: active ? '0 4px 12px var(--accent-glow)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
-        opacity: active ? 1 : (isHovered ? 1 : 0.85) // Slight opacity drop for inactive states, but still clearly white
+        opacity: active ? 1 : (isHovered ? 1 : 0.85)
       }}
     >
-      <Icon size={16} /> {label}
+      <Icon className="nav-tab-icon" /> <span className="nav-tab-label">{label}</span>
     </button>
   );
 };
 
 export default function PresentationApp({ forceAdmin = false }) {
   const { fetchCloudAssets, isLightboxOpen } = useViewerStore();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAdmin] = useState(() => {
     if (forceAdmin) return true;
     const params = new URLSearchParams(window.location.search);
     return params.get('admin') === 'true';
   });
+  const [activeTab, setActiveTab] = useState(isAdmin ? 'manage' : 'overview');
 
   // Automatically wire the client state to the Cloud Database on app load!
   useEffect(() => {
@@ -65,8 +64,19 @@ export default function PresentationApp({ forceAdmin = false }) {
         opacity: isLightboxOpen ? 0 : 1, pointerEvents: isLightboxOpen ? 'none' : 'auto', transition: 'opacity 0.3s ease'
       }}>
         <style>{`
+          .nav-tab-btn { padding: 10px 20px; font-size: 14px; gap: 8px; }
+          .nav-tab-icon { width: 16px; height: 16px; }
+          
+          @media (max-width: 1400px) {
+            .nav-tab-btn { padding: 8px 14px; font-size: 13px; gap: 6px; }
+            .nav-tab-icon { width: 14px; height: 14px; }
+          }
           @media (max-width: 1300px) {
             .desktop-logo-text { display: none !important; }
+          }
+          @media (max-width: 1100px) {
+            .nav-tab-btn { padding: 8px 12px; font-size: 12px; gap: 4px; }
+            .nav-tab-icon { display: none; } /* Hide icons on small laptops to save space */
           }
         `}</style>
         
