@@ -170,8 +170,8 @@ export default function ViewerCanvas() {
         <button 
           className="glass-panel hover-lift"
           style={{ padding: '10px 20px', color: 'white', cursor: 'pointer', fontWeight: 'bold', border: '1px solid rgba(255,255,255,0.2)' }}
-          onClick={() => store.enterAR()}>
-          Enter AR
+          onClick={() => store.enterVR()}>
+          Enter VR
         </button>
       </div>
 
