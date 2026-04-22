@@ -365,7 +365,7 @@ export default function AssetManager() {
                 {selectedFolder && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Active Folder:</h4>
+                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Rename Folder:</h4>
                       <input 
                         type="text" 
                         defaultValue={selectedFolder}
@@ -475,6 +475,13 @@ export default function AssetManager() {
                               />
                             </div>
                           )}
+                          <select
+                            value={render.folder_name}
+                            onChange={(e) => useViewerStore.getState().moveRender(supabase, render.id, e.target.value)}
+                            style={{ position: 'absolute', bottom: '8px', left: '8px', width: 'calc(100% - 16px)', background: 'rgba(0,0,0,0.8)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', fontSize: '10px', padding: '4px', zIndex: 2 }}
+                          >
+                            {folderList.map(f => <option key={f} value={f}>{f}</option>)}
+                          </select>
                         </div>
                       ))}
                     </div>

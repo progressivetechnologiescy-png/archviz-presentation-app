@@ -148,6 +148,23 @@ export const useViewerStore = create((set) => ({
       console.error('Update folder order failed', e);
     }
   },
+  moveRender: async (supabaseClient, id, newFolderName) => {
+    if (!supabaseClient || !newFolderName) return;
+    try {
+      const { error } = await supabaseClient
+        .from('project_renders')
+        .update({ folder_name: newFolderName })
+        .eq('id', id);
+      
+      if (!error) {
+        set((state) => ({
+          customRenders: state.customRenders.map(r => r.id === id ? { ...r, folder_name: newFolderName } : r)
+        }));
+      }
+    } catch (e) {
+      console.error('Move render failed', e);
+    }
+  },
 
   // CLOUD FETCHING PIPELINE
   isFetchingAssets: false,

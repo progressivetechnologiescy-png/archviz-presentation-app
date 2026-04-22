@@ -34,6 +34,17 @@ create table if not exists project_floorplans (
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- 2.7 Create the Spatial Tours table (Nodes and Hotspots)
+create table if not exists project_tours (
+    id uuid default gen_random_uuid() primary key,
+    project_id text not null,
+    node_name text not null, -- e.g., "Living Room"
+    image_url text not null,
+    hotspots jsonb default '[]'::jsonb,
+    is_starting_node boolean default false,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
 -- 3. Create properties config table (for GPS, Title, and dynamic Lead Scraper overrides)
 create table if not exists properties_config (
     project_id text primary key,
@@ -63,6 +74,10 @@ create policy "Allow public read access on floorplans"
   on project_floorplans for select
   using (true);
 
+create policy "Allow public read access on tours"
+  on project_tours for select
+  using (true);
+
 -- (To allow Admin Uploads via the web app without complex Auth for this MVP, you can temporarily allow anonymous inserts/updates, or strictly manage uploads via the Supabase Dashboard UI!)
 create policy "Allow anonymous inserts on renders"
   on project_renders for insert
@@ -82,4 +97,16 @@ create policy "Allow anonymous updates on floorplans"
 
 create policy "Allow anonymous deletes on floorplans"
   on project_floorplans for delete
+  using (true);
+
+create policy "Allow anonymous inserts on tours"
+  on project_tours for insert
+  with check (true);
+
+create policy "Allow anonymous updates on tours"
+  on project_tours for update
+  using (true);
+
+create policy "Allow anonymous deletes on tours"
+  on project_tours for delete
   using (true);
