@@ -90,11 +90,13 @@ export default function MobileARView() {
       if (!viewer.model || !viewer.model.materials) return;
       
       viewer.model.materials.forEach(mat => {
-        const baseColor = mat.pbrMetallicRoughness.baseColorFactor;
-        
-        // Revit GLB Exporter Bug Fix: Pure black base colors ruin textures. Force them to white.
-        if (baseColor && baseColor[0] < 0.05 && baseColor[1] < 0.05 && baseColor[2] < 0.05) {
-          mat.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, baseColor[3] || 1]);
+        try {
+          // Strip broken/black texture maps in the GLB to reveal the true white wall colors
+          if (mat.pbrMetallicRoughness.baseColorTexture) {
+            mat.pbrMetallicRoughness.baseColorTexture.texture = null;
+          }
+        } catch (e) {
+          // Ignore if API doesn't support texture removal
         }
         
         // Sleek architectural PBR finish
@@ -133,9 +135,9 @@ export default function MobileARView() {
           ios-src={appleSrc}
           ar 
           ar-modes="webxr scene-viewer quick-look" 
-          ar-scale={isAtPlot ? "fixed" : "auto"}
+          ar-scale="fixed"
           ar-placement="floor"
-          scale="0.01 0.01 0.01"
+          scale={isAtPlot ? "0.01 0.01 0.01" : "0.0001 0.0001 0.0001"}
           camera-controls 
           touch-action="pan-y"
           auto-rotate
