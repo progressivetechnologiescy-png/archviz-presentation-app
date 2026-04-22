@@ -231,20 +231,6 @@ export default function PresentationApp({ forceAdmin = false }) {
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
           <button 
-            onClick={() => {
-              if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => console.log(err));
-              } else {
-                document.exitFullscreen();
-              }
-              setIsMobileMenuOpen(false);
-            }}
-            className="glass-panel" 
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
-            <Maximize size={24} /> Fullscreen
-          </button>
-          
-          <button 
             onClick={() => { setIsShareModalOpen(true); setIsMobileMenuOpen(false); }}
             className="glass-panel" 
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
