@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { UploadCloud, FileType, CheckCircle, MapPin } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 
-function FileInput({ label, accept, onDrop, isUploaded, multiple = false }) {
+function FileInput({ label, accept, onDrop, isUploaded, multiple = false, onClear }) {
   const handleChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       if (multiple) {
@@ -35,6 +35,26 @@ function FileInput({ label, accept, onDrop, isUploaded, multiple = false }) {
           </p>
         </div>
       </div>
+      
+      {isUploaded && onClear && (
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClear();
+          }}
+          style={{ 
+            position: 'absolute', top: '12px', right: '12px', 
+            background: 'rgba(255,50,50,0.2)', color: '#ff6b6b', 
+            border: 'none', borderRadius: '50%', width: '28px', height: '28px', 
+            cursor: 'pointer', pointerEvents: 'auto', fontWeight: 'bold',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+          title="Remove Asset"
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }
@@ -120,6 +140,19 @@ export default function AssetManager() {
       alert(`Upload Failed: ${error.message || JSON.stringify(error)}\n\n(If this says 'new row violates row-level security', you need an INSERT/UPDATE policy in Supabase!)`);
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const clearAsset = async (assetType, setter) => {
+    if (!supabase) {
+      setter(null);
+      return;
+    }
+    try {
+      await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: assetType });
+      setter(null);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -217,18 +250,21 @@ export default function AssetManager() {
             accept=".fbx" 
             onDrop={handleUploadFBX} 
             isUploaded={!!customFBX} 
+            onClear={() => clearAsset('3d_model_fbx', setCustomFBX)}
           />
           <FileInput 
             label="WebGL Optimized Model (GLB/GLTF)" 
             accept=".glb,.gltf" 
             onDrop={handleUploadGLB} 
             isUploaded={!!customGLB} 
+            onClear={() => clearAsset('3d_model_glb', setCustomGLB)}
           />
           <FileInput 
             label="Apple AR Model (USDZ)" 
             accept=".usdz" 
             onDrop={handleUploadUSDZ} 
             isUploaded={!!customUSDZ} 
+            onClear={() => clearAsset('3d_model_usdz', setCustomUSDZ)}
           />
           
           <FileInput 
@@ -237,6 +273,10 @@ export default function AssetManager() {
             multiple={true}
             onDrop={handleUploadRenders} 
             isUploaded={customRenders.length > 0} 
+            onClear={async () => {
+              if (supabase) await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: 'render' });
+              clearCustomRenders();
+            }}
           />
           
           <FileInput 
@@ -244,6 +284,7 @@ export default function AssetManager() {
             accept="image/*" 
             onDrop={handleUploadPanorama} 
             isUploaded={!!customPanorama} 
+            onClear={() => clearAsset('panorama', setCustomPanorama)}
           />
           
           <FileInput 
@@ -251,6 +292,7 @@ export default function AssetManager() {
             accept="image/*,.pdf" 
             onDrop={handleUploadFloorplan} 
             isUploaded={!!customFloorplan} 
+            onClear={() => clearAsset('floorplan', setCustomFloorplan)}
           />
           
           {/* GPS Coordinate Text Input */}
