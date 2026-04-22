@@ -294,3 +294,5 @@ export default function PresentationApp({ forceAdmin = false }) {
     </div>
   );
 }
+
+// Vercel webhook trigger
