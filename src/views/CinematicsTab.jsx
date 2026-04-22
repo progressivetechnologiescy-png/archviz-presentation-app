@@ -47,21 +47,21 @@ const DUMMY_FILMS = [
     title: 'The Pinnacle - Full Cinematic Tour',
     duration: '03:15',
     thumbnail: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/506JiYPTDDI' 
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' 
   },
   {
     id: 'f2',
     title: 'Golden Hour Drone Flyover',
     duration: '01:45',
     thumbnail: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200&auto=format&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/506JiYPTDDI' 
+    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4' 
   },
   {
     id: 'f3',
     title: 'Interior Design Showcase',
     duration: '02:30',
     thumbnail: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop',
-    videoUrl: 'https://www.youtube.com/embed/506JiYPTDDI' 
+    videoUrl: 'https://www.youtube.com/embed/LXb3EKWsInQ' 
   }
 ];
 
