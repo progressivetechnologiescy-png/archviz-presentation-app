@@ -233,180 +233,183 @@ export default function AssetManager() {
     }
   };
 
+  const [activeTab, setActiveTab] = useState('models');
+
   return (
-    <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '64px' }}>
+    <div style={{ padding: '80px 32px 32px', height: '100%', overflowY: 'auto' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '64px' }}>
         
         <div style={{ marginBottom: '32px' }}>
-          <h2 style={{ marginBottom: '8px', fontSize: '28px', fontWeight: '300' }}>Session Asset Manager</h2>
+          <h2 style={{ marginBottom: '8px', fontSize: '32px', fontWeight: '300' }}>Presentation CMS</h2>
           <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-            Upload files here to test them immediately in the viewer. 
-            Because this is a serverless application, these assets are stored in temporary browser memory 
-            for validation purposes.
+            Manage all content, 3D assets, and interactive configurations for this presentation.
           </p>
         </div>
 
+        {/* Tab Navigation */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', overflowX: 'auto' }}>
+          {['models', 'renders', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
+                background: activeTab === tab ? 'var(--accent-color)' : 'transparent',
+                color: activeTab === tab ? 'white' : 'var(--text-secondary)',
+                border: 'none', transition: 'all 0.2s'
+              }}
+            >
+              {tab === 'models' && '3D Models & Scene'}
+              {tab === 'renders' && 'Render Gallery'}
+              {tab === 'floorplans' && 'Floorplans'}
+              {tab === 'tours' && '360° Tours'}
+              {tab === 'availability' && 'Availability Grid'}
+              {tab === 'ai_settings' && 'Emma AI Settings'}
+            </button>
+          ))}
+        </div>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <FileInput 
-            label="Original 3D Model (FBX)" 
-            accept=".fbx" 
-            onDrop={handleUploadFBX} 
-            isUploaded={!!customFBX} 
-            onClear={() => clearAsset('3d_model_fbx', setCustomFBX)}
-          />
-          <FileInput 
-            label="WebGL Optimized Model (GLB/GLTF)" 
-            accept=".glb,.gltf" 
-            onDrop={handleUploadGLB} 
-            isUploaded={!!customGLB} 
-            onClear={() => clearAsset('3d_model_glb', setCustomGLB)}
-          />
-          <FileInput 
-            label="Apple AR Model (USDZ)" 
-            accept=".usdz" 
-            onDrop={handleUploadUSDZ} 
-            isUploaded={!!customUSDZ} 
-            onClear={() => clearAsset('3d_model_usdz', setCustomUSDZ)}
-          />
           
-          <FileInput 
-            label="High-Res Renders (Images)" 
-            accept="image/*" 
-            multiple={true}
-            onDrop={handleUploadRenders} 
-            isUploaded={customRenders.length > 0} 
-            onClear={async () => {
-              if (supabase) await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: 'render' });
-              clearCustomRenders();
-            }}
-          />
-          
-          <FileInput 
-            label="360° Panorama Image (Equirectangular)" 
-            accept="image/*" 
-            onDrop={handleUploadPanorama} 
-            isUploaded={!!customPanorama} 
-            onClear={() => clearAsset('panorama', setCustomPanorama)}
-          />
-          
-          <FileInput 
-            label="2D Floorplan" 
-            accept="image/*,.pdf" 
-            onDrop={handleUploadFloorplan} 
-            isUploaded={!!customFloorplan} 
-            onClear={() => clearAsset('floorplan', setCustomFloorplan)}
-          />
-          
-          {/* GPS Coordinate Text Input */}
-          <div className="hover-lift" style={{
-            border: '1px solid var(--border-glass)',
-            borderRadius: '16px', padding: '24px',
-            background: 'var(--bg-panel)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <MapPin size={24} color="var(--text-secondary)" />
-              <div>
-                <h4 style={{ margin: '0 0 4px 0' }}>Real-World Address</h4>
-                <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
-                  Do not paste URLs! Just type the literal text address or city.
-                </p>
+          {/* TAB: 3D MODELS */}
+          {activeTab === 'models' && (
+            <>
+              <FileInput 
+                label="Original 3D Model (FBX)" 
+                accept=".fbx" 
+                onDrop={handleUploadFBX} 
+                isUploaded={!!customFBX} 
+                onClear={() => clearAsset('3d_model_fbx', setCustomFBX)}
+              />
+              <FileInput 
+                label="WebGL Optimized Model (GLB/GLTF)" 
+                accept=".glb,.gltf" 
+                onDrop={handleUploadGLB} 
+                isUploaded={!!customGLB} 
+                onClear={() => clearAsset('3d_model_glb', setCustomGLB)}
+              />
+              <FileInput 
+                label="Apple AR Model (USDZ)" 
+                accept=".usdz" 
+                onDrop={handleUploadUSDZ} 
+                isUploaded={!!customUSDZ} 
+                onClear={() => clearAsset('3d_model_usdz', setCustomUSDZ)}
+              />
+              <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '24px', background: 'var(--bg-panel)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                  <MapPin size={24} color="var(--text-secondary)" />
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0' }}>Real-World Address</h4>
+                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>Used for AI Radar location context.</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input type="text" value={gpsInput} onChange={(e) => setGpsInput(e.target.value)} placeholder="e.g., 'Limassol, Cyprus'" style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }} />
+                  <button onClick={handleSaveGPS} style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Save Location</button>
+                </div>
               </div>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input 
-                type="text" 
-                value={gpsInput}
-                onChange={(e) => setGpsInput(e.target.value)}
-                placeholder="e.g., '123 Sunset Blvd, CA' or 'Empire State Building'"
-                style={{ 
-                  flex: 1, padding: '12px 16px', borderRadius: '8px',
-                  background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white'
+            </>
+          )}
+
+          {/* TAB: RENDERS */}
+          {activeTab === 'renders' && (
+            <>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-color)', borderRadius: '12px', padding: '16px', marginBottom: '16px', color: 'white' }}>
+                <strong>Module 1: Coming Soon!</strong> We will upgrade this to support specific folders (Exteriors, Interiors).
+              </div>
+              <FileInput 
+                label="High-Res Renders (Images)" 
+                accept="image/*" 
+                multiple={true}
+                onDrop={handleUploadRenders} 
+                isUploaded={customRenders.length > 0} 
+                onClear={async () => {
+                  if (supabase) await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: 'render' });
+                  clearCustomRenders();
                 }}
               />
-              <button 
-                onClick={handleSaveGPS}
-                style={{ 
-                  padding: '12px 24px', borderRadius: '8px', 
-                  background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
-                }}>
-                Save Location
+            </>
+          )}
+
+          {/* TAB: FLOORPLANS */}
+          {activeTab === 'floorplans' && (
+            <>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-color)', borderRadius: '12px', padding: '16px', marginBottom: '16px', color: 'white' }}>
+                <strong>Module 2: Coming Soon!</strong> We will upgrade this to support multiple labeled floorplans.
+              </div>
+              <FileInput 
+                label="2D Floorplan" 
+                accept="image/*,.pdf" 
+                onDrop={handleUploadFloorplan} 
+                isUploaded={!!customFloorplan} 
+                onClear={() => clearAsset('floorplan', setCustomFloorplan)}
+              />
+            </>
+          )}
+
+          {/* TAB: TOURS */}
+          {activeTab === 'tours' && (
+            <>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-color)', borderRadius: '12px', padding: '16px', marginBottom: '16px', color: 'white' }}>
+                <strong>Module 3: Coming Soon!</strong> We will add a 360 Hotspot builder here.
+              </div>
+              <FileInput 
+                label="360° Panorama Image (Equirectangular)" 
+                accept="image/*" 
+                onDrop={handleUploadPanorama} 
+                isUploaded={!!customPanorama} 
+                onClear={() => clearAsset('panorama', setCustomPanorama)}
+              />
+            </>
+          )}
+
+          {/* TAB: AVAILABILITY */}
+          {activeTab === 'availability' && (
+            <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '64px 24px', textAlign: 'center', background: 'var(--bg-panel)' }}>
+              <h3 style={{ fontSize: '24px', marginBottom: '16px' }}>Availability Data Grid</h3>
+              <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '0 auto 24px' }}>
+                Manage inventory, pricing, and live statuses here. This data will automatically sync with Emma AI.
+              </p>
+              <button style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                Build Module 4 Now
               </button>
             </div>
-          </div>
+          )}
 
-          {/* AI Configuration Section */}
-          <div className="hover-lift" style={{
-            border: '1px solid var(--border-glass)',
-            borderRadius: '16px', padding: '24px',
-            background: 'var(--bg-panel)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '20px' }}>E</div>
-              <div>
-                <h4 style={{ margin: '0 0 4px 0' }}>Emma AI Configuration</h4>
-                <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
-                  Connect Emma to Google Gemini and provide property specifications.
-                </p>
+          {/* TAB: AI SETTINGS */}
+          {activeTab === 'ai_settings' && (
+            <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '24px', background: 'var(--bg-panel)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '20px' }}>E</div>
+                <div>
+                  <h4 style={{ margin: '0 0 4px 0' }}>Emma AI Configuration</h4>
+                  <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>Connect Emma to Google Gemini and provide property specifications.</p>
+                </div>
               </div>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>GOOGLE GEMINI API KEY (FREE)</label>
-                <input 
-                  type="password" 
-                  value={geminiApiKey || ''}
-                  onChange={(e) => setGeminiApiKey(e.target.value)}
-                  placeholder="AIzaSy..."
-                  style={{ 
-                    width: '100%', padding: '12px 16px', borderRadius: '8px',
-                    background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white'
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>PROPERTY SPECIFICATIONS (EMMA'S CONTEXT)</label>
-                <textarea 
-                  value={aiContext || ''}
-                  onChange={(e) => setAiContext(e.target.value)}
-                  placeholder="Paste pricing, square footage, materials, history, and any other details Emma should know..."
-                  style={{ 
-                    width: '100%', padding: '12px 16px', borderRadius: '8px', minHeight: '120px', resize: 'vertical',
-                    background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white', fontFamily: 'inherit'
-                  }}
-                />
-              </div>
-
-              <button 
-                onClick={async () => {
-                  if (supabase) {
-                    const { error } = await supabase.from('properties_config')
-                      .update({
-                        gemini_api_key: geminiApiKey,
-                        ai_context: aiContext
-                      })
-                      .match({ project_id: 'demo_project' });
-                      
-                    if (error) {
-                      console.error(error);
-                      alert(`Failed to save AI config to Cloud DB.\n\nError: ${error.message}\n\nPlease make sure you ran the SQL script to add the columns!`);
-                    } else {
-                      alert("Emma AI Configuration Saved to Cloud!");
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>GOOGLE GEMINI API KEY</label>
+                  <input type="password" value={geminiApiKey || ''} onChange={(e) => setGeminiApiKey(e.target.value)} placeholder="AIzaSy..." style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>PROPERTY SPECIFICATIONS (CONTEXT)</label>
+                  <textarea value={aiContext || ''} onChange={(e) => setAiContext(e.target.value)} placeholder="Paste pricing, square footage, materials..." style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', minHeight: '120px', resize: 'vertical', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white', fontFamily: 'inherit' }} />
+                </div>
+                <button 
+                  onClick={async () => {
+                    if (supabase) {
+                      const { error } = await supabase.from('properties_config').update({ gemini_api_key: geminiApiKey, ai_context: aiContext }).match({ project_id: 'demo_project' });
+                      if (error) alert(`Failed to save: ${error.message}`);
+                      else alert("Emma AI Configuration Saved!");
                     }
-                  }
-                }}
-                style={{ 
-                  padding: '12px 24px', borderRadius: '8px', alignSelf: 'flex-start',
-                  background: 'white', color: 'black', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
-                }}>
-                Save AI Settings
-              </button>
+                  }}
+                  style={{ padding: '12px 24px', borderRadius: '8px', alignSelf: 'flex-start', background: 'white', color: 'black', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Save AI Settings
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
