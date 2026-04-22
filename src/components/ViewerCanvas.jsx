@@ -16,9 +16,6 @@ function WalkEngine() {
   const speed = 15;
 
   useFrame((state, delta) => {
-    // Lock camera height to "Eye Level" so the user is stuck to the floor plane like a game!
-    state.camera.position.y = 1.6;
-
     if (!moveForward && !moveBackward && !moveLeft && !moveRight) return;
 
     // Calculate movement intent based on key combinations
@@ -28,8 +25,8 @@ function WalkEngine() {
     // Combine and normalize vector
     direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed * delta);
 
-    // Orient the movement direction to match where the camera is looking
-    direction.applyEuler(new THREE.Euler(0, state.camera.rotation.y, 0));
+    // Orient the movement direction to match EXACTLY where the camera is looking (full 3D free fly)
+    direction.applyQuaternion(state.camera.quaternion);
 
     // Translate the camera's physical position
     state.camera.position.add(direction);
