@@ -25,6 +25,32 @@ export default function MobileARView() {
   const androidSrc = customGLB || 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
   const appleSrc = customUSDZ || 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz';
 
+  // Fix CAD export bugs and apply photorealistic PBR to the AR model once it loads
+  useEffect(() => {
+    const viewer = document.getElementById('ar-viewer');
+    if (!viewer) return;
+
+    const handleLoad = () => {
+      if (!viewer.model || !viewer.model.materials) return;
+      
+      viewer.model.materials.forEach(mat => {
+        const baseColor = mat.pbrMetallicRoughness.baseColorFactor;
+        
+        // Revit GLB Exporter Bug Fix: Pure black base colors ruin textures. Force them to white.
+        if (baseColor && baseColor[0] < 0.05 && baseColor[1] < 0.05 && baseColor[2] < 0.05) {
+          mat.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, baseColor[3] || 1]);
+        }
+        
+        // Sleek architectural PBR finish
+        mat.pbrMetallicRoughness.setRoughnessFactor(0.2);
+        mat.pbrMetallicRoughness.setMetallicFactor(0.1);
+      });
+    };
+
+    viewer.addEventListener('load', handleLoad);
+    return () => viewer.removeEventListener('load', handleLoad);
+  }, [androidSrc]);
+
   return (
     <div style={{ 
       width: '100vw', height: '100dvh', 
@@ -48,6 +74,7 @@ export default function MobileARView() {
           ar-modes="webxr scene-viewer quick-look" 
           ar-scale="auto"
           ar-placement="floor"
+          scale="0.01 0.01 0.01"
           camera-controls 
           touch-action="pan-y"
           auto-rotate
