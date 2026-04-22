@@ -41,6 +41,7 @@ export default function MobileARView() {
 
       <div style={{ flex: 1, position: 'relative' }}>
         <model-viewer 
+          id="ar-viewer"
           src={androidSrc}
           ios-src={appleSrc}
           ar 
@@ -53,20 +54,28 @@ export default function MobileARView() {
           shadow-intensity="1"
           style={{ width: '100%', height: '100%', '--poster-color': 'transparent' }}
         >
-          {/* Custom AR Button */}
-          <button 
-            slot="ar-button" 
-            style={{ 
-              position: 'absolute', bottom: '32px', left: '50%', transform: 'translateX(-50%)',
-              background: 'var(--accent-color)', color: 'white', border: 'none', 
-              padding: '16px 32px', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px',
-              fontFamily: 'Outfit, sans-serif', boxShadow: '0 8px 24px var(--accent-glow)',
-              cursor: 'pointer'
-            }}
-          >
-            Drop on Your Desk
-          </button>
         </model-viewer>
+
+        {/* Custom AR Button GUARANTEED to be visible */}
+        <button 
+          onClick={() => {
+            const viewer = document.getElementById('ar-viewer');
+            if (viewer && viewer.activateAR) {
+              viewer.activateAR();
+            } else {
+              alert("AR is initializing or not supported on this specific device/browser.");
+            }
+          }}
+          style={{ 
+            position: 'absolute', bottom: '32px', left: '50%', transform: 'translateX(-50%)',
+            background: 'var(--accent-color)', color: 'white', border: 'none', 
+            padding: '16px 32px', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px',
+            fontFamily: 'Outfit, sans-serif', boxShadow: '0 8px 24px var(--accent-glow)',
+            cursor: 'pointer', zIndex: 1000
+          }}
+        >
+          Drop on Your Desk
+        </button>
       </div>
 
     </div>
