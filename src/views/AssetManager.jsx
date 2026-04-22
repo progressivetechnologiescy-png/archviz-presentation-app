@@ -388,7 +388,7 @@ export default function AssetManager() {
                 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {folderList.map(folder => (
-                    <button 
+                    <div 
                       key={folder}
                       draggable
                       onDragStart={(e) => {
@@ -405,16 +405,18 @@ export default function AssetManager() {
                       }}
                       onClick={() => setSelectedFolder(folder)}
                       style={{
-                        padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'grab',
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'grab',
                         border: selectedFolder === folder ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
                         background: selectedFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
                         color: selectedFolder === folder ? 'var(--accent-color)' : 'var(--text-secondary)',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.2s', userSelect: 'none'
                       }}
                       title="Drag to reorder"
                     >
+                      <span style={{ opacity: 0.5, fontSize: '14px', cursor: 'grab' }}>⋮⋮</span>
                       {folder}
-                    </button>
+                    </div>
                   ))}
                 </div>
 
@@ -435,6 +437,22 @@ export default function AssetManager() {
                           }
                         }}
                         style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
+                      />
+                    </div>
+                    
+                    {/* Mobile fallback for sorting */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Sort Order:</h4>
+                      <input 
+                        key={`order-${selectedFolder}`}
+                        type="number" 
+                        defaultValue={
+                          useViewerStore.getState().customRenders?.find(r => r.folder_name === selectedFolder)?.folder_order || 0
+                        }
+                        onBlur={(e) => {
+                          useViewerStore.getState().updateFolderOrder(supabase, selectedFolder, parseInt(e.target.value) || 0);
+                        }}
+                        style={{ width: '40px', background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}
                       />
                     </div>
                   </div>
