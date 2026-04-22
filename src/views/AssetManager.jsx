@@ -80,10 +80,52 @@ export default function AssetManager() {
   const [isUploading, setIsUploading] = useState(false);
 
   // Initialize folder list from existing database renders
-  const [folderList, setFolderList] = useState(() => {
-    const existing = (customRenders || []).map(r => typeof r === 'object' ? r.folder_name : null).filter(Boolean);
-    return [...new Set(['Interiors', 'Exteriors', ...existing])];
-  });
+  const [folderList, setFolderList] = useState([]);
+  
+  useEffect(() => {
+    const orderMap = {};
+    (customRenders || []).forEach(r => {
+      if (r.folder_name) {
+        orderMap[r.folder_name] = Number(r.folder_order) || 0;
+      }
+    });
+    
+    const existing = (customRenders || []).map(r => r.folder_name).filter(Boolean);
+    const uniqueFolders = [...new Set(['Interiors', 'Exteriors', ...existing])];
+    
+    // Add any locally added folders that haven't been saved to DB yet
+    setFolderList(prev => {
+      const localExtras = prev.filter(f => !uniqueFolders.includes(f));
+      const merged = [...new Set([...uniqueFolders, ...localExtras])].sort((a, b) => {
+        return (orderMap[a] || 0) - (orderMap[b] || 0);
+      });
+      if (JSON.stringify(merged) !== JSON.stringify(prev)) {
+        return merged;
+      }
+      return prev;
+    });
+  }, [customRenders]);
+
+  const handleFolderDrop = async (e, targetFolder) => {
+    const draggedFolder = e.dataTransfer.getData('text/plain');
+    if (draggedFolder === targetFolder || !draggedFolder) return;
+    
+    setFolderList(prev => {
+      const newList = [...prev];
+      const dragIdx = newList.indexOf(draggedFolder);
+      const dropIdx = newList.indexOf(targetFolder);
+      newList.splice(dragIdx, 1);
+      newList.splice(dropIdx, 0, draggedFolder);
+      
+      if (supabase) {
+        newList.forEach((folder, idx) => {
+          useViewerStore.getState().updateFolderOrder(supabase, folder, idx);
+        });
+      }
+      return newList;
+    });
+  };
+
   const [selectedFolder, setSelectedFolder] = useState('Interiors');
 
   // Sync the form field if Cloud DB fetches the GPS late
@@ -348,14 +390,28 @@ export default function AssetManager() {
                   {folderList.map(folder => (
                     <button 
                       key={folder}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', folder);
+                        e.dataTransfer.effectAllowed = 'move';
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        handleFolderDrop(e, folder);
+                      }}
                       onClick={() => setSelectedFolder(folder)}
                       style={{
-                        padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                        padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'grab',
                         border: selectedFolder === folder ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
                         background: selectedFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
                         color: selectedFolder === folder ? 'var(--accent-color)' : 'var(--text-secondary)',
                         transition: 'all 0.2s'
                       }}
+                      title="Drag to reorder"
                     >
                       {folder}
                     </button>
@@ -379,21 +435,6 @@ export default function AssetManager() {
                           }
                         }}
                         style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
-                      />
-                    </div>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Sort Order:</h4>
-                      <input 
-                        key={`order-${selectedFolder}`}
-                        type="number" 
-                        defaultValue={
-                          useViewerStore.getState().customRenders?.find(r => r.folder_name === selectedFolder)?.folder_order || 0
-                        }
-                        onBlur={(e) => {
-                          useViewerStore.getState().updateFolderOrder(supabase, selectedFolder, parseInt(e.target.value) || 0);
-                        }}
-                        style={{ width: '40px', background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}
                       />
                     </div>
                   </div>
