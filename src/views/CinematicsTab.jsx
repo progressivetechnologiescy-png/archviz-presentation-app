@@ -2,8 +2,26 @@ import React, { useState } from 'react';
 import { Play, X } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 
+function extractYoutubeId(url) {
+  if (!url) return null;
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function convertToEmbedUrl(url) {
+  if (!url) return '';
+  const videoId = extractYoutubeId(url);
+  if (videoId) {
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  return url;
+}
+
 export function VideoModal({ videoUrl, title, onClose }) {
   if (!videoUrl) return null;
+  
+  const finalUrl = convertToEmbedUrl(videoUrl);
 
   return (
     <div style={{

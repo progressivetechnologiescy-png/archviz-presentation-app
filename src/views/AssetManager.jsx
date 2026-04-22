@@ -101,6 +101,7 @@ export default function AssetManager() {
   const [gpsInput, setGpsInput] = useState(customGPS || '');
   const [isUploading, setIsUploading] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, message: '', onConfirm: null });
+  const [alertModal, setAlertModal] = useState({ isOpen: false, message: '' });
   const [pendingVideoThumb, setPendingVideoThumb] = useState(null);
 
   const handleUploadVideoThumb = async (file) => {
@@ -493,7 +494,10 @@ export default function AssetManager() {
                       onClick={() => {
                         const folderRenders = useViewerStore.getState().customRenders?.filter(r => r.folder_name === selectedFolder) || [];
                         if (folderRenders.length > 0) {
-                          alert(`You cannot delete "${selectedFolder}" because it still contains ${folderRenders.length} images.\n\nPlease delete or move all images out of this folder first.`);
+                          setAlertModal({ 
+                            isOpen: true, 
+                            message: `You cannot delete "${selectedFolder}" because it still contains ${folderRenders.length} images.\n\nPlease delete or move all images out of this folder first.`
+                          });
                           return;
                         }
                         
@@ -989,6 +993,32 @@ export default function AssetManager() {
                 Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOM ALERT MODAL */}
+      {alertModal.isOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 99999,
+          background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          <div className="glass-panel" style={{
+            background: 'var(--bg-panel)', padding: '32px', borderRadius: '16px',
+            width: '90%', maxWidth: '400px', border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.5)', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 16px 0', color: 'white' }}>Notice</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', lineHeight: '1.5', whiteSpace: 'pre-line' }}>{alertModal.message}</p>
+            <button 
+              onClick={() => setAlertModal({ isOpen: false, message: '' })}
+              className="hover-lift"
+              style={{ padding: '10px 32px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 12px var(--accent-glow)' }}
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

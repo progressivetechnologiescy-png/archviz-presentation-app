@@ -64,6 +64,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'nowrap', gap: '24px',
+        background: 'rgba(10, 12, 16, 0.85)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(255,255,255,0.05)',
         opacity: isLightboxOpen ? 0 : 1, 
         pointerEvents: isLightboxOpen ? 'none' : 'auto', 
         transition: 'all 0.3s ease',
