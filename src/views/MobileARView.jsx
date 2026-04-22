@@ -77,9 +77,11 @@ export default function MobileARView() {
     };
   }, []);
 
-  // Use the explicitly uploaded GLB for Android/WebXR, and USDZ for Apple AR QuickLook.
+  // Use the explicitly uploaded GLB for Android/WebXR.
+  // For Apple AR QuickLook, if a customUSDZ is NOT provided, passing 'undefined' 
+  // will force <model-viewer> to automatically generate one on the fly from the GLB!
   const androidSrc = customGLB || 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
-  const appleSrc = customUSDZ || 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz';
+  const appleSrc = customUSDZ || undefined;
 
   // Fix CAD export bugs and apply photorealistic PBR to the AR model once it loads
   useEffect(() => {
