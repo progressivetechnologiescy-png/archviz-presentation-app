@@ -363,21 +363,37 @@ export default function AssetManager() {
                 </div>
 
                 {selectedFolder && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                    <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Active Folder:</h4>
-                    <input 
-                      type="text" 
-                      defaultValue={selectedFolder}
-                      onBlur={(e) => {
-                        const newName = e.target.value.trim();
-                        if (newName && newName !== selectedFolder) {
-                          useViewerStore.getState().renameFolder(supabase, selectedFolder, newName);
-                          setFolderList(folderList.map(f => f === selectedFolder ? newName : f));
-                          setSelectedFolder(newName);
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Active Folder:</h4>
+                      <input 
+                        type="text" 
+                        defaultValue={selectedFolder}
+                        onBlur={(e) => {
+                          const newName = e.target.value.trim();
+                          if (newName && newName !== selectedFolder) {
+                            useViewerStore.getState().renameFolder(supabase, selectedFolder, newName);
+                            setFolderList(folderList.map(f => f === selectedFolder ? newName : f));
+                            setSelectedFolder(newName);
+                          }
+                        }}
+                        style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
+                      />
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Sort Order:</h4>
+                      <input 
+                        type="number" 
+                        defaultValue={
+                          (customRenders || []).find(r => r.folder_name === selectedFolder)?.folder_order || 0
                         }
-                      }}
-                      style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
-                    />
+                        onBlur={(e) => {
+                          useViewerStore.getState().updateFolderOrder(supabase, selectedFolder, parseInt(e.target.value) || 0);
+                        }}
+                        style={{ width: '40px', background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>

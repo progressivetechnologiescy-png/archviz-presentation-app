@@ -12,8 +12,20 @@ export default function RendersGallery() {
     typeof r === 'string' ? { image_url: r, folder_name: 'Uncategorized' } : r
   );
 
-  // Extract unique folders
-  const folders = ['All', ...new Set(displayImages.map(r => r.folder_name))];
+  const [thumbnailSize, setThumbnailSize] = useState('medium'); // small, medium, large
+
+  // Extract unique folders and sort them by folder_order
+  const folderOrderMap = {};
+  displayImages.forEach(r => {
+    if (r.folder_name && typeof r.folder_order === 'number') {
+      folderOrderMap[r.folder_name] = r.folder_order;
+    }
+  });
+  
+  const folders = ['All', ...[...new Set(displayImages.map(r => r.folder_name))].sort((a, b) => {
+    return (folderOrderMap[a] || 0) - (folderOrderMap[b] || 0);
+  })];
+
   const [activeFolder, setActiveFolder] = useState('All');
 
   // Filter images based on active folder
@@ -27,6 +39,13 @@ export default function RendersGallery() {
       </div>
     );
   }
+
+  // Determine grid styles based on thumbnailSize
+  const gridStyles = {
+    small: { minMax: '150px', height: '120px' },
+    medium: { minMax: '300px', height: '250px' },
+    large: { minMax: '500px', height: '400px' }
+  }[thumbnailSize];
 
   return (
     <div style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto' }}>
@@ -54,20 +73,41 @@ export default function RendersGallery() {
           </div>
         </div>
         
-        <button 
-          onClick={() => { setSelectedIndex(0); setIsPlaying(true); setLightboxOpen(true); }}
-          className="hover-lift"
-          style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            padding: '12px 24px', borderRadius: '30px',
-            background: 'var(--accent-color)', color: 'white', border: 'none',
-            fontSize: '15px', fontWeight: 'bold', cursor: 'pointer',
-            boxShadow: '0 8px 24px var(--accent-glow)'
-          }}
-        >
-          <Play size={18} fill="white" />
-          Play Slideshow
-        </button>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {/* Thumbnail Size Toggle */}
+          <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '20px' }}>
+            {['small', 'medium', 'large'].map(size => (
+              <button
+                key={size}
+                onClick={() => setThumbnailSize(size)}
+                title={`${size.charAt(0).toUpperCase() + size.slice(1)} Thumbnails`}
+                style={{
+                  padding: '6px 12px', borderRadius: '16px', border: 'none',
+                  background: thumbnailSize === size ? 'var(--accent-color)' : 'transparent',
+                  color: thumbnailSize === size ? 'white' : 'var(--text-secondary)',
+                  fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                {size === 'small' ? 'S' : size === 'medium' ? 'M' : 'L'}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            onClick={() => { setSelectedIndex(0); setIsPlaying(true); setLightboxOpen(true); }}
+            className="hover-lift"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '12px 24px', borderRadius: '30px',
+              background: 'var(--accent-color)', color: 'white', border: 'none',
+              fontSize: '15px', fontWeight: 'bold', cursor: 'pointer',
+              boxShadow: '0 8px 24px var(--accent-glow)'
+            }}
+          >
+            <Play size={18} fill="white" />
+            Play Slideshow
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px', paddingBottom: '32px' }}>
@@ -80,8 +120,9 @@ export default function RendersGallery() {
               {activeFolder === 'All' && <h3 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '16px', color: 'var(--text-secondary)' }}>{folder}</h3>}
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-                gap: '24px'
+                gridTemplateColumns: `repeat(auto-fill, minmax(${gridStyles.minMax}, 1fr))`, 
+                gap: '24px',
+                transition: 'all 0.3s ease'
               }}>
                 {folderImages.map((render, i) => {
                   const src = render.image_url;
@@ -97,12 +138,13 @@ export default function RendersGallery() {
                         }
                       }}
                       style={{ 
-                         height: '250px', 
+                         height: gridStyles.height, 
                          background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
                          display: 'flex', alignItems: 'center', justifyContent: 'center',
                          color: 'rgba(255,255,255,0.2)', fontSize: '14px',
                          borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
-                         position: 'relative'
+                         position: 'relative',
+                         transition: 'height 0.3s ease'
                       }}
                     >
                       {!isRealImage && `Render Placeholder ${src}`}

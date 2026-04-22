@@ -131,6 +131,23 @@ export const useViewerStore = create((set) => ({
       console.error('Rename folder failed', e);
     }
   },
+  updateFolderOrder: async (supabaseClient, folderName, newOrder) => {
+    if (!supabaseClient || !folderName) return;
+    try {
+      const { error } = await supabaseClient
+        .from('project_renders')
+        .update({ folder_order: newOrder })
+        .eq('folder_name', folderName);
+      
+      if (!error) {
+        set((state) => ({
+          customRenders: state.customRenders.map(r => r.folder_name === folderName ? { ...r, folder_order: newOrder } : r)
+        }));
+      }
+    } catch (e) {
+      console.error('Update folder order failed', e);
+    }
+  },
 
   // CLOUD FETCHING PIPELINE
   isFetchingAssets: false,
