@@ -140,6 +140,27 @@ export default function PresentationApp({ forceAdmin = false }) {
         )}
       </div>
 
+      {/* Global Footer Watermark */}
+      <div style={{
+        position: 'absolute', bottom: '32px', left: '32px', zIndex: 100,
+        pointerEvents: 'auto', display: 'flex', alignItems: 'center'
+      }}>
+        <a 
+          href="https://progressivetechnologies.com.cy/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{
+            color: 'rgba(255,255,255,0.4)', fontSize: '12px', textDecoration: 'none',
+            fontFamily: 'Outfit, sans-serif', letterSpacing: '0.5px', transition: 'color 0.2s ease',
+            textShadow: '0 1px 4px rgba(0,0,0,0.8)'
+          }}
+          onMouseEnter={(e) => e.target.style.color = 'rgba(255,255,255,0.9)'}
+          onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.4)'}
+        >
+          Developed by <strong>Progressive Technologies</strong>
+        </a>
+      </div>
+
       <FloatingConcierge />
       {isShareModalOpen && <ShareModal onClose={() => setIsShareModalOpen(false)} />}
     </div>
