@@ -3,7 +3,8 @@ import { useViewerStore } from '../store/viewerStore';
 import { X, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function RendersGallery() {
-  const { customRenders, setLightboxOpen } = useViewerStore();
+  const customRenders = useViewerStore(state => state.customRenders);
+  const setLightboxOpen = useViewerStore(state => state.setLightboxOpen);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -54,7 +55,7 @@ export default function RendersGallery() {
         </div>
         
         <button 
-          onClick={() => { setSelectedIndex(0); setIsPlaying(true); }}
+          onClick={() => { setSelectedIndex(0); setIsPlaying(true); setLightboxOpen(true); }}
           className="hover-lift"
           style={{
             display: 'flex', alignItems: 'center', gap: '8px',
@@ -82,7 +83,12 @@ export default function RendersGallery() {
             <div 
               key={i} 
               className="hover-lift" 
-              onClick={() => isRealImage && setSelectedIndex(displayImages.findIndex(r => r === render))}
+              onClick={() => {
+                if (isRealImage) {
+                  setSelectedIndex(displayImages.findIndex(r => r === render));
+                  setLightboxOpen(true);
+                }
+              }}
               style={{ 
                  height: '250px', 
                  background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
@@ -121,7 +127,7 @@ export default function RendersGallery() {
               {isPlaying ? <Pause size={24} /> : <Play size={24} fill="white" />}
             </button>
             <button 
-              onClick={() => { setSelectedIndex(null); setIsPlaying(false); }}
+              onClick={() => { setSelectedIndex(null); setIsPlaying(false); setLightboxOpen(false); }}
               className="hover-lift"
               style={{
                 background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',

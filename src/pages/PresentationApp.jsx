@@ -40,7 +40,9 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => {
 };
 
 export default function PresentationApp({ forceAdmin = false }) {
-  const { fetchCloudAssets, isLightboxOpen } = useViewerStore();
+  const fetchCloudAssets = useViewerStore(state => state.fetchCloudAssets);
+  const isLightboxOpen = useViewerStore(state => state.isLightboxOpen);
+  
   const [isAdmin] = useState(() => {
     if (forceAdmin) return true;
     const params = new URLSearchParams(window.location.search);
@@ -62,7 +64,10 @@ export default function PresentationApp({ forceAdmin = false }) {
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'nowrap', gap: '24px',
-        opacity: isLightboxOpen ? 0 : 1, pointerEvents: isLightboxOpen ? 'none' : 'auto', transition: 'opacity 0.3s ease'
+        opacity: isLightboxOpen ? 0 : 1, 
+        pointerEvents: isLightboxOpen ? 'none' : 'auto', 
+        transition: 'all 0.3s ease',
+        transform: isLightboxOpen ? 'translateY(-20px)' : 'translateY(0)'
       }}>
         <style>{`
           .nav-tab-btn { padding: 10px 20px; font-size: 14px; gap: 8px; }
@@ -143,7 +148,7 @@ export default function PresentationApp({ forceAdmin = false }) {
       </div>
 
       {/* Main Content Viewport */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
         {activeTab === 'overview' && <ProjectOverview onNavigate={setActiveTab} />}
         {activeTab === 'cinematics' && <CinematicsTab />}
         {activeTab === 'renders' && <RendersGallery />}
