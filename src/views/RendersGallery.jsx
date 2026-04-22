@@ -17,8 +17,11 @@ export default function RendersGallery() {
   // Extract unique folders and sort them by folder_order
   const folderOrderMap = {};
   displayImages.forEach(r => {
-    if (r.folder_name && typeof r.folder_order === 'number') {
-      folderOrderMap[r.folder_name] = r.folder_order;
+    if (r.folder_name) {
+      const order = Number(r.folder_order);
+      if (!isNaN(order)) {
+        folderOrderMap[r.folder_name] = order;
+      }
     }
   });
   
