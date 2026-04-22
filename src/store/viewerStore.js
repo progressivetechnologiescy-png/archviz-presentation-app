@@ -62,6 +62,23 @@ export const useViewerStore = create((set) => ({
   customRenders: [],
   addCustomRender: (renderObj) => set((state) => ({ customRenders: [...state.customRenders, renderObj] })),
   clearCustomRenders: () => set({ customRenders: [] }),
+  toggleOverviewRender: async (supabaseClient, id, currentStatus) => {
+    if (!supabaseClient) return;
+    try {
+      const { error } = await supabaseClient
+        .from('project_renders')
+        .update({ is_overview: !currentStatus })
+        .eq('id', id);
+      
+      if (!error) {
+        set((state) => ({
+          customRenders: state.customRenders.map(r => r.id === id ? { ...r, is_overview: !currentStatus } : r)
+        }));
+      }
+    } catch (e) {
+      console.error('Toggle Overview failed', e);
+    }
+  },
 
   // CLOUD FETCHING PIPELINE
   isFetchingAssets: false,

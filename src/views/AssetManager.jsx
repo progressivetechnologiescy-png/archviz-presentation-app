@@ -369,43 +369,71 @@ export default function AssetManager() {
                     <span style={{ background: 'rgba(0,0,0,0.8)', padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold' }}>Please select a folder first</span>
                   </div>
                 )}
-                <FileInput 
-                  label={`Upload to '${selectedFolder || '...'}'`} 
-                  accept="image/*" 
-                  multiple={true}
-                  onDrop={async (files) => {
-                    if (!supabase) {
-                      files.forEach(f => addCustomRender({ id: uuidv4(), folder_name: selectedFolder, image_url: URL.createObjectURL(f) }));
-                      return;
-                    }
-                    setIsUploading(true);
-                    try {
-                      for (const file of files) {
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `${uuidv4()}.${fileExt}`;
-                        const filePath = `renders/${fileName}`;
-                        
-                        const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
-                        if (uploadError) throw uploadError;
-                        
-                        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
-                        
-                        const newRow = { project_id: 'demo_project', folder_name: selectedFolder, image_url: publicUrl };
-                        const { data: dbData, error: dbError } = await supabase.from('project_renders').insert(newRow).select().single();
-                        if (dbError) throw dbError;
-                        
-                        addCustomRender(dbData);
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+                  {/* Upload Box */}
+                  <FileInput 
+                    label={`Upload to '${selectedFolder || '...'}'`} 
+                    accept="image/*" 
+                    multiple={true}
+                    onDrop={async (files) => {
+                      if (!supabase) {
+                        files.forEach(f => addCustomRender({ id: uuidv4(), folder_name: selectedFolder, image_url: URL.createObjectURL(f), is_overview: false }));
+                        return;
                       }
-                      alert(`Successfully uploaded ${files.length} renders to '${selectedFolder}'!`);
-                    } catch (error) {
-                      console.error("Upload error:", error);
-                      alert(`Render Upload Failed: ${error.message}`);
-                    } finally {
-                      setIsUploading(false);
-                    }
-                  }} 
-                  isUploaded={false} // Never show checkmark for multi-upload, always allow more
-                />
+                      setIsUploading(true);
+                      try {
+                        for (const file of files) {
+                          const fileExt = file.name.split('.').pop();
+                          const fileName = `${uuidv4()}.${fileExt}`;
+                          const filePath = `renders/${fileName}`;
+                          
+                          const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                          if (uploadError) throw uploadError;
+                          
+                          const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+                          
+                          const newRow = { project_id: 'demo_project', folder_name: selectedFolder, image_url: publicUrl, is_overview: false };
+                          const { data: dbData, error: dbError } = await supabase.from('project_renders').insert(newRow).select().single();
+                          if (dbError) throw dbError;
+                          
+                          addCustomRender(dbData);
+                        }
+                        alert(`Successfully uploaded ${files.length} renders to '${selectedFolder}'!`);
+                      } catch (error) {
+                        console.error("Upload error:", error);
+                        alert(`Render Upload Failed: ${error.message}`);
+                      } finally {
+                        setIsUploading(false);
+                      }
+                    }} 
+                    isUploaded={false} // Never show checkmark for multi-upload, always allow more
+                  />
+
+                  {/* Thumbnail Grid for Selected Folder */}
+                  {selectedFolder && customRenders && customRenders.filter(r => r.folder_name === selectedFolder).length > 0 && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '16px', marginTop: '16px' }}>
+                      {customRenders.filter(r => r.folder_name === selectedFolder).map(render => (
+                        <div key={render.id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px' }}>
+                          <img src={render.image_url} alt="render thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button
+                            onClick={() => useViewerStore.getState().toggleOverviewRender(supabase, render.id, render.is_overview)}
+                            title={render.is_overview ? "Remove from Overview Slideshow" : "Add to Overview Slideshow"}
+                            style={{
+                              position: 'absolute', top: '8px', right: '8px',
+                              background: render.is_overview ? 'var(--accent-color)' : 'rgba(0,0,0,0.5)',
+                              color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%',
+                              width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              cursor: 'pointer', transition: 'all 0.2s', fontSize: '16px'
+                            }}
+                          >
+                            ★
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           )}

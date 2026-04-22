@@ -7,9 +7,8 @@ export default function ProjectOverview({ onNavigate }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Enforce pure database logic, NO dummy data
-  // Try to find renders tagged for 'Overview' or 'Slideshow', otherwise fallback to all images
   let images = customRenders || [];
-  const slideshowRenders = images.filter(r => r.folder_name && (r.folder_name.toLowerCase() === 'overview' || r.folder_name.toLowerCase() === 'slideshow'));
+  const slideshowRenders = images.filter(r => r.is_overview === true);
   
   if (slideshowRenders.length > 0) {
     images = slideshowRenders;
