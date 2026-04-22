@@ -58,36 +58,26 @@ function FBXModel({ url }) {
           
           if (child.material) {
             const mats = Array.isArray(child.material) ? child.material : [child.material];
-            mats.forEach((mat, index) => {
-               let cleanColor = mat.color;
-               
-               // The "Inverted Colors" Fix:
-               // 1. In Three.js, a texture (map) multiplies with the base color. To see the texture perfectly, the base color MUST be white.
-               //    Revit often exports mapped materials with a black base color, which turns them invisible.
-               // 2. For untextured materials (like dark grey balconies), we MUST preserve the original base color.
-               if (mat.map) {
-                 cleanColor = new THREE.Color(0xffffff); // Force white so the texture renders naturally
-               } else {
-                 // Only intervene if an untextured material is mathematically pitch black (export error)
-                 if (cleanColor && (cleanColor.r + cleanColor.g + cleanColor.b < 0.05)) {
-                   cleanColor = new THREE.Color(0xffffff);
-                 }
+            mats.forEach((mat) => {
+               // 1. Non-invasive Revit Black Color Fix
+               // If the exporter set the base color to pitch black or extremely dark grey, fix it directly on the existing material
+               if (mat.color && (mat.color.r + mat.color.g + mat.color.b < 0.5)) {
+                   mat.color.setHex(0xffffff);
                }
                
-               const pbrMat = new THREE.MeshStandardMaterial({
-                 color: cleanColor,
-                 map: mat.map || null,
-                 normalMap: mat.normalMap || null,
-                 roughness: 0.2, // Sleek architectural finish
-                 metalness: 0.1, 
-                 envMapIntensity: 1.5 // Perfectly reflects the HDRI maps
-               });
-               
-               if (Array.isArray(child.material)) {
-                 child.material[index] = pbrMat;
+               // 2. Enhance realism without destroying original maps/UVs
+               if (mat.isMeshStandardMaterial || mat.isMeshPhysicalMaterial) {
+                   mat.roughness = 0.2;
+                   mat.metalness = 0.1;
+                   mat.envMapIntensity = 1.5;
                } else {
-                 child.material = pbrMat;
+                   // Inject basic PBR traits for legacy materials
+                   mat.roughness = 0.2;
+                   mat.metalness = 0.1;
+                   mat.envMapIntensity = 1.5;
                }
+               
+               mat.needsUpdate = true;
             });
           }
         }
