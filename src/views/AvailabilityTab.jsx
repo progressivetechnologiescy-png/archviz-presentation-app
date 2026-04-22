@@ -53,7 +53,7 @@ export default function AvailabilityTab() {
 
   return (
     <div 
-      style={{ padding: '120px 32px 32px', height: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' }}
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, padding: '120px 32px 32px', overflowY: 'auto', WebkitOverflowScrolling: 'touch', boxSizing: 'border-box' }}
       onScroll={(e) => useViewerStore.getState().setGlobalScrolled(e.target.scrollTop > 50)}
       className="availability-container"
     >
@@ -67,7 +67,7 @@ export default function AvailabilityTab() {
         .table-wrapper { overflow: hidden; }
         
         @media (max-width: 768px) {
-          .availability-container { padding: 100px 16px 32px !important; }
+          .availability-container { padding: 100px 16px 120px !important; }
           .availability-header { flex-direction: column; align-items: flex-start; gap: 16px; }
           .availability-filters { overflow-x: auto; max-width: 100%; white-space: nowrap; -webkit-overflow-scrolling: touch; width: 100%; }
           .financing-panel { flex-direction: column; gap: 24px; align-items: stretch; }
