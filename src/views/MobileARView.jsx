@@ -45,6 +45,8 @@ export default function MobileARView() {
           ios-src={appleSrc}
           ar 
           ar-modes="webxr scene-viewer quick-look" 
+          ar-scale="auto"
+          ar-placement="floor"
           camera-controls 
           touch-action="pan-y"
           auto-rotate
