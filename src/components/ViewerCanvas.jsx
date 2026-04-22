@@ -59,9 +59,14 @@ function FBXModel({ url }) {
           if (child.material) {
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             mats.forEach((mat, index) => {
-               // Smart Material Standardizer for FBX
-               // If there's no texture, CAD exporters often leave it pitch black. We force it to clean white!
-               const cleanColor = mat.map ? mat.color : 0xffffff;
+               let cleanColor = mat.color;
+               
+               // Revit/CAD Exporter Bug Fix: Materials often export with a pure black base color (0,0,0).
+               // If color is black, it ruins textures (black * texture = black) and makes walls pitch black.
+               // We catch anything mathematically close to pure black and force it to white.
+               if (cleanColor && (cleanColor.r + cleanColor.g + cleanColor.b < 0.05)) {
+                 cleanColor = new THREE.Color(0xffffff);
+               }
                
                const pbrMat = new THREE.MeshStandardMaterial({
                  color: cleanColor,
@@ -69,7 +74,7 @@ function FBXModel({ url }) {
                  normalMap: mat.normalMap || null,
                  roughness: 0.2, // Sleek architectural finish
                  metalness: 0.1, 
-                 envMapIntensity: 1.5 // Perfectly reflects the Morning/Noon HDRI maps
+                 envMapIntensity: 1.5 // Perfectly reflects the HDRI maps
                });
                
                if (Array.isArray(child.material)) {
