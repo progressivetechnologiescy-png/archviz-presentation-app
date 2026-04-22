@@ -1,70 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 import { supabase } from '../lib/supabase';
 
-// Haversine formula to calculate distance in miles
-function getDistanceInMiles(lat1, lon1, lat2, lon2) {
-  const R = 3958.8; // Radius of Earth in miles
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
-
-// Extract GPS coordinates from string or Google Maps URL
-function extractCoordinates(str) {
-  if (!str) return null;
-  const match = str.match(/([+-]?\d+\.\d+)\s*,\s*([+-]?\d+\.\d+)/);
-  if (match) return { lat: parseFloat(match[1]), lon: parseFloat(match[2]) };
-  const pbMatch = str.match(/!3d([+-]?\d+\.\d+)!4d([+-]?\d+\.\d+)/);
-  if (pbMatch) return { lat: parseFloat(pbMatch[1]), lon: parseFloat(pbMatch[2]) };
-  return null;
-}
-
 export default function MobileARView() {
-  const { customGLB, customUSDZ, fetchCloudAssets, customGPS } = useViewerStore();
-  const [isAtPlot, setIsAtPlot] = useState(false);
-  const [arStatus, setArStatus] = useState("Checking GPS location...");
+  const { customGLB, customUSDZ, fetchCloudAssets } = useViewerStore();
   
   useEffect(() => {
     fetchCloudAssets(supabase);
   }, [fetchCloudAssets]);
 
-  // Geolocation Check
-  useEffect(() => {
-    // Default to the Pinnacle Residence (Limassol) if customGPS isn't set
-    const projectCoords = extractCoordinates(customGPS) || { lat: 34.6853, lon: 33.0375 }; 
-
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLat = position.coords.latitude;
-          const userLon = position.coords.longitude;
-          const dist = getDistanceInMiles(userLat, userLon, projectCoords.lat, projectCoords.lon);
-          
-          if (dist < 0.1) { // Within ~160 meters
-            setIsAtPlot(true);
-            setArStatus("📍 You are at the project site! Model will deploy at 1:1 scale on the land.");
-          } else {
-            setIsAtPlot(false);
-            setArStatus(`You are ${dist.toFixed(1)} miles from the site. Deploying desktop-scale model.`);
-          }
-        },
-        (error) => {
-          setIsAtPlot(false);
-          setArStatus("Location access denied. Deploying desktop-scale model.");
-        },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-      );
-    } else {
-      setIsAtPlot(false);
-      setArStatus("Geolocation not supported. Deploying desktop-scale model.");
-    }
-  }, [customGPS]);
-  
   // Dynamically inject Google's model-viewer script on mount
   useEffect(() => {
     const script = document.createElement('script');
@@ -111,13 +55,6 @@ export default function MobileARView() {
     return () => viewer.removeEventListener('load', handleLoad);
   }, [androidSrc]);
 
-  // If user is at the plot, default to 'plot' mode, otherwise 'desk'
-  const [arMode, setArMode] = useState('desk');
-  useEffect(() => {
-    if (isAtPlot) setArMode('plot');
-    else setArMode('desk');
-  }, [isAtPlot]);
-
   return (
     <div style={{ 
       width: '100vw', height: '100dvh', 
@@ -133,20 +70,14 @@ export default function MobileARView() {
       </div>
 
       <div style={{ flex: 1, position: 'relative' }}>
-        {/* Status Indicator for debugging/user feedback */}
-        <div style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', zIndex: 10, whiteSpace: 'nowrap' }}>
-          {arStatus}
-        </div>
-
         <model-viewer 
           id="ar-viewer"
           src={androidSrc}
           ios-src={appleSrc}
           ar 
           ar-modes="webxr scene-viewer quick-look" 
-          ar-scale={arMode === 'plot' ? "fixed" : "auto"}
+          ar-scale="auto"
           ar-placement="floor"
-          scale={arMode === 'plot' ? "0.01 0.01 0.01" : undefined}
           camera-controls 
           touch-action="pan-y"
           auto-rotate
@@ -164,31 +95,16 @@ export default function MobileARView() {
           width: '100%', maxWidth: '350px'
         }}>
           
-          {/* Mode Selector (Always visible so user has full control regardless of GPS) */}
-          <div style={{ 
-            display: 'flex', background: 'rgba(0,0,0,0.5)', borderRadius: '20px', 
-            padding: '4px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' 
+          {/* Instructions Banner */}
+          <div style={{
+            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px',
+            padding: '12px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.9)'
           }}>
-            <button 
-              onClick={() => setArMode('plot')}
-              style={{
-                background: arMode === 'plot' ? 'var(--accent-color)' : 'transparent',
-                color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
-                fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
-              }}
-            >
-              1:1 Locked Scale
-            </button>
-            <button 
-              onClick={() => setArMode('desk')}
-              style={{
-                background: arMode === 'desk' ? 'var(--accent-color)' : 'transparent',
-                color: 'white', border: 'none', padding: '8px 16px', borderRadius: '16px',
-                fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px'
-              }}
-            >
-              Manual Scale (Pinch)
-            </button>
+            <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
+              <strong>Manual Control Enabled</strong><br/>
+              Pinch to scale • Drag to position • Double-tap to reset
+            </p>
           </div>
 
           {/* Custom AR Button */}
