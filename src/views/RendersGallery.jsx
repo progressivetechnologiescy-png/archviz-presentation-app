@@ -8,15 +8,9 @@ export default function RendersGallery() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const displayImages = (customRenders || []).map(r => 
-    typeof r === 'string' ? { image_url: r, folder_name: 'Uncategorized' } : r
-  );
-
-  const [thumbnailSize, setThumbnailSize] = useState('medium'); // small, medium, large
-
   // Extract unique folders and sort them by folder_order
   const folderOrderMap = {};
-  displayImages.forEach(r => {
+  (customRenders || []).forEach(r => {
     if (r.folder_name) {
       const order = Number(r.folder_order);
       if (!isNaN(order)) {
@@ -24,10 +18,32 @@ export default function RendersGallery() {
       }
     }
   });
+
+  const displayImages = (customRenders || []).map(r => 
+    typeof r === 'string' ? { image_url: r, folder_name: 'Uncategorized', folder_order: 999, id: 0 } : r
+  ).sort((a, b) => {
+    // Sort by folder order first
+    const orderA = folderOrderMap[a.folder_name] || 0;
+    const orderB = folderOrderMap[b.folder_name] || 0;
+    if (orderA !== orderB) return orderA - orderB;
+    // Then by image ID or creation order within the folder
+    return (a.id || 0) > (b.id || 0) ? 1 : -1;
+  });
+
+  const [thumbnailSize, setThumbnailSize] = useState('medium'); // small, medium, large
   
-  const folders = ['All', ...[...new Set(displayImages.map(r => r.folder_name))].sort((a, b) => {
-    return (folderOrderMap[a] || 0) - (folderOrderMap[b] || 0);
-  })];
+  const folders = ['All', ...[...new Set(displayImages.map(r => r.folder_name))]];
+
+  // Autoplay Slideshow Logic
+  useEffect(() => {
+    let interval;
+    if (isPlaying && selectedIndex !== null) {
+      interval = setInterval(() => {
+        setSelectedIndex(prev => (prev + 1) % displayImages.length);
+      }, 2000); // 2 seconds between images
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, selectedIndex, displayImages.length]);
 
   const [activeFolder, setActiveFolder] = useState('All');
 
