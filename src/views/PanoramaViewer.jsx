@@ -92,7 +92,7 @@ export default function PanoramaViewer() {
         </div>
       </div>
 
-      {isTouchDevice && (
+      {isTouchDevice && !useGyro && (
         <div className="gyro-btn-wrapper" style={{ position: 'absolute', top: '180px', left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
           <button 
             onClick={toggleGyro}
