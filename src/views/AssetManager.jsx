@@ -79,6 +79,13 @@ export default function AssetManager() {
   const [gpsInput, setGpsInput] = useState(customGPS || '');
   const [isUploading, setIsUploading] = useState(false);
 
+  // Initialize folder list from existing database renders
+  const [folderList, setFolderList] = useState(() => {
+    const existing = (customRenders || []).map(r => typeof r === 'object' ? r.folder_name : null).filter(Boolean);
+    return [...new Set(['Overview', 'Interiors', 'Exteriors', ...existing])];
+  });
+  const [selectedFolder, setSelectedFolder] = useState('Overview');
+
   // Sync the form field if Cloud DB fetches the GPS late
   useEffect(() => {
     if (customGPS && customGPS !== 'Beverly Hills, CA') {
