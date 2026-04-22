@@ -95,7 +95,7 @@ export default function CinematicsTab() {
                 style={{ 
                   borderRadius: '20px', overflow: 'hidden', cursor: 'pointer',
                   boxShadow: '0 12px 32px rgba(0,0,0,0.3)',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  border: 'none',
                   position: 'relative',
                   aspectRatio: '16/9',
                   background: `url(${film.thumbnail}) center/cover`

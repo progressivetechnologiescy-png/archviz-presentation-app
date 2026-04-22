@@ -96,8 +96,8 @@ export default function PresentationApp({ forceAdmin = false }) {
           }}>
             <style>{`.glass-panel::-webkit-scrollbar { display: none; }`}</style>
             <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" onClick={() => setActiveTab('overview')} />
-            <TabButton active={activeTab === 'cinematics'} icon={Video} label="Films" onClick={() => setActiveTab('cinematics')} />
             <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" onClick={() => setActiveTab('renders')} />
+            <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" onClick={() => setActiveTab('cinematics')} />
             <TabButton active={activeTab === 'floorplans'} icon={Layers} label="Floorplans" onClick={() => setActiveTab('floorplans')} />
             <TabButton active={activeTab === 'availability'} icon={ListChecks} label="Availability" onClick={() => setActiveTab('availability')} />
             <TabButton active={activeTab === 'map'} icon={Map} label="Location" onClick={() => setActiveTab('map')} />
