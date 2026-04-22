@@ -62,6 +62,32 @@ export const useViewerStore = create((set) => ({
       console.error('Update floorplan label failed', e);
     }
   },
+  updateFloorplanPropertyType: async (supabaseClient, id, newType) => {
+    if (!supabaseClient) return;
+    try {
+      const { error } = await supabaseClient.from('project_floorplans').update({ property_type: newType }).eq('id', id);
+      if (!error) {
+        set((state) => ({
+          customFloorplans: state.customFloorplans.map(f => f.id === id ? { ...f, property_type: newType } : f)
+        }));
+      }
+    } catch (e) {
+      console.error('Update floorplan property type failed', e);
+    }
+  },
+  updateFloorplanOrder: async (supabaseClient, id, newOrder) => {
+    if (!supabaseClient) return;
+    try {
+      const { error } = await supabaseClient.from('project_floorplans').update({ order_index: newOrder }).eq('id', id);
+      if (!error) {
+        set((state) => ({
+          customFloorplans: state.customFloorplans.map(f => f.id === id ? { ...f, order_index: newOrder } : f)
+        }));
+      }
+    } catch (e) {
+      console.error('Update floorplan order failed', e);
+    }
+  },
   primaryModel: null,
   customFBX: null,
   customGLB: null,
@@ -163,6 +189,35 @@ export const useViewerStore = create((set) => ({
       }
     } catch (e) {
       console.error('Move render failed', e);
+    }
+  },
+  deleteRender: async (supabaseClient, id) => {
+    if (!supabaseClient || !id) return;
+    try {
+      const { error } = await supabaseClient.from('project_renders').delete().eq('id', id);
+      if (!error) {
+        set((state) => ({
+          customRenders: state.customRenders.filter(r => r.id !== id)
+        }));
+      }
+    } catch (e) {
+      console.error('Delete render failed', e);
+    }
+  },
+  deleteFloorplan: async (supabaseClient, id) => {
+    if (!supabaseClient || !id) return;
+    try {
+      const { error } = await supabaseClient.from('project_floorplans').delete().eq('id', id);
+      if (!error) {
+        set((state) => ({
+          customFloorplans: state.customFloorplans.filter(f => f.id !== id),
+          activeFloorplanId: state.activeFloorplanId === id 
+            ? (state.customFloorplans.find(f => f.id !== id)?.id || null) 
+            : state.activeFloorplanId
+        }));
+      }
+    } catch (e) {
+      console.error('Delete floorplan failed', e);
     }
   },
 

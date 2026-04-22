@@ -28,6 +28,7 @@ create table if not exists project_renders (
 create table if not exists project_floorplans (
     id uuid default gen_random_uuid() primary key,
     project_id text not null,
+    property_type text default 'Default Property',
     level_name text not null, -- e.g., "Ground Floor"
     image_url text not null,
     order_index integer default 0,

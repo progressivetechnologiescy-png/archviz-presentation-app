@@ -6,18 +6,66 @@ export default function FloorplanViewer() {
 
   const activePlan = customFloorplans?.find(f => f.id === activeFloorplanId);
 
+  // Extract unique property types
+  const propertyTypes = customFloorplans && customFloorplans.length > 0
+    ? [...new Set(customFloorplans.map(f => f.property_type || 'Default Property'))]
+    : [];
+
+  const [activePropertyType, setActivePropertyType] = React.useState(
+    activePlan ? (activePlan.property_type || 'Default Property') : (propertyTypes[0] || 'Default Property')
+  );
+
+  // Filter floorplans by the selected property type, and sort them by order_index
+  const filteredFloorplans = customFloorplans
+    ? customFloorplans
+        .filter(f => (f.property_type || 'Default Property') === activePropertyType)
+        .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+    : [];
+
+  // When changing property type, automatically select its first floorplan
+  React.useEffect(() => {
+    if (filteredFloorplans.length > 0 && !filteredFloorplans.find(f => f.id === activeFloorplanId)) {
+      setActiveFloorplanId(filteredFloorplans[0].id);
+    }
+  }, [activePropertyType, filteredFloorplans, activeFloorplanId, setActiveFloorplanId]);
+
   // Use the specific active plan URL if selected, otherwise fallback to the single uploaded customFloorplan
-  const bgImage = activePlan ? activePlan.url : customFloorplan;
+  const bgImage = activePlan ? activePlan.image_url : customFloorplan;
 
   return (
     <div style={{ padding: '120px 32px 32px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* Top-Level Property Type Menu */}
+      {propertyTypes.length > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+          <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px', background: 'rgba(0,0,0,0.4)' }}>
+            {propertyTypes.map(type => (
+              <button
+                key={type}
+                onClick={() => setActivePropertyType(type)}
+                style={{
+                  padding: '8px 24px', borderRadius: '30px', border: 'none',
+                  background: activePropertyType === type ? 'var(--text-primary)' : 'transparent',
+                  color: activePropertyType === type ? 'var(--bg-main)' : 'var(--text-secondary)',
+                  fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s ease',
+                  fontSize: '15px'
+                }}>
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '300', margin: 0 }}>Level Floorplans</h2>
+        <h2 style={{ fontSize: '28px', fontWeight: '300', margin: 0 }}>
+          {propertyTypes.length > 1 ? activePropertyType : 'Level Floorplans'}
+        </h2>
         
-        {/* Segmented Controller */}
-        {customFloorplans && customFloorplans.length > 0 && (
+        {/* Secondary Level Controller */}
+        {filteredFloorplans && filteredFloorplans.length > 0 && (
           <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px' }}>
-            {customFloorplans.map(plan => (
+            {filteredFloorplans.map(plan => (
               <button
                 key={plan.id}
                 onClick={() => setActiveFloorplanId(plan.id)}

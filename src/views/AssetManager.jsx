@@ -367,6 +367,7 @@ export default function AssetManager() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Rename Folder:</h4>
                       <input 
+                        key={`rename-${selectedFolder}`}
                         type="text" 
                         defaultValue={selectedFolder}
                         onBlur={(e) => {
@@ -384,9 +385,10 @@ export default function AssetManager() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Sort Order:</h4>
                       <input 
+                        key={`order-${selectedFolder}`}
                         type="number" 
                         defaultValue={
-                          (customRenders || []).find(r => r.folder_name === selectedFolder)?.folder_order || 0
+                          useViewerStore.getState().customRenders?.find(r => r.folder_name === selectedFolder)?.folder_order || 0
                         }
                         onBlur={(e) => {
                           useViewerStore.getState().updateFolderOrder(supabase, selectedFolder, parseInt(e.target.value) || 0);
@@ -464,6 +466,24 @@ export default function AssetManager() {
                           >
                             ★
                           </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm('Are you sure you want to delete this render?')) {
+                                useViewerStore.getState().deleteRender(supabase, render.id);
+                              }
+                            }}
+                            title="Delete Render"
+                            style={{
+                              position: 'absolute', top: '48px', right: '8px',
+                              background: 'rgba(239, 68, 68, 0.8)',
+                              color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%',
+                              width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px', zIndex: 2
+                            }}
+                          >
+                            🗑️
+                          </button>
                           {render.is_overview && (
                             <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.7)', borderRadius: '4px', padding: '4px', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 2 }}>
                               <span style={{ fontSize: '10px', fontWeight: 'bold' }}>Order:</span>
@@ -540,18 +560,48 @@ export default function AssetManager() {
                     {useViewerStore.getState().customFloorplans.map(plan => (
                       <div key={plan.id} className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '12px' }}>
                         <div style={{ width: '80px', height: '60px', borderRadius: '8px', background: `url(${plan.image_url}) center/cover no-repeat rgba(255,255,255,0.05)`, border: '1px solid rgba(255,255,255,0.1)' }} />
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Level Name (e.g. Ground Floor)</label>
-                          <input 
-                            type="text" 
-                            defaultValue={plan.level_name}
-                            onBlur={(e) => {
-                              if (e.target.value.trim() !== plan.level_name) {
-                                useViewerStore.getState().updateFloorplanLabel(supabase, plan.id, e.target.value.trim());
-                              }
-                            }}
-                            style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
-                          />
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Level Name (e.g. Ground Floor)</label>
+                              <input 
+                                type="text" 
+                                defaultValue={plan.level_name}
+                                onBlur={(e) => {
+                                  if (e.target.value.trim() !== plan.level_name) {
+                                    useViewerStore.getState().updateFloorplanLabel(supabase, plan.id, e.target.value.trim());
+                                  }
+                                }}
+                                style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
+                              />
+                            </div>
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Property Type (e.g. Villa Type A)</label>
+                              <input 
+                                type="text" 
+                                defaultValue={plan.property_type || 'Default Property'}
+                                onBlur={(e) => {
+                                  if (e.target.value.trim() !== (plan.property_type || 'Default Property')) {
+                                    useViewerStore.getState().updateFloorplanPropertyType(supabase, plan.id, e.target.value.trim());
+                                  }
+                                }}
+                                style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold' }}
+                              />
+                            </div>
+                            <div style={{ width: '80px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Sort Order</label>
+                              <input 
+                                type="number" 
+                                defaultValue={plan.order_index || 0}
+                                onBlur={(e) => {
+                                  if (parseInt(e.target.value) !== (plan.order_index || 0)) {
+                                    useViewerStore.getState().updateFloorplanOrder(supabase, plan.id, parseInt(e.target.value) || 0);
+                                  }
+                                }}
+                                style={{ background: 'transparent', border: 'none', borderBottom: '1px solid var(--border-color)', color: 'white', padding: '4px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}
+                              />
+                            </div>
+                          </div>
                         </div>
                         <button 
                           onClick={async () => {
