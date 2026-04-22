@@ -78,6 +78,7 @@ export default function AssetManager() {
 
   const [gpsInput, setGpsInput] = useState(customGPS || '');
   const [isUploading, setIsUploading] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, message: '', onConfirm: null });
 
   // Initialize folder list from existing database renders
   const [folderList, setFolderList] = useState([]);
@@ -451,16 +452,19 @@ export default function AssetManager() {
                           return;
                         }
                         
-                        if (window.confirm(`Are you sure you want to delete the empty folder "${selectedFolder}"?`)) {
-                          useViewerStore.getState().deleteFolder(supabase, selectedFolder);
-                          
-                          // Switch to a different folder visually
-                          setFolderList(prev => {
-                            const newList = prev.filter(f => f !== selectedFolder);
-                            setSelectedFolder(newList.length > 0 ? newList[0] : null);
-                            return newList;
-                          });
-                        }
+                        setConfirmModal({
+                          isOpen: true,
+                          message: `Are you sure you want to delete the empty folder "${selectedFolder}"?`,
+                          onConfirm: () => {
+                            useViewerStore.getState().deleteFolder(supabase, selectedFolder);
+                            // Switch to a different folder visually
+                            setFolderList(prev => {
+                              const newList = prev.filter(f => f !== selectedFolder);
+                              setSelectedFolder(newList.length > 0 ? newList[0] : null);
+                              return newList;
+                            });
+                          }
+                        });
                       }}
                       style={{
                         padding: '8px 16px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', 
@@ -551,9 +555,11 @@ export default function AssetManager() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (window.confirm('Are you sure you want to delete this render?')) {
-                                useViewerStore.getState().deleteRender(supabase, render.id);
-                              }
+                              setConfirmModal({
+                                isOpen: true,
+                                message: 'Are you sure you want to delete this render?',
+                                onConfirm: () => useViewerStore.getState().deleteRender(supabase, render.id)
+                              });
                             }}
                             title="Delete Render"
                             style={{
