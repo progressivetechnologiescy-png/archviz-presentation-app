@@ -1,13 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, MapPin, Phone } from 'lucide-react';
+import { useViewerStore } from '../store/viewerStore';
 
 export default function FloatingConcierge() {
+  const { customGPS } = useViewerStore();
+  const locationName = customGPS || 'The Pinnacle Residence';
+  
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'agent', text: 'Hi! I am Emma, your digital concierge for The Pinnacle Residence. How can I help you today?' }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef(null);
+
+  // Dynamically update the greeting if the cloud database fetches a new GPS location
+  useEffect(() => {
+    if (messages.length === 0 || (messages.length === 1 && messages[0].role === 'agent')) {
+      setMessages([{ role: 'agent', text: `Hi! I am Emma, your digital concierge for the property at ${locationName}. How can I help you today?` }]);
+    }
+  }, [locationName]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -24,23 +33,27 @@ export default function FloatingConcierge() {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setInputValue('');
 
-    // Simulate AI typing delay
-    setTimeout(() => {
-      let response = "I'd be happy to connect you with our lead broker to discuss that in detail!";
-      const lowerReq = userMsg.toLowerCase();
+      // Simulate AI processing context
+      setTimeout(() => {
+        let response = `I'd be happy to connect you with our lead broker to discuss the ${locationName} property in detail!`;
+        const lowerReq = userMsg.toLowerCase();
 
-      if (lowerReq.includes('beach') || lowerReq.includes('ocean')) {
-        response = 'The Pinnacle Residence is just a 5-minute drive (1.2 miles) from the pristine coastline and private beach clubs.';
-      } else if (lowerReq.includes('school')) {
-        response = 'We are located in the highly-rated District 9 school zone. The international prep academy is only 3 miles away!';
-      } else if (lowerReq.includes('amenities') || lowerReq.includes('gym') || lowerReq.includes('pool')) {
-        response = 'The property features a private infinity pool, a state-of-the-art wellness center, and a 24/7 concierge.';
-      } else if (lowerReq.includes('price') || lowerReq.includes('cost')) {
-        response = 'Pricing starts at $1.25M for our 2-Bedroom layouts. You can view full pricing in the Availability tab!';
-      }
+        if (lowerReq.includes('beach') || lowerReq.includes('ocean')) {
+          response = `Based on the property's location at ${locationName}, you are just a 5-minute drive from the nearest pristine coastline and private beach clubs.`;
+        } else if (lowerReq.includes('school')) {
+          response = `The residence at ${locationName} is located within a highly-rated school zone. The international prep academy is only 3 miles away!`;
+        } else if (lowerReq.includes('restaurant') || lowerReq.includes('food') || lowerReq.includes('eat')) {
+          response = `Since you're located at ${locationName}, there's an incredible Michelin-star restaurant and several premium cafes just a 5-10 minute walk away!`;
+        } else if (lowerReq.includes('neighborhood') || lowerReq.includes('area') || lowerReq.includes('location')) {
+          response = `The area around ${locationName} is extremely safe, featuring 24/7 private security patrols and exclusive neighborhood access.`;
+        } else if (lowerReq.includes('amenities') || lowerReq.includes('gym') || lowerReq.includes('pool')) {
+          response = 'The property features a private infinity pool, a state-of-the-art wellness center, and a 24/7 concierge.';
+        } else if (lowerReq.includes('price') || lowerReq.includes('cost')) {
+          response = 'Pricing starts at $1.25M for our 2-Bedroom layouts. You can view full pricing in the Availability tab!';
+        }
 
-      setMessages(prev => [...prev, { role: 'agent', text: response }]);
-    }, 1000);
+        setMessages(prev => [...prev, { role: 'agent', text: response }]);
+      }, 1000);
   };
 
   const handleKeyPress = (e) => {
