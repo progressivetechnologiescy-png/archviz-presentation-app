@@ -14,6 +14,8 @@ export default function StandaloneView() {
         case 'KeyA': case 'ArrowLeft': setMovement('moveLeft', true); break;
         case 'KeyS': case 'ArrowDown': setMovement('moveBackward', true); break;
         case 'KeyD': case 'ArrowRight': setMovement('moveRight', true); break;
+        case 'ShiftLeft': case 'ShiftRight': setMovement('moveUp', true); break;
+        case 'ControlLeft': case 'ControlRight': case 'KeyC': setMovement('moveDown', true); break;
       }
     };
 
@@ -23,6 +25,8 @@ export default function StandaloneView() {
         case 'KeyA': case 'ArrowLeft': setMovement('moveLeft', false); break;
         case 'KeyS': case 'ArrowDown': setMovement('moveBackward', false); break;
         case 'KeyD': case 'ArrowRight': setMovement('moveRight', false); break;
+        case 'ShiftLeft': case 'ShiftRight': setMovement('moveUp', false); break;
+        case 'ControlLeft': case 'ControlRight': case 'KeyC': setMovement('moveDown', false); break;
       }
     };
 

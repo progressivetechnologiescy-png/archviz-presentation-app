@@ -16,29 +16,34 @@ function WalkEngine() {
   const speed = 15;
 
   useFrame((state, delta) => {
-    if (!moveForward && !moveBackward && !moveLeft && !moveRight) return;
-
-    // Calculate movement intent based on key combinations
-    frontVector.set(0, 0, Number(moveBackward) - Number(moveForward));
-    sideVector.set(Number(moveLeft) - Number(moveRight), 0, 0);
-
-    // Combine and normalize vector
-    direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed * delta);
-
-    // Orient the movement direction to match EXACTLY where the camera is looking (full 3D free fly)
-    direction.applyQuaternion(state.camera.quaternion);
-
-    // Translate the camera's physical position
-    state.camera.position.add(direction);
-
-    // Process Look Direction (Virtual Rotation Pad for Mobile)
     const storeState = useViewerStore.getState();
+
+    // Process Look Direction (Virtual Rotation Pad for Mobile) - MUST be before early return!
     if (storeState.lookLeft || storeState.lookRight) {
       const lookSpeed = delta * 1.5;
       // PointerLockControls uses Euler rotation order YXZ
       if (storeState.lookLeft) state.camera.rotation.y += lookSpeed;
       if (storeState.lookRight) state.camera.rotation.y -= lookSpeed;
     }
+
+    if (!storeState.moveForward && !storeState.moveBackward && !storeState.moveLeft && !storeState.moveRight && !storeState.moveUp && !storeState.moveDown) return;
+
+    // Calculate planar movement intent
+    frontVector.set(0, 0, Number(storeState.moveBackward) - Number(storeState.moveForward));
+    sideVector.set(Number(storeState.moveLeft) - Number(storeState.moveRight), 0, 0);
+
+    // Orient the X/Z movement direction to match where the camera is looking
+    direction.subVectors(frontVector, sideVector);
+    direction.applyQuaternion(state.camera.quaternion);
+
+    // Add global Up/Down (Y-axis) movement completely independent of camera look angle
+    direction.y += Number(storeState.moveUp) - Number(storeState.moveDown);
+
+    // Normalize and apply speed
+    direction.normalize().multiplyScalar(speed * delta);
+
+    // Translate the camera's physical position
+    state.camera.position.add(direction);
   });
 
   return null;

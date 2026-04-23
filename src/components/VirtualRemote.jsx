@@ -1,6 +1,6 @@
 import React from 'react';
 import { useViewerStore } from '../store/viewerStore';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCcw, RotateCw } from 'lucide-react';
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCcw, RotateCw, ChevronsUp, ChevronsDown } from 'lucide-react';
 
 const ArrowButton = (props) => {
   const IconToRender = props.icon;
@@ -32,10 +32,10 @@ export default function VirtualRemote() {
         .virtual-joystick-left {
           position: absolute; bottom: 30px; left: 380px; z-index: 100;
           padding: 16px; border-radius: 24px;
-          display: grid; grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(2, 48px); gap: 8px;
+          display: grid; grid-template-columns: repeat(4, 48px); grid-template-rows: repeat(2, 48px); gap: 8px;
         }
         .virtual-joystick-right {
-          position: absolute; bottom: 110px; right: 30px; z-index: 100;
+          position: absolute; bottom: 30px; right: 380px; z-index: 100;
           padding: 12px 16px; border-radius: 24px;
           display: flex; gap: 8px; align-items: center;
         }
@@ -48,7 +48,7 @@ export default function VirtualRemote() {
         @media (max-width: 600px) {
           .virtual-joystick-left {
             left: 16px; bottom: 20px; padding: 12px; gap: 4px;
-            grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(2, 40px);
+            grid-template-columns: repeat(4, 40px); grid-template-rows: repeat(2, 40px);
           }
           .virtual-joystick-right {
             right: 16px; bottom: 20px; padding: 8px 12px; gap: 4px;
@@ -58,19 +58,25 @@ export default function VirtualRemote() {
       
       {/* Primary Movement D-Pad (Left Side Joystick) */}
       <div className="glass-panel virtual-joystick-left">
-        {/* Top Row */}
-        <div style={{ gridColumn: '2' }}>
+        {/* Left Column (Vertical Fly controls) */}
+        <div style={{ gridColumn: '1', gridRow: '1', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
+          <ArrowButton direction="moveUp" icon={ChevronsUp} style={{ width: '40px', height: '40px' }} setMovement={setMovement} />
+        </div>
+        <div style={{ gridColumn: '1', gridRow: '2', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+          <ArrowButton direction="moveDown" icon={ChevronsDown} style={{ width: '40px', height: '40px' }} setMovement={setMovement} />
+        </div>
+
+        {/* Right Columns (Planar WASD equivalent) */}
+        <div style={{ gridColumn: '3', gridRow: '1' }}>
           <ArrowButton direction="moveForward" icon={ArrowUp} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
-        
-        {/* Bottom Row */}
-        <div style={{ gridColumn: '1', gridRow: '2' }}>
+        <div style={{ gridColumn: '2', gridRow: '2' }}>
           <ArrowButton direction="moveLeft" icon={ArrowLeft} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
-        <div style={{ gridColumn: '2', gridRow: '2' }}>
+        <div style={{ gridColumn: '3', gridRow: '2' }}>
           <ArrowButton direction="moveBackward" icon={ArrowDown} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
-        <div style={{ gridColumn: '3', gridRow: '2' }}>
+        <div style={{ gridColumn: '4', gridRow: '2' }}>
           <ArrowButton direction="moveRight" icon={ArrowRight} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
       </div>

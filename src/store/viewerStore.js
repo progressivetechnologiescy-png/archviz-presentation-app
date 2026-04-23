@@ -44,6 +44,8 @@ export const useViewerStore = create(
   moveBackward: false,
   moveLeft: false,
   moveRight: false,
+  moveUp: false,
+  moveDown: false,
   lookLeft: false,
   lookRight: false,
   setMovement: (direction, isMoving) => set(() => ({ [direction]: isMoving })),
