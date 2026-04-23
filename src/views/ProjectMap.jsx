@@ -44,15 +44,17 @@ export default function ProjectMap() {
           <button
             key={mode}
             onClick={() => setMapMode(mode)}
+            className="hover-lift"
             style={{
-               padding: '8px 24px', borderRadius: '30px', border: 'none',
-               background: mapMode === mode ? 'var(--text-primary)' : 'transparent',
-               color: mapMode === mode ? 'var(--bg-dark)' : 'var(--text-secondary)',
-               fontWeight: 'bold', cursor: 'pointer', textTransform: 'capitalize',
-               transition: 'all 0.3s ease'
+               padding: '12px 24px', borderRadius: '12px', border: 'none',
+               background: mapMode === mode ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
+               color: mapMode === mode ? 'white' : 'var(--text-primary)',
+               fontWeight: mapMode === mode ? 'bold' : '600', cursor: 'pointer', textTransform: 'capitalize',
+               transition: 'all 0.3s ease',
+               boxShadow: mapMode === mode ? '0 4px 16px var(--accent-glow)' : 'none'
             }}
           >
-             {mode}
+             {mode} Mode
           </button>
         ))}
       </div>
