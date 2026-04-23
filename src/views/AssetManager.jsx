@@ -178,23 +178,36 @@ export default function AssetManager() {
   }, [customRenders]);
 
   const handleFolderDrop = async (e, targetFolder) => {
-    const draggedFolder = e.dataTransfer.getData('text/plain');
-    if (draggedFolder === targetFolder || !draggedFolder) return;
-    
-    setFolderList(prev => {
-      const newList = [...prev];
-      const dragIdx = newList.indexOf(draggedFolder);
-      const dropIdx = newList.indexOf(targetFolder);
-      newList.splice(dragIdx, 1);
-      newList.splice(dropIdx, 0, draggedFolder);
+    const payload = e.dataTransfer.getData('text/plain');
+    if (!payload) return;
+
+    if (payload.startsWith('render:')) {
+      const renderId = payload.replace('render:', '');
+      if (supabase) useViewerStore.getState().moveRender(supabase, renderId, targetFolder);
+      return;
+    }
+
+    if (payload.startsWith('folder:')) {
+      const draggedFolder = payload.replace('folder:', '');
+      if (draggedFolder === targetFolder) return;
       
-      if (supabase) {
-        newList.forEach((folder, idx) => {
-          useViewerStore.getState().updateFolderOrder(supabase, folder, idx);
-        });
-      }
-      return newList;
-    });
+      setFolderList(prev => {
+        const newList = [...prev];
+        const dragIdx = newList.indexOf(draggedFolder);
+        const dropIdx = newList.indexOf(targetFolder);
+        if (dragIdx === -1 || dropIdx === -1) return prev; // Safety check against weird drops
+        
+        newList.splice(dragIdx, 1);
+        newList.splice(dropIdx, 0, draggedFolder);
+        
+        if (supabase) {
+          newList.forEach((folder, idx) => {
+            useViewerStore.getState().updateFolderOrder(supabase, folder, idx);
+          });
+        }
+        return newList;
+      });
+    }
   };
 
   const [selectedFolder, setSelectedFolder] = useState('Interiors');
@@ -581,7 +594,7 @@ export default function AssetManager() {
                       key={folder}
                       draggable
                       onDragStart={(e) => {
-                        e.dataTransfer.setData('text/plain', folder);
+                        e.dataTransfer.setData('text/plain', `folder:${folder}`);
                         e.dataTransfer.effectAllowed = 'move';
                         setDraggedFolderId(folder);
                       }}
@@ -741,8 +754,16 @@ export default function AssetManager() {
                   {selectedFolder && customRenders && customRenders.filter(r => r.folder_name === selectedFolder).length > 0 && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '16px', marginTop: '16px' }}>
                       {customRenders.filter(r => r.folder_name === selectedFolder).map(render => (
-                        <div key={render.id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px', border: render.is_overview ? '2px solid var(--accent-color)' : 'none' }}>
-                          <img src={render.image_url} alt="render thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div 
+                          key={render.id} 
+                          style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px', border: render.is_overview ? '2px solid var(--accent-color)' : 'none', cursor: 'grab' }}
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('text/plain', `render:${render.id}`);
+                            e.dataTransfer.effectAllowed = 'move';
+                          }}
+                        >
+                          <img src={render.image_url} alt="render thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }} />
                           <button
                             onClick={() => useViewerStore.getState().toggleOverviewRender(supabase, render.id, render.is_overview)}
                             title={render.is_overview ? "Remove from Overview Slideshow" : "Add to Overview Slideshow"}
@@ -1007,12 +1028,30 @@ export default function AssetManager() {
                   {Array.from(new Set([...propertyTypes, selectedFolder === 'All' ? 'Default Property' : selectedFolder])).map(type => (
                     <button 
                       key={type}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        if (dragOverFolderId !== type) setDragOverFolderId(type);
+                      }}
+                      onDragLeave={() => {
+                        if (dragOverFolderId === type) setDragOverFolderId(null);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setDragOverFolderId(null);
+                        const payload = e.dataTransfer.getData('text/plain');
+                        if (payload.startsWith('floorplan:')) {
+                           const floorplanId = payload.replace('floorplan:', '');
+                           if (supabase) useViewerStore.getState().updateFloorplanPropertyType(supabase, floorplanId, type);
+                        }
+                      }}
                       onClick={() => setSelectedFolder(type)}
                       style={{
                         padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
-                        border: selectedFolder === type ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
-                        background: selectedFolder === type ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
+                        border: selectedFolder === type ? '1px solid var(--accent-color)' : (dragOverFolderId === type ? '1px dashed var(--accent-color)' : '1px solid rgba(255,255,255,0.1)'),
+                        background: dragOverFolderId === type ? 'rgba(255, 107, 0, 0.3)' : (selectedFolder === type ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)'),
                         color: selectedFolder === type ? 'var(--accent-color)' : 'var(--text-secondary)',
+                        transform: dragOverFolderId === type ? 'scale(1.05)' : 'scale(1)',
                         transition: 'all 0.2s'
                       }}
                     >
@@ -1076,7 +1115,7 @@ export default function AssetManager() {
                           className="glass-panel" 
                           draggable
                           onDragStart={(e) => {
-                            e.dataTransfer.setData('text/plain', plan.id);
+                            e.dataTransfer.setData('text/plain', `floorplan:${plan.id}`);
                             e.dataTransfer.effectAllowed = 'move';
                           }}
                           onDragOver={(e) => {
@@ -1085,7 +1124,9 @@ export default function AssetManager() {
                           }}
                           onDrop={(e) => {
                             e.preventDefault();
-                            const draggedId = e.dataTransfer.getData('text/plain');
+                            const payload = e.dataTransfer.getData('text/plain');
+                            if (!payload.startsWith('floorplan:')) return;
+                            const draggedId = payload.replace('floorplan:', '');
                             if (draggedId === plan.id) return;
                             
                             const plans = [...floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Default Property' : selectedFolder))].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));

@@ -59,8 +59,8 @@ export default function FloorplanViewer() {
                 onClick={() => setActivePropertyType(type)}
                 style={{
                   padding: '8px 24px', borderRadius: '30px', border: 'none',
-                  background: activePropertyType === type ? 'var(--text-primary)' : 'transparent',
-                  color: activePropertyType === type ? 'var(--bg-main)' : 'var(--text-secondary)',
+                  background: activePropertyType === type ? 'var(--accent-color)' : 'transparent',
+                  color: activePropertyType === type ? 'white' : 'var(--text-secondary)',
                   fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s ease',
                   fontSize: '15px'
                 }}>
