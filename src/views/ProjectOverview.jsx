@@ -35,10 +35,17 @@ export default function ProjectOverview({ onNavigate }) {
       {/* Slideshow or Video Background */}
       {!isFetchingAssets && (
         overviewMediaType === 'video' && overviewVideoUrl ? (
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
           <iframe 
             src={`${overviewVideoUrl}?autoplay=1&mute=1&controls=0&loop=1&playlist=${extractYoutubeId(overviewVideoUrl)}`} 
-            style={{ width: '100vw', height: '100vh', border: 'none', transform: 'scale(1.2)' }}
+            style={{ 
+              position: 'absolute', top: '50%', left: '50%', 
+              width: '100vw', height: '56.25vw', 
+              minHeight: '100vh', minWidth: '177.77vh', 
+              border: 'none', 
+              transform: 'translate(-50%, -50%) scale(1.15)',
+              pointerEvents: 'none'
+            }}
           />
         </div>
       ) : (
