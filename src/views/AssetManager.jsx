@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, FileType, CheckCircle, MapPin, X } from 'lucide-react';
+import { UploadCloud, FileType, CheckCircle, MapPin, X, Plus } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
+import PanoramaViewer from './PanoramaViewer';
 
 function FileInput({ label, accept, onDrop, isUploaded, multiple = false, onClear }) {
   const handleChange = (e) => {
@@ -1304,18 +1305,62 @@ export default function AssetManager() {
           })()}
 
           {/* TAB: TOURS */}
+          {/* TAB: TOURS */}
           {activeTab === 'tours' && (
             <>
-              <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid var(--accent-color)', borderRadius: '12px', padding: '16px', marginBottom: '16px', color: 'white' }}>
-                <strong>Module 3: Coming Soon!</strong> We will add a 360 Hotspot builder here.
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div>
+                  <h3 style={{ fontSize: '24px', margin: '0 0 8px 0', color: 'white' }}>360 Spatial Tour Builder</h3>
+                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Upload panoramas and visually place interactive hotspots.</p>
+                </div>
+                <button className="hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
+                  <Plus size={18} /> New Panorama Node
+                </button>
               </div>
-              <FileInput 
-                label="360° Panorama Image (Equirectangular)" 
-                accept="image/*" 
-                onDrop={handleUploadPanorama} 
-                isUploaded={!!customPanorama} 
-                onClear={() => clearAsset('panorama', setCustomPanorama)}
-              />
+
+              {/* Node List (Mock) */}
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '12px' }}>
+                {Object.values(useViewerStore.getState().customTourNodes).map(node => (
+                  <div key={node.id} className="hover-lift" style={{ minWidth: '200px', height: '120px', borderRadius: '12px', background: `url(${node.url}) center/cover`, position: 'relative', border: node.id === useViewerStore.getState().activeTourNodeId ? '2px solid var(--accent-color)' : '2px solid transparent', cursor: 'pointer' }} onClick={() => useViewerStore.getState().setActiveTourNodeId(node.id)}>
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', color: 'white', fontWeight: 'bold', fontSize: '12px' }}>
+                      {node.title}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Visual 3D Editor Canvas */}
+              <div style={{ width: '100%', height: '500px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10, display: 'flex', gap: '12px' }}>
+                  <div className="glass-panel" style={{ padding: '8px 16px', borderRadius: '8px', background: 'rgba(10,12,16,0.8)', border: '1px solid var(--accent-color)', color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '12px' }}>
+                    EDITING MODE: {useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId]?.title}
+                  </div>
+                  <div className="glass-panel" style={{ padding: '8px 16px', borderRadius: '8px', background: 'rgba(10,12,16,0.8)', color: 'white', fontSize: '12px' }}>
+                    Click anywhere to drop a new Hotspot
+                  </div>
+                </div>
+
+                <PanoramaViewer />
+              </div>
+
+              <div style={{ marginTop: '24px', padding: '24px', background: 'rgba(10, 12, 16, 0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <h4 style={{ margin: '0 0 16px 0', color: 'white' }}>Current Hotspots</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
+                  {useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId]?.hotspots.map(hs => (
+                    <div key={hs.id} style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '12px' }}>{hs.type.toUpperCase()}</span>
+                        <span style={{ color: '#6b7280', fontSize: '12px' }}>[X: {hs.position[0].toFixed(0)}, Z: {hs.position[2].toFixed(0)}]</span>
+                      </div>
+                      <div style={{ color: 'white', fontWeight: 'bold', marginBottom: '4px' }}>{hs.label || 'No Label'}</div>
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                        <button style={{ flex: 1, padding: '6px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '4px', cursor: 'pointer' }}>Edit Data</button>
+                        <button style={{ padding: '6px 12px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#ef4444', borderRadius: '4px', cursor: 'pointer' }}>Delete</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
 

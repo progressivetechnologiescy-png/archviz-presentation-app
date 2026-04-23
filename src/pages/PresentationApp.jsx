@@ -81,7 +81,7 @@ export default function PresentationApp({ forceAdmin = false }) {
       {/* Global Responsive Header */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
-        padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '24px 32px', display: activeTab === 'panorama' ? 'none' : 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'nowrap', gap: '24px',
         background: isGlobalScrolled || isMobileMenuOpen ? 'rgba(10, 12, 16, 0.95)' : 'transparent', 
         backdropFilter: isGlobalScrolled || isMobileMenuOpen ? 'blur(24px)' : 'none', 
@@ -277,7 +277,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         {activeTab === 'floorplans' && <FloorplanViewer />}
         {activeTab === 'availability' && <AvailabilityTab onNavigate={setActiveTab} />}
         {activeTab === 'map' && <ProjectMap />}
-        {activeTab === 'panorama' && <PanoramaViewer />}
+        {activeTab === 'panorama' && <PanoramaViewer onBack={() => setActiveTab('overview')} />}
         {activeTab === 'manage' && isAdmin && <AssetManager />}
         
         {/* We reuse the StandaloneView for the 3D portion since it has the Sidebars built-in.

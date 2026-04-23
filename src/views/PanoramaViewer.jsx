@@ -23,26 +23,26 @@ function TourHotspot({ spot, onClick }) {
     >
       {isDetailed && (
         <>
-          <div style={{ background: 'rgba(20, 25, 30, 0.9)', color: 'white', padding: '6px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '4px', border: '1px solid rgba(255,255,255,0.1)', whiteSpace: 'nowrap' }}>
+          <div className="glass-panel" style={{ background: 'rgba(10, 12, 16, 0.8)', backdropFilter: 'blur(16px)', color: 'white', padding: '6px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '4px', border: '1px solid rgba(255,255,255,0.1)', whiteSpace: 'nowrap' }}>
             {spot.label}
           </div>
-          <div style={{ background: 'white', color: '#10b981', padding: '4px 12px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '12px', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)', color: 'var(--accent-color)', padding: '4px 12px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '12px', whiteSpace: 'nowrap', border: '1px solid var(--accent-color)' }}>
             {spot.subLabel}
           </div>
-          <div style={{ width: '32px', height: '32px', background: '#dcfce7', border: '2px solid white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a', fontSize: '11px', fontWeight: 'bold', zIndex: 2 }}>
+          <div style={{ width: '32px', height: '32px', background: 'var(--bg-dark)', border: '2px solid var(--accent-color)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-color)', fontSize: '11px', fontWeight: 'bold', zIndex: 2, boxShadow: '0 0 15px var(--accent-glow)' }}>
             {spot.percentage}
           </div>
-          <div style={{ width: '2px', height: '60px', background: 'rgba(255,255,255,0.6)', marginTop: '-2px', zIndex: 1 }} />
+          <div style={{ width: '2px', height: '60px', background: 'linear-gradient(to bottom, var(--accent-color), transparent)', marginTop: '-2px', zIndex: 1 }} />
         </>
       )}
 
       {isTextBox && (
         <>
-          <div style={{ background: 'white', color: '#1f2937', padding: '10px 16px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}>
+          <div className="glass-panel" style={{ background: 'rgba(10, 12, 16, 0.8)', backdropFilter: 'blur(16px)', color: 'white', padding: '10px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', whiteSpace: 'nowrap', border: '1px solid rgba(255,255,255,0.1)' }}>
             {spot.label}
           </div>
-          <div style={{ width: '1px', height: '80px', background: 'rgba(255,255,255,0.8)', zIndex: 1 }} />
-          <div style={{ width: '24px', height: '24px', background: '#dcfce7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a', zIndex: 2, marginTop: '-2px' }}>
+          <div style={{ width: '1px', height: '80px', background: 'linear-gradient(to bottom, rgba(255,255,255,0.5), transparent)', zIndex: 1 }} />
+          <div style={{ width: '24px', height: '24px', background: 'rgba(10, 12, 16, 0.9)', border: '1px solid var(--accent-color)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-color)', zIndex: 2, marginTop: '-2px' }}>
             <Plus size={14} strokeWidth={3} />
           </div>
         </>
@@ -50,10 +50,10 @@ function TourHotspot({ spot, onClick }) {
 
       {isPin && (
         <>
-          <div style={{ background: 'white', color: '#1f2937', padding: '8px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', marginBottom: '6px', whiteSpace: 'nowrap', opacity: spot.label ? 1 : 0 }}>
+          <div className="glass-panel" style={{ background: 'rgba(10, 12, 16, 0.8)', backdropFilter: 'blur(16px)', color: 'white', padding: '8px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', marginBottom: '6px', whiteSpace: 'nowrap', opacity: spot.label ? 1 : 0, border: '1px solid rgba(255,255,255,0.1)' }}>
             {spot.label || 'Details'}
           </div>
-          <div style={{ width: '36px', height: '36px', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)', border: '2px solid white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1f2937', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
+          <div style={{ width: '36px', height: '36px', background: 'rgba(10, 12, 16, 0.8)', backdropFilter: 'blur(16px)', border: '2px solid var(--accent-color)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-color)', boxShadow: '0 0 15px var(--accent-glow)' }}>
             <Plus size={18} strokeWidth={2.5} />
           </div>
         </>
@@ -115,7 +115,7 @@ function SphericalPanorama({ showHotspots, onHotspotClick }) {
   );
 }
 
-export default function PanoramaViewer() {
+export default function PanoramaViewer({ onBack }) {
   const [useGyro, setUseGyro] = useState(false);
   const [showHotspots, setShowHotspots] = useState(true);
   
@@ -145,19 +145,19 @@ export default function PanoramaViewer() {
         </div>
         
         <div style={{ display: 'flex', gap: '12px', pointerEvents: 'auto' }}>
-          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.9)', color: '#1f2937', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
+          <button onClick={onBack} className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
             <ChevronLeft size={16} /> BACK
           </button>
-          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
+          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(10, 12, 16, 0.6)', backdropFilter: 'blur(12px)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
             <MapPin size={16} /> CITY
           </button>
-          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
+          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(10, 12, 16, 0.6)', backdropFilter: 'blur(12px)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
             PROPERTIES
           </button>
-          <button onClick={() => setShowHotspots(!showHotspots)} className="glass-panel hover-lift" style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', cursor: 'pointer' }}>
+          <button onClick={() => setShowHotspots(!showHotspots)} className="glass-panel hover-lift" style={{ padding: '8px 12px', background: 'rgba(10, 12, 16, 0.6)', backdropFilter: 'blur(12px)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'pointer' }}>
             {showHotspots ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
-          <button className="glass-panel hover-lift" style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', cursor: 'pointer' }}>
+          <button className="glass-panel hover-lift" style={{ padding: '8px 12px', background: 'rgba(10, 12, 16, 0.6)', backdropFilter: 'blur(12px)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'pointer' }}>
             <Maximize size={18} />
           </button>
         </div>
@@ -166,50 +166,51 @@ export default function PanoramaViewer() {
       {/* Slide-out Side Panel */}
       <div style={{
         position: 'absolute', top: 0, right: 0, height: '100%', width: '400px', maxWidth: '100%', zIndex: 40,
-        background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(20px)',
+        background: 'rgba(10, 12, 16, 0.85)', backdropFilter: 'blur(24px)', borderLeft: '1px solid rgba(255,255,255,0.05)',
         transform: activeHotspotData ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         padding: '100px 32px 32px 32px', display: 'flex', flexDirection: 'column',
-        boxShadow: '-10px 0 30px rgba(0,0,0,0.1)'
+        boxShadow: '-10px 0 30px rgba(0,0,0,0.5)', color: 'white'
       }}>
         {activeHotspotData && (
           <>
             <button 
               onClick={() => setActiveHotspotData(null)}
-              style={{ position: 'absolute', top: '32px', right: '32px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280' }}
+              style={{ position: 'absolute', top: '32px', right: '32px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', transition: 'all 0.2s' }}
+              className="hover-lift"
             >
-              CLOSE ✕
+              ✕
             </button>
-            <h2 style={{ fontSize: '48px', fontWeight: '300', margin: '0 0 16px 0', color: '#111827', lineHeight: '1.1' }}>
+            <h2 style={{ fontSize: '48px', fontWeight: '300', margin: '0 0 16px 0', color: 'white', lineHeight: '1.1' }}>
               {activeHotspotData.title.split(' ')[0]}<br/>
               <strong style={{ fontWeight: '800' }}>{activeHotspotData.title.split(' ').slice(1).join(' ')}</strong>
             </h2>
-            <p style={{ color: '#4b5563', fontSize: '15px', lineHeight: '1.6', marginBottom: '32px' }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: '1.6', marginBottom: '32px' }}>
               {activeHotspotData.subtitle || 'Showcase your property with an immersive sense of presence. Let your buyers explore the space with freedom.'}
             </p>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', padding: '16px 0', marginBottom: '32px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '16px 0', marginBottom: '32px' }}>
               <div>
-                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>Total Area</div>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: '#111827' }}>{activeHotspotData.area}</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Total Area</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>{activeHotspotData.area}</div>
               </div>
               <div>
-                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>Beds</div>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: '#111827' }}>{activeHotspotData.beds}</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Beds</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>{activeHotspotData.beds}</div>
               </div>
               <div>
-                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>Roof Garden</div>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: '#111827' }}>{activeHotspotData.roof}</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Roof Garden</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>{activeHotspotData.roof}</div>
               </div>
             </div>
 
             {activeHotspotData.image && (
-              <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
+              <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <img src={activeHotspotData.image} alt="Property" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             )}
 
-            <button style={{ width: '100%', padding: '16px', background: 'transparent', border: '2px solid #16a34a', color: '#16a34a', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}>
+            <button className="hover-lift" style={{ width: '100%', padding: '16px', background: 'var(--accent-color)', border: 'none', color: 'white', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 15px var(--accent-glow)' }}>
               Book A Demo
             </button>
           </>
