@@ -270,7 +270,14 @@ export default function AssetManager() {
     }
   };
 
-  const [selectedFolder, setSelectedFolder] = useState('Interiors');
+  const [selectedFolder, setSelectedFolder] = useState(null);
+
+  // Auto-select the first folder dynamically rather than hardcoding 'Interiors'
+  useEffect(() => {
+    if (!selectedFolder && folderList && folderList.length > 0) {
+      setSelectedFolder(folderList[0]);
+    }
+  }, [folderList, selectedFolder]);
 
   // Sync the form field if Cloud DB fetches the GPS late
   useEffect(() => {
