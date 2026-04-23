@@ -79,6 +79,14 @@ export default function FloorplanViewer() {
           flex-direction: column;
           gap: 8px;
         }
+        .floorplan-image-layer {
+          background-size: cover !important;
+        }
+        .active-level-dot {
+          display: block;
+          margin-left: 12px;
+          flex-shrink: 0;
+        }
 
         @media (max-width: 1024px) {
           .floorplan-master-container {
@@ -111,6 +119,12 @@ export default function FloorplanViewer() {
             min-height: 60vh;
             height: auto;
             flex: 1;
+          }
+          .floorplan-image-layer {
+            background-size: contain !important;
+          }
+          .active-level-dot {
+            display: none !important;
           }
         }
       `}</style>
@@ -162,7 +176,7 @@ export default function FloorplanViewer() {
                         fontSize: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                       }}>
                       {plan.level_name}
-                      {activeFloorplanId === plan.id && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-color)', boxShadow: '0 0 8px var(--accent-color)' }} />}
+                      {activeFloorplanId === plan.id && <span className="active-level-dot" style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-color)', boxShadow: '0 0 8px var(--accent-color)' }} />}
                     </button>
                   ))}
                 </div>
@@ -189,9 +203,9 @@ export default function FloorplanViewer() {
                   }} 
                 >
                   {/* Image Layer */}
-                  <div style={{
+                  <div className="floorplan-image-layer" style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                    background: `url(${plan.image_url}) center/cover no-repeat`,
+                    background: `url(${plan.image_url}) center no-repeat`,
                     backgroundColor: 'rgba(5, 8, 12, 0.6)'
                   }} />
                   
