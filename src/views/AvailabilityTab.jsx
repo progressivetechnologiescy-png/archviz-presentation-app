@@ -95,18 +95,18 @@ export default function AvailabilityTab() {
           </div>
         </div>
 
-        <div className="table-wrapper" style={{ borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', background: 'var(--bg-panel)', padding: '0 24px 24px 24px' }}>
+        <div className="table-wrapper" style={{ borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', background: 'var(--bg-panel)', padding: '0 32px 32px 32px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
             <thead>
               <tr>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Unit</th>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Beds</th>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Baths</th>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Covered Area</th>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Uncovered Area</th>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Price</th>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>Plan</th>
-                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Status</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Apartment</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Beds</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Baths</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Covered Area</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Uncovered Area</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Price</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>Plan</th>
+                <th style={{ padding: '32px 24px', fontSize: '15px', fontWeight: '600', color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -129,13 +129,13 @@ export default function AvailabilityTab() {
                     onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; }}
                     onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <td style={{ padding: '24px 16px', fontWeight: '700', fontSize: '15px' }}>#{unit.id}</td>
-                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.beds} Bed</td>
-                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.baths} Bath</td>
-                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.coveredSqM} m²</td>
-                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.uncoveredSqM} m²</td>
-                      <td style={{ padding: '24px 16px', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: '600' }}>{unit.price}</td>
-                      <td style={{ padding: '24px 16px', textAlign: 'center' }}>
+                      <td style={{ padding: '32px 24px', fontWeight: '700', fontSize: '15px' }}>{unit.id}</td>
+                      <td style={{ padding: '32px 24px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.beds}</td>
+                      <td style={{ padding: '32px 24px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.baths}</td>
+                      <td style={{ padding: '32px 24px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.coveredSqM}</td>
+                      <td style={{ padding: '32px 24px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.uncoveredSqM}</td>
+                      <td style={{ padding: '32px 24px', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: '600' }}>{unit.price}</td>
+                      <td style={{ padding: '32px 24px', textAlign: 'center' }}>
                         {customFloorplans && customFloorplans.length > 0 && (
                           <button 
                             onClick={(e) => handlePreviewFloorplan(e, unit)}
@@ -152,7 +152,7 @@ export default function AvailabilityTab() {
                           </button>
                         )}
                       </td>
-                      <td style={{ padding: '24px 16px' }}>
+                      <td style={{ padding: '32px 24px' }}>
                         <span style={{ 
                           padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px',
                           background: getStatusColor(unit.status), color: getStatusTextColor(unit.status), border: `1px solid ${getStatusTextColor(unit.status)}40`,
