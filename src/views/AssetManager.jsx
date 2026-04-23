@@ -1377,7 +1377,7 @@ export default function AssetManager() {
                 </div>
                 <button 
                   onClick={() => {
-                    useViewerStore.getState().addInventoryUnit({
+                    useViewerStore.getState().addInventoryUnit(supabase, {
                       id: '', beds: '', baths: '', coveredSqM: '', uncoveredSqM: '', price: '', status: 'Available'
                     });
                   }}
@@ -1393,49 +1393,49 @@ export default function AssetManager() {
                     <div style={{ flex: '1 1 120px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Apartment</label>
                       <input type="text" value={unit.id} 
-                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { id: e.target.value })}
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { id: e.target.value })}
                         style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 80px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Beds</label>
                       <input type="number" value={unit.beds} 
-                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { beds: e.target.value === '' ? '' : Number(e.target.value) })}
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { beds: e.target.value === '' ? '' : Number(e.target.value) })}
                         style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 80px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Baths</label>
                       <input type="number" step="0.5" value={unit.baths} 
-                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { baths: e.target.value === '' ? '' : Number(e.target.value) })}
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { baths: e.target.value === '' ? '' : Number(e.target.value) })}
                         style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 100px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Cov. m²</label>
                       <input type="number" value={unit.coveredSqM} 
-                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { coveredSqM: e.target.value === '' ? '' : Number(e.target.value) })}
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { coveredSqM: e.target.value === '' ? '' : Number(e.target.value) })}
                         style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 100px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Uncov. m²</label>
                       <input type="number" value={unit.uncoveredSqM} 
-                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { uncoveredSqM: e.target.value === '' ? '' : Number(e.target.value) })}
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { uncoveredSqM: e.target.value === '' ? '' : Number(e.target.value) })}
                         style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '2 1 140px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Price</label>
                       <input type="text" value={unit.price} 
-                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { price: e.target.value })}
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { price: e.target.value })}
                         style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold' }} />
                     </div>
 
                     <div style={{ flex: '1 1 120px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Status</label>
                       <select value={unit.status} 
-                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { status: e.target.value })}
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { status: e.target.value })}
                         style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }}>
                         <option value="Available">Available</option>
                         <option value="Reserved">Reserved</option>
@@ -1447,7 +1447,7 @@ export default function AssetManager() {
                       onClick={() => setConfirmModal({
                         isOpen: true,
                         message: `Are you sure you want to delete Unit ${unit.id || 'this unit'}? This action cannot be undone.`,
-                        onConfirm: () => useViewerStore.getState().deleteInventoryUnit(unit.id)
+                        onConfirm: () => useViewerStore.getState().deleteInventoryUnit(supabase, unit.id)
                       })}
                       style={{ padding: '10px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '8px', cursor: 'pointer', marginTop: '18px', fontWeight: 'bold', transition: 'all 0.2s' }}>
                       Delete

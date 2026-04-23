@@ -1,5 +1,19 @@
 import { create } from 'zustand';
 
+let inventorySyncTimeout = null;
+const syncInventoryToCloud = (supabaseClient, newList) => {
+  if (!supabaseClient) return;
+  if (inventorySyncTimeout) clearTimeout(inventorySyncTimeout);
+  inventorySyncTimeout = setTimeout(() => {
+    supabaseClient.from('properties_config')
+      .update({ inventory_data: newList })
+      .match({ project_id: 'demo_project' })
+      .then(({ error }) => {
+        if (error) console.error("Failed to sync inventory:", error);
+      });
+  }, 1000);
+};
+
 // Simple store to manage our 3D UI states
 export const useViewerStore = create((set) => ({
   // Environment / Lighting
@@ -41,15 +55,21 @@ export const useViewerStore = create((set) => ({
     { id: '202', beds: 3, baths: 3.5, coveredSqM: 205, uncoveredSqM: 40, price: '€2,100,000', status: 'Reserved' },
     { id: '301', beds: 4, baths: 4.5, coveredSqM: 325, uncoveredSqM: 150, price: '€4,500,000', status: 'Available' },
   ],
-  updateInventoryUnit: (id, updatedData) => set((state) => ({
-    inventoryUnits: state.inventoryUnits.map(unit => unit.id === id ? { ...unit, ...updatedData } : unit)
-  })),
-  addInventoryUnit: (unit) => set((state) => ({
-    inventoryUnits: [unit, ...state.inventoryUnits]
-  })),
-  deleteInventoryUnit: (id) => set((state) => ({
-    inventoryUnits: state.inventoryUnits.filter(unit => unit.id !== id)
-  })),
+  updateInventoryUnit: (supabaseClient, id, updatedData) => set((state) => {
+    const newList = state.inventoryUnits.map(unit => unit.id === id ? { ...unit, ...updatedData } : unit);
+    syncInventoryToCloud(supabaseClient, newList);
+    return { inventoryUnits: newList };
+  }),
+  addInventoryUnit: (supabaseClient, unit) => set((state) => {
+    const newList = [unit, ...state.inventoryUnits];
+    syncInventoryToCloud(supabaseClient, newList);
+    return { inventoryUnits: newList };
+  }),
+  deleteInventoryUnit: (supabaseClient, id) => set((state) => {
+    const newList = state.inventoryUnits.filter(unit => unit.id !== id);
+    syncInventoryToCloud(supabaseClient, newList);
+    return { inventoryUnits: newList };
+  }),
   
   // Interactive 360 Spatial Tour Database
   activeTourNodeId: 'node_exterior',
@@ -666,6 +686,7 @@ export const useViewerStore = create((set) => ({
         if (configData.active_material) set({ activeMaterial: configData.active_material });
         if (configData.gemini_api_key) set({ geminiApiKey: configData.gemini_api_key });
         if (configData.ai_context) set({ aiContext: configData.ai_context });
+        if (configData.inventory_data) set({ inventoryUnits: configData.inventory_data });
       }
     } catch (e) {
       console.error("Cloud Connection Failed:", e);
