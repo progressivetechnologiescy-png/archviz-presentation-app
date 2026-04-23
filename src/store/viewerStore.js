@@ -120,9 +120,9 @@ export const useViewerStore = create((set) => ({
   customUSDZ: null,
 
   // Branding & Overview
-  projectTitle: 'The Pinnacle Residence',
-  companyName: 'ARCHVIZ STUDIO LTD.',
-  projectDescription: 'Welcome to the ultimate expression of modern architectural design. Nestled in the prestigious hills, this property features breathtaking panoramic views, seamless indoor-outdoor living, and state-of-the-art cinematic finishes.',
+  projectTitle: '',
+  companyName: '',
+  projectDescription: '',
   logoUrl: null,
   overviewMediaType: 'images',
   overviewVideoUrl: null,
