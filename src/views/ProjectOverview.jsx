@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 import { Component, ArrowRight } from 'lucide-react';
 
+function extractYoutubeId(url) {
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
 export default function ProjectOverview({ onNavigate }) {
-  const { customRenders } = useViewerStore();
+  const { customRenders, projectTitle, projectDescription, overviewMediaType, overviewVideoUrl } = useViewerStore();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Enforce pure database logic, NO dummy data
@@ -26,30 +32,39 @@ export default function ProjectOverview({ onNavigate }) {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: 'var(--bg-dark)' }}>
       
-      {/* Slideshow Background */}
-      {images.map((src, index) => {
-        const url = typeof src === 'string' ? src : src.image_url;
-        const bgImg = url ? `url(${url})` : 'none';
-        const isActive = index === currentSlide;
+      {/* Slideshow or Video Background */}
+      {overviewMediaType === 'video' && overviewVideoUrl ? (
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
+          <iframe 
+            src={`${overviewVideoUrl}?autoplay=1&mute=1&controls=0&loop=1&playlist=${extractYoutubeId(overviewVideoUrl)}`} 
+            style={{ width: '100vw', height: '100vh', border: 'none', transform: 'scale(1.2)' }}
+          />
+        </div>
+      ) : (
+        images.map((src, index) => {
+          const url = typeof src === 'string' ? src : src.image_url;
+          const bgImg = url ? `url(${url})` : 'none';
+          const isActive = index === currentSlide;
 
-        return (
-          <div 
-            key={index}
-            style={{
-              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-              zIndex: isActive ? 1 : 0,
-              pointerEvents: 'none'
-            }}
-          >
-            <div style={{
-              width: '100%', height: '100%',
-              background: url ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
-              animation: isActive ? 'focusPullReveal 8.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' : 'fadeOutOld 1.5s ease-out forwards',
-              willChange: 'transform, filter, opacity'
-            }} />
-          </div>
-        );
-      })}
+          return (
+            <div 
+              key={index}
+              style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                zIndex: isActive ? 1 : 0,
+                pointerEvents: 'none'
+              }}
+            >
+              <div style={{
+                width: '100%', height: '100%',
+                background: url ? `${bgImg} center/cover no-repeat` : 'linear-gradient(45deg, #1f2937, #111827)',
+                animation: isActive ? 'focusPullReveal 8.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' : 'fadeOutOld 1.5s ease-out forwards',
+                willChange: 'transform, filter, opacity'
+              }} />
+            </div>
+          );
+        })
+      )}
 
       {/* Film Grain Overlay */}
       <div style={{
@@ -95,12 +110,10 @@ export default function ProjectOverview({ onNavigate }) {
           WebkitBackdropFilter: 'blur(4px)',
         }}>
           <h1 className="overview-title" style={{ fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.5px' }}>
-            The Pinnacle Residence
+            {projectTitle}
           </h1>
-          <p className="overview-desc" style={{ color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '100%', margin: '0 auto 32px' }}>
-            Welcome to the ultimate expression of modern architectural design. 
-            Nestled in the prestigious hills, this property features breathtaking panoramic 
-            views, seamless indoor-outdoor living, and state-of-the-art cinematic finishes. 
+          <p className="overview-desc" style={{ color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '100%', margin: '0 auto 32px', whiteSpace: 'pre-wrap' }}>
+            {projectDescription}
           </p>
 
           <button 

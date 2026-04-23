@@ -86,6 +86,7 @@ function convertToEmbedUrl(url) {
 
 export default function AssetManager() {
   const { 
+    projectTitle, companyName, projectDescription, logoUrl, overviewMediaType, overviewVideoUrl, updateBrandingConfig,
     customFBX, setCustomFBX, 
     customGLB, setCustomGLB,
     customUSDZ, setCustomUSDZ,
@@ -97,6 +98,7 @@ export default function AssetManager() {
     aiContext, setAiContext,
     modelRoughness, modelMetalness, modelEnvMapIntensity, setModelProperties
   } = useViewerStore();
+
 
   const [gpsInput, setGpsInput] = useState(customGPS || '');
   const [isUploading, setIsUploading] = useState(false);
@@ -120,6 +122,27 @@ export default function AssetManager() {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleUploadLogo = async (file) => {
+    if (!supabase) return;
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo_${uuidv4()}.${fileExt}`;
+      const filePath = `branding/${fileName}`;
+      
+      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+      updateBrandingConfig(supabase, { logoUrl: publicUrl });
+    } catch (e) {
+      console.error(e);
+      alert("Failed to upload logo.");
     } finally {
       setIsUploading(false);
     }
@@ -328,7 +351,7 @@ export default function AssetManager() {
     }
   };
 
-  const [activeTab, setActiveTab] = useState('models');
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <div style={{ padding: '80px 32px 32px', height: '100%', overflowY: 'auto' }}>
@@ -343,7 +366,7 @@ export default function AssetManager() {
 
         {/* Tab Navigation */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', overflowX: 'auto' }}>
-          {['models', 'renders', 'cinematics', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
+          {['overview', 'models', 'renders', 'cinematics', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -351,9 +374,10 @@ export default function AssetManager() {
                 padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
                 background: activeTab === tab ? 'var(--accent-color)' : 'transparent',
                 color: activeTab === tab ? 'white' : 'var(--text-secondary)',
-                border: 'none', transition: 'all 0.2s'
+                border: 'none', transition: 'all 0.2s', whiteSpace: 'nowrap'
               }}
             >
+              {tab === 'overview' && 'Overview & Branding'}
               {tab === 'models' && '3D Models & Scene'}
               {tab === 'renders' && 'Render Gallery'}
               {tab === 'cinematics' && 'Cinematics'}
@@ -366,6 +390,103 @@ export default function AssetManager() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+          {/* TAB: OVERVIEW & BRANDING */}
+          {activeTab === 'overview' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h3 style={{ margin: 0, fontSize: '20px' }}>Project Identity</h3>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Project Title</label>
+                    <input 
+                      type="text" 
+                      defaultValue={projectTitle}
+                      onBlur={(e) => updateBrandingConfig(supabase, { projectTitle: e.target.value })}
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Company Name</label>
+                    <input 
+                      type="text" 
+                      defaultValue={companyName}
+                      onBlur={(e) => updateBrandingConfig(supabase, { companyName: e.target.value })}
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Overview Description</label>
+                    <textarea 
+                      defaultValue={projectDescription}
+                      onBlur={(e) => updateBrandingConfig(supabase, { projectDescription: e.target.value })}
+                      rows={4}
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', resize: 'vertical' }} 
+                    />
+                  </div>
+                </div>
+                <div style={{ flex: '0 0 200px' }}>
+                  <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Logo</h3>
+                  <FileInput 
+                    label="Upload Logo" 
+                    accept="image/*" 
+                    onDrop={handleUploadLogo} 
+                    isUploaded={!!logoUrl} 
+                    onClear={() => updateBrandingConfig(supabase, { logoUrl: null })}
+                  />
+                  {logoUrl && (
+                    <div style={{ marginTop: '16px', background: 'white', padding: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'center' }}>
+                      <img src={logoUrl} alt="Logo" style={{ maxWidth: '100%', maxHeight: '80px', objectFit: 'contain' }} />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
+                <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Overview Background Media</h3>
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+                  <button 
+                    onClick={() => updateBrandingConfig(supabase, { overviewMediaType: 'images' })}
+                    style={{ flex: 1, padding: '16px', borderRadius: '8px', border: overviewMediaType === 'images' ? '2px solid var(--accent-color)' : '1px solid var(--border-color)', background: overviewMediaType === 'images' ? 'rgba(255, 107, 0, 0.1)' : 'rgba(0,0,0,0.2)', color: 'white', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Image Slideshow</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Uses starred images from the Render Gallery</div>
+                  </button>
+                  <button 
+                    onClick={() => updateBrandingConfig(supabase, { overviewMediaType: 'video' })}
+                    style={{ flex: 1, padding: '16px', borderRadius: '8px', border: overviewMediaType === 'video' ? '2px solid var(--accent-color)' : '1px solid var(--border-color)', background: overviewMediaType === 'video' ? 'rgba(255, 107, 0, 0.1)' : 'rgba(0,0,0,0.2)', color: 'white', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Background Video</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Plays a silent YouTube loop</div>
+                  </button>
+                </div>
+
+                {overviewMediaType === 'video' && (
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>YouTube Embed URL</label>
+                    <input 
+                      type="text" 
+                      defaultValue={overviewVideoUrl || ''}
+                      placeholder="e.g. https://www.youtube.com/embed/..."
+                      onBlur={(e) => {
+                        const url = e.target.value.trim();
+                        const finalUrl = url ? convertToEmbedUrl(url) : null;
+                        updateBrandingConfig(supabase, { overviewVideoUrl: finalUrl });
+                        e.target.value = finalUrl || '';
+                      }}
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
+                    />
+                    {overviewVideoUrl && (
+                      <div style={{ marginTop: '16px', width: '100%', aspectRatio: '16/9', borderRadius: '8px', overflow: 'hidden' }}>
+                        <iframe 
+                          src={`${overviewVideoUrl}?autoplay=1&mute=1&controls=0&loop=1&playlist=${extractYoutubeId(overviewVideoUrl)}`} 
+                          style={{ width: '100%', height: '100%', border: 'none', pointerEvents: 'none' }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           
           {/* TAB: 3D MODELS */}
           {activeTab === 'models' && (

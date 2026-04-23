@@ -49,6 +49,9 @@ export default function PresentationApp({ forceAdmin = false }) {
   const fetchCloudAssets = useViewerStore(state => state.fetchCloudAssets);
   const isLightboxOpen = useViewerStore(state => state.isLightboxOpen);
   const isGlobalScrolled = useViewerStore(state => state.isGlobalScrolled);
+  const projectTitle = useViewerStore(state => state.projectTitle);
+  const companyName = useViewerStore(state => state.companyName);
+  const logoUrl = useViewerStore(state => state.logoUrl);
   
   const [isAdmin] = useState(() => {
     if (forceAdmin) return true;
@@ -118,13 +121,17 @@ export default function PresentationApp({ forceAdmin = false }) {
           <div style={{ 
             width: '48px', height: '48px', background: 'linear-gradient(135deg, var(--accent-color), #60a5fa)', 
             borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 8px 24px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.5)'
+            boxShadow: '0 8px 24px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.5)', overflow: 'hidden'
           }}>
-            <Hexagon size={28} color="#fff" />
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'rgba(255,255,255,0.9)' }} />
+            ) : (
+              <Hexagon size={28} color="#fff" />
+            )}
           </div>
           <div className="desktop-logo-text">
-            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)', whiteSpace: 'nowrap' }}>The Pinnacle Residence</h1>
-            <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textShadow: '0 1px 8px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>ARCHVIZ STUDIO LTD.</p>
+            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)', whiteSpace: 'nowrap' }}>{projectTitle}</h1>
+            <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textShadow: '0 1px 8px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>{companyName}</p>
           </div>
         </div>
 
@@ -178,19 +185,21 @@ export default function PresentationApp({ forceAdmin = false }) {
             <Maximize size={18} />
           </button>
 
-          {/* Always Visible Share Button */}
-          <button 
-            onClick={() => setIsShareModalOpen(true)}
-            className="glass-panel hover-lift icon-action-btn" 
-            title="Share"
-            style={{ 
-              display: 'flex', alignItems: 'center', justifyContent: 'center', 
-              width: '48px', height: '48px', padding: '0', 
-              borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', 
-              border: '1px solid rgba(255,255,255,0.1)', color: 'white' 
-            }}>
-            <Share2 size={18} />
-          </button>
+          {/* Share Button (Hidden on Manage) */}
+          {activeTab !== 'manage' && (
+            <button 
+              onClick={() => setIsShareModalOpen(true)}
+              className="glass-panel hover-lift icon-action-btn" 
+              title="Share"
+              style={{ 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                width: '48px', height: '48px', padding: '0', 
+                borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', 
+                border: '1px solid rgba(255,255,255,0.1)', color: 'white' 
+              }}>
+              <Share2 size={18} />
+            </button>
+          )}
 
           {/* Mobile Hamburger Toggle */}
           <button 

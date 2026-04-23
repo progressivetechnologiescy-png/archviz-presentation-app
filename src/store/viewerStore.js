@@ -118,6 +118,50 @@ export const useViewerStore = create((set) => ({
   customFBX: null,
   customGLB: null,
   customUSDZ: null,
+
+  // Branding & Overview
+  projectTitle: 'The Pinnacle Residence',
+  companyName: 'ARCHVIZ STUDIO LTD.',
+  projectDescription: 'Welcome to the ultimate expression of modern architectural design. Nestled in the prestigious hills, this property features breathtaking panoramic views, seamless indoor-outdoor living, and state-of-the-art cinematic finishes.',
+  logoUrl: null,
+  overviewMediaType: 'images',
+  overviewVideoUrl: null,
+
+  setProjectTitle: (title) => set({ projectTitle: title }),
+  setCompanyName: (name) => set({ companyName: name }),
+  setProjectDescription: (desc) => set({ projectDescription: desc }),
+  setLogoUrl: (url) => set({ logoUrl: url }),
+  setOverviewMediaType: (type) => set({ overviewMediaType: type }),
+  setOverviewVideoUrl: (url) => set({ overviewVideoUrl: url }),
+
+  updateBrandingConfig: async (supabaseClient, updates) => {
+    if (!supabaseClient) return;
+    set(updates); // Optimistic UI
+    try {
+      // Get existing config to merge with
+      const { data: existing } = await supabaseClient
+        .from('properties_config')
+        .select('*')
+        .eq('project_id', 'demo_project')
+        .maybeSingle();
+      
+      const payload = {
+        project_id: 'demo_project',
+        title: updates.projectTitle !== undefined ? updates.projectTitle : existing?.title || 'The Pinnacle Residence',
+        company_name: updates.companyName !== undefined ? updates.companyName : existing?.company_name,
+        project_description: updates.projectDescription !== undefined ? updates.projectDescription : existing?.project_description,
+        logo_url: updates.logoUrl !== undefined ? updates.logoUrl : existing?.logo_url,
+        overview_media_type: updates.overviewMediaType !== undefined ? updates.overviewMediaType : existing?.overview_media_type,
+        overview_video_url: updates.overviewVideoUrl !== undefined ? updates.overviewVideoUrl : existing?.overview_video_url,
+      };
+
+      const { error } = await supabaseClient.from('properties_config').upsert(payload);
+      if (error) console.error("Failed to update branding config:", error);
+    } catch (e) {
+      console.error("Failed to update branding config:", e);
+    }
+  },
+
   setCustomFBX: (url) => set({ customFBX: url }),
   setCustomGLB: (url) => set({ customGLB: url }),
   setCustomUSDZ: (url) => set({ customUSDZ: url }),
@@ -441,6 +485,12 @@ export const useViewerStore = create((set) => ({
         .maybeSingle();
 
       if (!configError && configData) {
+        if (configData.title) set({ projectTitle: configData.title });
+        if (configData.company_name) set({ companyName: configData.company_name });
+        if (configData.project_description) set({ projectDescription: configData.project_description });
+        if (configData.logo_url) set({ logoUrl: configData.logo_url });
+        if (configData.overview_media_type) set({ overviewMediaType: configData.overview_media_type });
+        if (configData.overview_video_url) set({ overviewVideoUrl: configData.overview_video_url });
         if (configData.gps_coordinates) set({ customGPS: configData.gps_coordinates });
         if (configData.lighting_preset) set({ lightingPreset: configData.lighting_preset });
         if (configData.active_material) set({ activeMaterial: configData.active_material });

@@ -46,10 +46,15 @@ create table if not exists project_tours (
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 3. Create properties config table (for GPS, Title, and dynamic Lead Scraper overrides)
+-- 3. Create properties config table (for GPS, Title, and dynamic presentation overrides)
 create table if not exists properties_config (
     project_id text primary key,
     title text not null,
+    company_name text default 'ARCHVIZ STUDIO LTD.',
+    project_description text default 'Welcome to the ultimate expression of modern architectural design. Nestled in the prestigious hills, this property features breathtaking panoramic views, seamless indoor-outdoor living, and state-of-the-art cinematic finishes.',
+    logo_url text,
+    overview_media_type text default 'images',
+    overview_video_url text,
     gps_coordinates text,
     lighting_preset text default 'noon',
     active_material text default 'marble'
