@@ -54,7 +54,8 @@ export default function PresentationApp({ forceAdmin = false }) {
   const projectTitle = useViewerStore(state => state.projectTitle);
   const companyName = useViewerStore(state => state.companyName);
   const logoUrl = useViewerStore(state => state.logoUrl);
-  
+  const mapMode = useViewerStore(state => state.mapMode);
+    
   const [isAdmin] = useState(() => {
     if (forceAdmin) return true;
     const params = new URLSearchParams(window.location.search);
@@ -64,7 +65,8 @@ export default function PresentationApp({ forceAdmin = false }) {
   const accentColor = useViewerStore(state => state.accentColor);
   
   const [activeTab, setActiveTab] = useState(isAdmin ? 'manage' : 'overview');
-  const isDarkBackgroundTab = ['overview', '3d', 'map', 'panorama'].includes(activeTab);
+  const currentMapMode = mapMode || themeMode || 'dark';
+  const isDarkBackgroundTab = ['overview', '3d', 'panorama'].includes(activeTab) || (activeTab === 'map' && currentMapMode === 'dark');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth <= 1100);

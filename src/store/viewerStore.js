@@ -25,6 +25,8 @@ export const useViewerStore = create(
 
   // Global Theme
   themeMode: 'dark', // 'dark', 'light'
+  mapMode: null,
+  setMapMode: (mode) => set({ mapMode: mode }),
   setThemeMode: (mode) => set({ themeMode: mode }),
   accentColor: '#3b82f6',
   setAccentColor: (color) => set({ accentColor: color }),

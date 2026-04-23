@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useViewerStore } from '../store/viewerStore';
 
 export default function ProjectMap() {
-  const { customGPS, themeMode } = useViewerStore();
-  const [mapMode, setMapMode] = useState(themeMode || 'dark'); // Matches global theme
+  const { customGPS, themeMode, mapMode, setMapMode } = useViewerStore();
+  const currentMapMode = mapMode || themeMode || 'dark';
   
   let srcUrl = '';
 
@@ -26,7 +26,7 @@ export default function ProjectMap() {
   }
 
   // Zero-API Dark Mode hack for Google Maps (Inverts brightness, restores hue)
-  const filterStyle = mapMode === 'dark' 
+  const filterStyle = currentMapMode === 'dark' 
     ? 'invert(100%) hue-rotate(180deg) contrast(100%) grayscale(20%)' 
     : 'none';
 
@@ -47,11 +47,11 @@ export default function ProjectMap() {
             className="hover-lift"
             style={{
                padding: '10px 24px', borderRadius: '12px', border: 'none',
-               background: mapMode === mode ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
-               color: mapMode === mode ? 'white' : 'rgba(255,255,255,0.6)',
-               fontWeight: mapMode === mode ? 'bold' : '600', cursor: 'pointer', textTransform: 'capitalize',
+               background: currentMapMode === mode ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
+               color: currentMapMode === mode ? 'white' : 'rgba(255,255,255,0.6)',
+               fontWeight: currentMapMode === mode ? 'bold' : '600', cursor: 'pointer', textTransform: 'capitalize',
                transition: 'all 0.3s ease',
-               boxShadow: mapMode === mode ? '0 4px 16px var(--accent-glow)' : 'none'
+               boxShadow: currentMapMode === mode ? '0 4px 16px var(--accent-glow)' : 'none'
             }}
           >
              {mode} Mode
