@@ -22,6 +22,8 @@
   /* Shadows */
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
   --shadow-glass: inset 0 1px 0 rgba(255,255,255,0.1);
+  --logo-shadow: 0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
+  --logo-shadow-sm: 0 1px 8px rgba(0,0,0,0.9);
 }
 
 body.light-mode {
@@ -46,6 +48,8 @@ body.light-mode {
   /* Shadows */
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.05);
   --shadow-glass: inset 0 1px 0 rgba(255,255,255,0.8);
+  --logo-shadow: 0 2px 12px rgba(0,0,0,0.1), 0 0 4px rgba(0,0,0,0.05);
+  --logo-shadow-sm: 0 1px 8px rgba(0,0,0,0.1);
 }
 
 * {

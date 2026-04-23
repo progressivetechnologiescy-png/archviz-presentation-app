@@ -112,7 +112,7 @@ export default function AvailabilityTab() {
                   className="hover-lift"
                   style={{ 
                     background: isSelected ? 'rgba(59, 130, 246, 0.05)' : 'var(--bg-panel)',
-                    border: isSelected ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.05)',
+                    border: isSelected ? '1px solid var(--accent-color)' : '1px solid var(--border-color)',
                     borderRadius: '16px', padding: '32px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px',
                     transition: 'all 0.3s ease'
@@ -121,38 +121,38 @@ export default function AvailabilityTab() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '48px', flexWrap: 'wrap', flex: 1 }}>
                     <div style={{ minWidth: '80px' }}>
                       <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600' }}>Apartment</div>
-                      <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>{unit.id}</div>
+                      <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{unit.id}</div>
                     </div>
                     
                     <div style={{ display: 'flex', gap: '48px' }}>
                       <div>
                         <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600' }}>Beds</div>
-                        <div style={{ fontSize: '18px', color: 'white', fontWeight: '500' }}>{unit.beds}</div>
+                        <div style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: '500' }}>{unit.beds}</div>
                       </div>
                       <div>
                         <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600' }}>Baths</div>
-                        <div style={{ fontSize: '18px', color: 'white', fontWeight: '500' }}>{unit.baths}</div>
+                        <div style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: '500' }}>{unit.baths}</div>
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '48px' }}>
                       <div>
                         <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600' }}>Covered</div>
-                        <div style={{ fontSize: '18px', color: 'white', fontWeight: '500' }}>{unit.coveredSqM} m²</div>
+                        <div style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: '500' }}>{unit.coveredSqM} m²</div>
                       </div>
                       <div>
                         <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600' }}>Uncovered</div>
-                        <div style={{ fontSize: '18px', color: 'white', fontWeight: '500' }}>{unit.uncoveredSqM} m²</div>
+                        <div style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: '500' }}>{unit.uncoveredSqM} m²</div>
                       </div>
                     </div>
 
                     <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
                       <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600' }}>Price</div>
-                      <div style={{ fontSize: '20px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: 'bold' }}>{unit.price}</div>
+                      <div style={{ fontSize: '20px', color: isSelected ? 'var(--accent-color)' : 'var(--text-primary)', fontWeight: 'bold' }}>{unit.price}</div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '32px', borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '32px', minWidth: '220px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '32px', borderLeft: '1px solid var(--border-color)', paddingLeft: '32px', minWidth: '220px' }}>
                     <div>
                       <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600', textAlign: 'center' }}>Plan</div>
                       {customFloorplans && customFloorplans.length > 0 ? (
@@ -160,7 +160,7 @@ export default function AvailabilityTab() {
                           onClick={(e) => handlePreviewFloorplan(e, unit)}
                           className="hover-lift"
                           style={{ 
-                            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', 
+                            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-primary)', 
                             borderRadius: '8px', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                           }}>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -199,7 +199,7 @@ export default function AvailabilityTab() {
                           <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>
                               <span>Down Payment ({downPaymentPct}%)</span>
-                              <span style={{ color: 'white', fontWeight: 'bold' }}>€{(numericPrice * (downPaymentPct / 100)).toLocaleString()}</span>
+                              <span style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>€{(numericPrice * (downPaymentPct / 100)).toLocaleString()}</span>
                             </div>
                             <input type="range" min="10" max="100" step="5" value={downPaymentPct} onChange={(e) => setDownPaymentPct(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent-color)' }} />
                           </div>
@@ -230,7 +230,7 @@ export default function AvailabilityTab() {
                               <button 
                                 onClick={() => setInquireStatus('form')}
                                 className="hover-lift"
-                                style={{ flex: 1, background: 'var(--accent-color)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
+                                style={{ flex: 1, background: 'var(--accent-color)', color: 'var(--text-primary)', border: 'none', padding: '12px 24px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
                                 Inquire Unit #{unit.id}
                               </button>
                             </div>
@@ -238,11 +238,11 @@ export default function AvailabilityTab() {
                         )}
                         {inquireStatus === 'form' && (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <input type="text" placeholder="Full Name" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '12px', borderRadius: '8px', fontSize: '14px', outline: 'none' }} />
-                            <input type="email" placeholder="Email Address" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '12px', borderRadius: '8px', fontSize: '14px', outline: 'none' }} />
+                            <input type="text" placeholder="Full Name" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '14px', outline: 'none' }} />
+                            <input type="email" placeholder="Email Address" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '14px', outline: 'none' }} />
                             <div style={{ display: 'flex', gap: '8px' }}>
                               <button onClick={() => setInquireStatus('idle')} style={{ flex: 1, background: 'transparent', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
-                              <button onClick={() => setInquireStatus('success')} className="hover-lift" style={{ flex: 1, background: 'var(--accent-color)', color: 'white', border: 'none', padding: '12px', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold' }}>Submit</button>
+                              <button onClick={() => setInquireStatus('success')} className="hover-lift" style={{ flex: 1, background: 'var(--accent-color)', color: 'var(--text-primary)', border: 'none', padding: '12px', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold' }}>Submit</button>
                             </div>
                           </div>
                         )}
@@ -280,7 +280,7 @@ export default function AvailabilityTab() {
             onClick={() => setPreviewImageUrl(null)}
             style={{
               position: 'absolute', top: '32px', right: '32px',
-              background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
+              background: 'rgba(255,255,255,0.1)', border: 'none', color: 'var(--text-primary)',
               width: '48px', height: '48px', borderRadius: '50%',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '24px', transition: 'background 0.2s', zIndex: 10000

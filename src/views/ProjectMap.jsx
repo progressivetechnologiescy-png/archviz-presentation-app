@@ -37,7 +37,7 @@ export default function ProjectMap() {
       <div style={{ 
         position: 'absolute', top: '120px', right: '32px', zIndex: 10, 
         display: 'flex', gap: '4px', background: 'rgba(10,12,16,0.7)', 
-        padding: '6px', borderRadius: '40px', backdropFilter: 'blur(10px)', 
+        padding: '6px', borderRadius: '16px', backdropFilter: 'blur(10px)', 
         border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' 
       }}>
         {['dark', 'light'].map(mode => (
@@ -46,7 +46,7 @@ export default function ProjectMap() {
             onClick={() => setMapMode(mode)}
             className="hover-lift"
             style={{
-               padding: '10px 24px', borderRadius: '30px', border: 'none',
+               padding: '10px 24px', borderRadius: '12px', border: 'none',
                background: mapMode === mode ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
                color: mapMode === mode ? 'white' : 'var(--text-primary)',
                fontWeight: mapMode === mode ? 'bold' : '600', cursor: 'pointer', textTransform: 'capitalize',

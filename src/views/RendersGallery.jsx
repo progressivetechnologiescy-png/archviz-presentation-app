@@ -103,8 +103,8 @@ export default function RendersGallery() {
                 onClick={() => setActiveFolder(folder)}
                 style={{
                   padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
-                  border: activeFolder === folder ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
-                  background: activeFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
+                  border: activeFolder === folder ? '1px solid var(--accent-color)' : '1px solid var(--border-color)',
+                  background: activeFolder === folder ? 'var(--accent-glow)' : 'var(--input-bg)',
                   color: activeFolder === folder ? 'var(--accent-color)' : 'var(--text-secondary)',
                   transition: 'all 0.2s'
                 }}

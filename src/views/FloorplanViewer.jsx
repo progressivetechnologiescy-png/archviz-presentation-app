@@ -171,9 +171,9 @@ export default function FloorplanViewer() {
                       key={plan.id}
                       onClick={() => setActiveFloorplanId(plan.id)}
                       style={{
-                        padding: '12px 20px', borderRadius: '12px', border: activeFloorplanId === plan.id ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent', textAlign: 'left',
-                        background: activeFloorplanId === plan.id ? 'rgba(255,255,255,0.1)' : 'transparent',
-                        color: activeFloorplanId === plan.id ? 'white' : 'var(--text-secondary)',
+                        padding: '12px 20px', borderRadius: '12px', border: activeFloorplanId === plan.id ? '1px solid var(--border-color)' : '1px solid transparent', textAlign: 'left',
+                        background: activeFloorplanId === plan.id ? 'var(--input-bg)' : 'transparent',
+                        color: activeFloorplanId === plan.id ? 'var(--text-primary)' : 'var(--text-secondary)',
                         fontWeight: activeFloorplanId === plan.id ? 'bold' : '500', cursor: 'pointer', transition: 'all 0.3s ease',
                         fontSize: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                       }}>

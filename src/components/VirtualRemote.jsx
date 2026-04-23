@@ -13,7 +13,7 @@ const ArrowButton = (props) => {
       style={{
         width: '48px', height: '48px',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        border: 'none', background: 'rgba(255,255,255,0.05)', color: 'white',
+        border: 'none', background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)',
         cursor: 'pointer', borderRadius: '12px',
         ...props.style
       }}
@@ -84,7 +84,7 @@ export default function VirtualRemote() {
       {/* Secondary Camera Rotation Pad (Right Side Joystick) */}
       <div className="glass-panel virtual-joystick-right">
         <ArrowButton direction="lookLeft" icon={RotateCcw} style={{ width: '64px' }} setMovement={setMovement} />
-        <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>Look</span>
+        <span style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>Look</span>
         <ArrowButton direction="lookRight" icon={RotateCw} style={{ width: '64px' }} setMovement={setMovement} />
       </div>
     </>
