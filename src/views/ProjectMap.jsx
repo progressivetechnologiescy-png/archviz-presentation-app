@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 
 export default function ProjectMap() {
-  const { customGPS } = useViewerStore();
-  const [mapMode, setMapMode] = useState('dark'); // 'dark' or 'light'
+  const { customGPS, themeMode } = useViewerStore();
+  const [mapMode, setMapMode] = useState(themeMode || 'dark'); // Matches global theme
   
   let srcUrl = '';
 
