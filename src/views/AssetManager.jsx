@@ -86,7 +86,7 @@ function convertToEmbedUrl(url) {
 
 export default function AssetManager() {
   const { 
-    projectTitle, companyName, projectDescription, logoUrl, overviewMediaType, overviewVideoUrl, updateBrandingConfig,
+    projectTitle, setProjectTitle, companyName, setCompanyName, projectDescription, setProjectDescription, logoUrl, overviewMediaType, overviewVideoUrl, setOverviewVideoUrl, updateBrandingConfig,
     customFBX, setCustomFBX, 
     customGLB, setCustomGLB,
     customUSDZ, setCustomUSDZ,
@@ -416,7 +416,8 @@ export default function AssetManager() {
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Project Title</label>
                     <input 
                       type="text" 
-                      defaultValue={projectTitle}
+                      value={projectTitle || ''}
+                      onChange={(e) => setProjectTitle(e.target.value)}
                       onBlur={(e) => updateBrandingConfig(supabase, { projectTitle: e.target.value })}
                       style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                     />
@@ -425,7 +426,8 @@ export default function AssetManager() {
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Company Name</label>
                     <input 
                       type="text" 
-                      defaultValue={companyName}
+                      value={companyName || ''}
+                      onChange={(e) => setCompanyName(e.target.value)}
                       onBlur={(e) => updateBrandingConfig(supabase, { companyName: e.target.value })}
                       style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                     />
@@ -433,7 +435,8 @@ export default function AssetManager() {
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Overview Description</label>
                     <textarea 
-                      defaultValue={projectDescription}
+                      value={projectDescription || ''}
+                      onChange={(e) => setProjectDescription(e.target.value)}
                       onBlur={(e) => updateBrandingConfig(supabase, { projectDescription: e.target.value })}
                       rows={4}
                       style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', resize: 'vertical', fontFamily: 'inherit', fontSize: '15px', lineHeight: '1.5' }} 
@@ -475,20 +478,16 @@ export default function AssetManager() {
                 </div>
 
                 {overviewMediaType === 'video' && (
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>YouTube Embed URL</label>
-                    <input 
-                      type="text" 
-                      defaultValue={overviewVideoUrl || ''}
-                      placeholder="e.g. https://www.youtube.com/embed/..."
-                      onBlur={(e) => {
-                        const url = e.target.value.trim();
-                        const finalUrl = url ? convertToEmbedUrl(url) : null;
-                        updateBrandingConfig(supabase, { overviewVideoUrl: finalUrl });
-                        e.target.value = finalUrl || '';
-                      }}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
-                    />
+                    <div style={{ marginTop: '16px', animation: 'fadeIn 0.3s ease-out' }}>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>YouTube Video Link (Background)</label>
+                      <input 
+                        type="text" 
+                        value={overviewVideoUrl || ''}
+                        onChange={(e) => setOverviewVideoUrl(e.target.value)}
+                        onBlur={(e) => updateBrandingConfig(supabase, { overviewVideoUrl: e.target.value })}
+                        placeholder="https://youtu.be/..."
+                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
+                      />
                     {overviewVideoUrl && (
                       <div style={{ marginTop: '16px', width: '100%', aspectRatio: '16/9', borderRadius: '8px', overflow: 'hidden' }}>
                         <iframe 
