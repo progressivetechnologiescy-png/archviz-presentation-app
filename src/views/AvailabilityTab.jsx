@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 
-const DUMMY_UNITS = [
-  { id: '101', type: '2 Bed, 2 Bath', sqft: 1450, price: '€1,250,000', status: 'Sold' },
-  { id: '102', type: '3 Bed, 3 Bath', sqft: 2100, price: '€1,850,000', status: 'Available' },
-  { id: '201', type: '2 Bed, 2 Bath', sqft: 1500, price: '€1,350,000', status: 'Available' },
-  { id: '202', type: '3 Bed, 3.5 Bath', sqft: 2200, price: '€2,100,000', status: 'Reserved' },
-  { id: '301', type: 'Penthouse', sqft: 3500, price: '€4,500,000', status: 'Available' },
-];
+
 
 export default function AvailabilityTab() {
   const [filter, setFilter] = useState('All');
@@ -17,9 +11,9 @@ export default function AvailabilityTab() {
   const [inquireStatus, setInquireStatus] = useState('idle'); // idle, form, success
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
 
-  const { customFloorplans } = useViewerStore();
+  const { customFloorplans, inventoryUnits } = useViewerStore();
 
-  const filteredUnits = DUMMY_UNITS.filter(unit => filter === 'All' || unit.status === filter);
+  const filteredUnits = (inventoryUnits || []).filter(unit => filter === 'All' || unit.status === filter);
 
   const getStatusColor = (status) => {
     switch(status) {

@@ -33,6 +33,14 @@ export const useViewerStore = create((set) => ({
 
   customFloorplans: [],
   activeFloorplanId: null,
+
+  inventoryUnits: [
+    { id: '101', type: '2 Bed, 2 Bath', sqft: 1450, price: '€1,250,000', status: 'Sold' },
+    { id: '102', type: '3 Bed, 3 Bath', sqft: 2100, price: '€1,850,000', status: 'Available' },
+    { id: '201', type: '2 Bed, 2 Bath', sqft: 1500, price: '€1,350,000', status: 'Available' },
+    { id: '202', type: '3 Bed, 3.5 Bath', sqft: 2200, price: '€2,100,000', status: 'Reserved' },
+    { id: '301', type: 'Penthouse', sqft: 3500, price: '€4,500,000', status: 'Available' },
+  ],
   
   // Interactive 360 Spatial Tour Database
   activeTourNodeId: 'node_exterior',
@@ -81,12 +89,10 @@ export const useViewerStore = create((set) => ({
           position: [50, -50, -150],
           label: 'Details',
           targetNodeId: null,
+          unitId: '102',
           panelData: {
-            title: 'Modern Living Space',
-            subtitle: 'Featuring custom Italian furniture and smart home integration.',
-            area: '85m2',
-            beds: 'N/A',
-            roof: 'N/A',
+            title: 'Unit #102',
+            subtitle: 'South-facing corner unit with panoramic ocean views.',
             image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop'
           }
         }
