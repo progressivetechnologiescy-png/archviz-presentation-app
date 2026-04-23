@@ -30,8 +30,8 @@ export default function RendersGallery() {
     const idxB = sortedFolders.indexOf(b.folder_name);
     if (idxA !== idxB) return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
     
-    // Then by image ID or creation order within the folder
-    return (a.id || 0) > (b.id || 0) ? 1 : -1;
+    // Preserve chronological DB sort (created_at DESC) for images within the same folder
+    return 0;
   });
 
   const [thumbnailSize, setThumbnailSize] = useState('medium'); // small, medium, large
