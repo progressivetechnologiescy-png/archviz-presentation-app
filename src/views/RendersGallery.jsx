@@ -19,20 +19,22 @@ export default function RendersGallery() {
     }
   });
 
+  const uniqueFolders = [...new Set((customRenders || []).map(r => r.folder_name).filter(Boolean))];
+  const sortedFolders = uniqueFolders.sort((a, b) => (folderOrderMap[a] || 0) - (folderOrderMap[b] || 0));
+  const folders = ['All', ...sortedFolders];
+
   const displayImages = (customRenders || []).map(r => 
     typeof r === 'string' ? { image_url: r, folder_name: 'Uncategorized', folder_order: 999, id: 0 } : r
   ).sort((a, b) => {
-    // Sort by folder order first
-    const orderA = folderOrderMap[a.folder_name] || 0;
-    const orderB = folderOrderMap[b.folder_name] || 0;
-    if (orderA !== orderB) return orderA - orderB;
+    const idxA = sortedFolders.indexOf(a.folder_name);
+    const idxB = sortedFolders.indexOf(b.folder_name);
+    if (idxA !== idxB) return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+    
     // Then by image ID or creation order within the folder
     return (a.id || 0) > (b.id || 0) ? 1 : -1;
   });
 
   const [thumbnailSize, setThumbnailSize] = useState('medium'); // small, medium, large
-  
-  const folders = ['All', ...[...new Set(displayImages.map(r => r.folder_name))]];
 
   // Autoplay Slideshow Logic
   useEffect(() => {

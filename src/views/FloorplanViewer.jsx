@@ -191,7 +191,7 @@ export default function FloorplanViewer() {
                   {/* Image Layer */}
                   <div style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                    background: `url(${plan.image_url}) center/contain no-repeat`,
+                    background: `url(${plan.image_url}) center/cover no-repeat`,
                     backgroundColor: 'rgba(5, 8, 12, 0.6)'
                   }} />
                   
