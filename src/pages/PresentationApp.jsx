@@ -25,7 +25,7 @@ const TabButton = (props) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: props.isMobile ? '16px' : '30px',
+        display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '12px',
         background: props.active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'),
         border: 'none',
         color: 'white',
@@ -60,6 +60,9 @@ export default function PresentationApp({ forceAdmin = false }) {
     const params = new URLSearchParams(window.location.search);
     return params.get('admin') === 'true';
   });
+  const themeMode = useViewerStore(state => state.themeMode);
+  const accentColor = useViewerStore(state => state.accentColor);
+  
   const [activeTab, setActiveTab] = useState(isAdmin ? 'manage' : 'overview');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -75,6 +78,16 @@ export default function PresentationApp({ forceAdmin = false }) {
   useEffect(() => {
     fetchCloudAssets(supabase);
   }, [fetchCloudAssets]);
+
+  // Inject Theme Mode and Accent Color globally
+  useEffect(() => {
+    if (themeMode === 'light') {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+    document.documentElement.style.setProperty('--accent-color', accentColor);
+  }, [themeMode, accentColor]);
 
   // Reset scroll state on tab switch
   useEffect(() => {
@@ -149,7 +162,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         {activeTab !== 'manage' ? (
           <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
             <div className="glass-panel" style={{ 
-              display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px',
+              display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
               background: 'rgba(10, 12, 16, 0.8)',
               boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
             }}>

@@ -23,6 +23,12 @@ export const useViewerStore = create(
   lightingPreset: 'noon', // 'morning', 'noon', 'night'
   setLightingPreset: (preset) => set({ lightingPreset: preset }),
 
+  // Global Theme
+  themeMode: 'dark', // 'dark', 'light'
+  setThemeMode: (mode) => set({ themeMode: mode }),
+  accentColor: '#3b82f6',
+  setAccentColor: (color) => set({ accentColor: color }),
+
   // Material Swap state
   activeMaterial: 'marble', // 'marble', 'wood', 'concrete'
   setActiveMaterial: (material) => set({ activeMaterial: material }),
@@ -310,6 +316,8 @@ export const useViewerStore = create(
         logo_url: updates.logoUrl !== undefined ? updates.logoUrl : existing?.logo_url,
         overview_media_type: updates.overviewMediaType !== undefined ? updates.overviewMediaType : existing?.overview_media_type,
         overview_video_url: updates.overviewVideoUrl !== undefined ? updates.overviewVideoUrl : existing?.overview_video_url,
+        theme_mode: updates.themeMode !== undefined ? updates.themeMode : existing?.theme_mode,
+        accent_color: updates.accentColor !== undefined ? updates.accentColor : existing?.accent_color,
       };
 
       const { error } = await supabaseClient.from('properties_config').upsert(payload, { onConflict: 'project_id' });
@@ -692,6 +700,8 @@ export const useViewerStore = create(
         if (configData.gemini_api_key) set({ geminiApiKey: configData.gemini_api_key });
         if (configData.ai_context) set({ aiContext: configData.ai_context });
         if (configData.inventory_data) set({ inventoryUnits: configData.inventory_data });
+        if (configData.theme_mode) set({ themeMode: configData.theme_mode });
+        if (configData.accent_color) set({ accentColor: configData.accent_color });
       }
     } catch (e) {
       console.error("Cloud Connection Failed:", e);

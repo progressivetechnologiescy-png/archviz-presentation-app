@@ -6,7 +6,7 @@
   --bg-panel: rgba(18, 22, 30, 0.45);
   
   --accent-color: #3b82f6;
-  --accent-glow: rgba(59, 130, 246, 0.3);
+  --accent-glow: color-mix(in srgb, var(--accent-color) 30%, transparent);
   
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.5);
@@ -18,6 +18,26 @@
   /* Shadows */
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
   --shadow-glass: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+body.light-mode {
+  --bg-dark: #f8fafc;
+  --bg-gradient: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+  --bg-panel: rgba(255, 255, 255, 0.65);
+  
+  /* Keep accent color dynamic */
+  --accent-glow: color-mix(in srgb, var(--accent-color) 30%, transparent);
+  
+  --text-primary: #0f172a;
+  --text-secondary: rgba(15, 23, 42, 0.6);
+  
+  /* Glass Borders for Light Mode */
+  --border-glass: rgba(0, 0, 0, 0.08);
+  --border-glass-light: rgba(0, 0, 0, 0.15);
+  
+  /* Shadows */
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.05);
+  --shadow-glass: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
 * {

@@ -96,7 +96,9 @@ export default function AssetManager() {
     customRenders, addCustomRender,
     customGPS, setCustomGPS,
     geminiApiKey, setGeminiApiKey,
-    aiContext, setAiContext
+    aiContext, setAiContext,
+    themeMode, setThemeMode,
+    accentColor, setAccentColor
   } = useViewerStore();
 
 
@@ -494,20 +496,59 @@ export default function AssetManager() {
                     />
                   </div>
                 </div>
-                <div style={{ flex: '0 0 200px' }}>
-                  <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Logo</h3>
-                  <FileInput 
-                    label="Upload Logo" 
-                    accept="image/*" 
-                    onDrop={handleUploadLogo} 
-                    isUploaded={!!logoUrl} 
-                    onClear={() => updateBrandingConfig(supabase, { logoUrl: null })}
-                  />
-                  {logoUrl && (
-                    <div style={{ marginTop: '16px', background: 'white', padding: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'center' }}>
-                      <img src={logoUrl} alt="Logo" style={{ maxWidth: '100%', maxHeight: '80px', objectFit: 'contain' }} />
+                <div style={{ flex: '0 0 200px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Logo</h3>
+                    <FileInput 
+                      label="Upload Logo" 
+                      accept="image/*" 
+                      onDrop={handleUploadLogo} 
+                      isUploaded={!!logoUrl} 
+                      onClear={() => updateBrandingConfig(supabase, { logoUrl: null })}
+                    />
+                    {logoUrl && (
+                      <div style={{ marginTop: '16px', background: 'white', padding: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'center' }}>
+                        <img src={logoUrl} alt="Logo" style={{ maxWidth: '100%', maxHeight: '80px', objectFit: 'contain' }} />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Theme Mode and Color Picker */}
+                  <div>
+                    <h3 style={{ margin: '0 0 16px', fontSize: '20px' }}>Global Theme</h3>
+                    
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Theme Mode</label>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                      <button 
+                        onClick={() => {
+                          setThemeMode('dark');
+                          updateBrandingConfig(supabase, { themeMode: 'dark' });
+                        }}
+                        style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: themeMode === 'dark' ? 'var(--accent-color)' : 'rgba(0,0,0,0.2)', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}>
+                        Dark
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setThemeMode('light');
+                          updateBrandingConfig(supabase, { themeMode: 'light' });
+                        }}
+                        style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: themeMode === 'light' ? 'var(--accent-color)' : 'rgba(0,0,0,0.2)', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}>
+                        Light
+                      </button>
                     </div>
-                  )}
+
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Accent Color</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <input 
+                        type="color" 
+                        value={accentColor || '#3b82f6'}
+                        onChange={(e) => setAccentColor(e.target.value)}
+                        onBlur={(e) => updateBrandingConfig(supabase, { accentColor: e.target.value })}
+                        style={{ width: '48px', height: '48px', padding: '0', border: 'none', borderRadius: '8px', cursor: 'pointer', background: 'transparent' }} 
+                      />
+                      <span style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{accentColor}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
