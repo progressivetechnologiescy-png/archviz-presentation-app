@@ -35,14 +35,14 @@ export const useViewerStore = create((set) => ({
   activeFloorplanId: null,
   
   // Interactive 360 Spatial Tour Database
-  activeTourNodeId: 'node_aerial_01',
+  activeTourNodeId: 'node_limassol_aerial',
   activeHotspotData: null,
   setActiveHotspotData: (data) => set({ activeHotspotData: data }),
   customTourNodes: {
-    'node_aerial_01': {
-      id: 'node_aerial_01',
+    'node_limassol_aerial': {
+      id: 'node_limassol_aerial',
       url: 'https://images.unsplash.com/photo-1552083375-1447ce886485?q=80&w=3000&auto=format&fit=crop', // Temporary placeholder pano
-      title: 'City Aerial View',
+      title: 'Limassol Aerial View',
       hotspots: [
         {
           id: 'hs_1',
@@ -103,6 +103,23 @@ export const useViewerStore = create((set) => ({
         }
       ]
     },
+    'node_larnaca_aerial': {
+      id: 'node_larnaca_aerial',
+      url: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=3000&auto=format&fit=crop',
+      title: 'Larnaca Aerial View',
+      hotspots: [
+        {
+          id: 'hs_larnaca_1',
+          type: 'detailed-label',
+          position: [-100, -20, 300],
+          label: 'MARINA RESIDENCES',
+          subLabel: 'COMPLETED',
+          percentage: '100%',
+          targetNodeId: 'node_limassol_aerial', // just link back for demo
+          panelData: null
+        }
+      ]
+    },
     'node_ritz': {
       id: 'node_ritz',
       url: 'https://images.unsplash.com/photo-1541881519129-cbdd601247d4?q=80&w=3000&auto=format&fit=crop',
@@ -112,8 +129,8 @@ export const useViewerStore = create((set) => ({
           id: 'hs_back',
           type: 'text-box',
           position: [0, 0, 400],
-          label: 'BACK TO CITY VIEW',
-          targetNodeId: 'node_aerial_01',
+          label: 'BACK TO LIMASSOL VIEW',
+          targetNodeId: 'node_limassol_aerial',
           panelData: null
         }
       ]
