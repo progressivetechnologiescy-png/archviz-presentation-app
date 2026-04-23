@@ -364,32 +364,47 @@ export default function AssetManager() {
           </p>
         </div>
 
-        {/* Tab Navigation */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', overflowX: 'auto' }}>
-          {['overview', 'models', 'renders', 'cinematics', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer',
-                background: activeTab === tab ? 'var(--accent-color)' : 'transparent',
-                color: activeTab === tab ? 'white' : 'var(--text-secondary)',
-                border: 'none', transition: 'all 0.2s', whiteSpace: 'nowrap'
-              }}
-            >
-              {tab === 'overview' && 'Overview & Branding'}
-              {tab === 'models' && '3D Models & Scene'}
-              {tab === 'renders' && 'Render Gallery'}
-              {tab === 'cinematics' && 'Cinematics'}
-              {tab === 'floorplans' && 'Floorplans'}
-              {tab === 'tours' && '360° Tours'}
-              {tab === 'availability' && 'Availability Grid'}
-              {tab === 'ai_settings' && 'Emma AI Settings'}
-            </button>
-          ))}
-        </div>
+        <style>{`
+          .cms-layout { display: flex; gap: 32px; align-items: flex-start; }
+          .cms-sidebar { width: 240px; flex-shrink: 0; position: sticky; top: 80px; display: flex; flex-direction: column; gap: 8px; }
+          .cms-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+          
+          @media (max-width: 768px) {
+            .cms-layout { flex-direction: column; gap: 24px; }
+            .cms-sidebar { width: 100%; position: static; flex-direction: row; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--border-glass); }
+          }
+        `}</style>
+        
+        <div className="cms-layout">
+          {/* Sidebar Menu */}
+          <div className="cms-sidebar">
+            {['overview', 'models', 'renders', 'cinematics', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className="hover-lift"
+                style={{
+                  padding: '14px 20px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left',
+                  background: activeTab === tab ? 'var(--accent-color)' : 'rgba(0,0,0,0.2)',
+                  color: activeTab === tab ? 'white' : 'var(--text-secondary)',
+                  border: activeTab === tab ? '1px solid rgba(255,255,255,0.1)' : '1px solid var(--border-glass)', 
+                  transition: 'all 0.2s', whiteSpace: 'nowrap'
+                }}
+              >
+                {tab === 'overview' && 'Overview & Branding'}
+                {tab === 'models' && '3D Models & Scene'}
+                {tab === 'renders' && 'Render Gallery'}
+                {tab === 'cinematics' && 'Cinematics'}
+                {tab === 'floorplans' && 'Floorplans'}
+                {tab === 'tours' && '360° Tours'}
+                {tab === 'availability' && 'Availability Grid'}
+                {tab === 'ai_settings' && 'Emma AI Settings'}
+              </button>
+            ))}
+          </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Main Content Area */}
+          <div className="cms-content">
 
           {/* TAB: OVERVIEW & BRANDING */}
           {activeTab === 'overview' && (
