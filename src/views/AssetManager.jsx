@@ -273,11 +273,13 @@ export default function AssetManager() {
 
   // Auto-select the first folder dynamically rather than hardcoding 'Interiors'
   useEffect(() => {
-    if (!selectedFolder && folderList && folderList.length > 0) {
+    if (activeTab === 'floorplans') {
+      setSelectedFolder('All');
+    } else if (!selectedFolder && folderList && folderList.length > 0 && activeTab === 'renders') {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedFolder(folderList[0]);
     }
-  }, [folderList, selectedFolder]);
+  }, [folderList, selectedFolder, activeTab]);
 
   const [prevGps, setPrevGps] = useState(customGPS);
 
@@ -1132,7 +1134,7 @@ export default function AssetManager() {
                   ))}
                 </div>
 
-                {selectedFolder && (
+                {selectedFolder && selectedFolder !== 'All' && propertyTypes.includes(selectedFolder) && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Rename Block:</h4>
