@@ -484,9 +484,14 @@ export default function AssetManager() {
                         type="text" 
                         value={overviewVideoUrl || ''}
                         onChange={(e) => setOverviewVideoUrl(e.target.value)}
-                        onBlur={(e) => updateBrandingConfig(supabase, { overviewVideoUrl: e.target.value })}
+                        onBlur={(e) => {
+                          const url = e.target.value.trim();
+                          const finalUrl = url ? convertToEmbedUrl(url) : '';
+                          setOverviewVideoUrl(finalUrl);
+                          updateBrandingConfig(supabase, { overviewVideoUrl: finalUrl });
+                        }}
                         placeholder="https://youtu.be/..."
-                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
+                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                       />
                     {overviewVideoUrl && (
                       <div style={{ marginTop: '16px', width: '100%', aspectRatio: '16/9', borderRadius: '8px', overflow: 'hidden' }}>
