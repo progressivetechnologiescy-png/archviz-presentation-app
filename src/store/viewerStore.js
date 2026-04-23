@@ -156,9 +156,13 @@ export const useViewerStore = create((set) => ({
       };
 
       const { error } = await supabaseClient.from('properties_config').upsert(payload, { onConflict: 'project_id' });
-      if (error) console.error("Failed to update branding config:", error);
+      if (error) {
+        console.error("Failed to update branding config:", error);
+        alert(`Database Save Error: ${error.message}\n(This usually means the SQL permissions were not applied correctly)`);
+      }
     } catch (e) {
-      console.error("Failed to update branding config:", e);
+      console.error("Exception updating branding config:", e);
+      alert(`Database Exception: ${e.message}`);
     }
   },
 
