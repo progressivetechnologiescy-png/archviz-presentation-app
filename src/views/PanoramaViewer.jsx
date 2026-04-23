@@ -125,8 +125,6 @@ export default function PanoramaViewer() {
     if (spot.targetNodeId && customTourNodes[spot.targetNodeId]) {
       setActiveTourNodeId(spot.targetNodeId);
       setActiveHotspotData(null); // Clear panel on navigation
-    } else if (spot.panelData) {
-      setActiveHotspotData(spot.panelData);
     }
   };
 
@@ -137,105 +135,9 @@ export default function PanoramaViewer() {
       
       {/* Removed Top Controls per user request */}
 
-      {/* Slide-out Side Panel */}
-      <div style={{
-        position: 'absolute', top: 0, right: 0, height: '100%', width: '400px', maxWidth: '100%', zIndex: 40,
-        background: 'rgba(10, 12, 16, 0.85)', backdropFilter: 'blur(24px)', borderLeft: '1px solid rgba(255,255,255,0.05)',
-        transform: activeHotspotData ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        padding: '100px 32px 32px 32px', display: 'flex', flexDirection: 'column',
-        boxShadow: '-10px 0 30px rgba(0,0,0,0.5)', color: 'white'
-      }}>
-        {activeHotspotData && (() => {
-          const unitData = activeHotspotData.unitId ? inventoryUnits?.find(u => u.id === activeHotspotData.unitId) : null;
-          
-          const getStatusColor = (status) => {
-            switch(status) {
-              case 'Available': return 'rgba(34, 197, 94, 0.2)';
-              case 'Reserved': return 'rgba(234, 179, 8, 0.2)';
-              case 'Sold': return 'rgba(239, 68, 68, 0.2)';
-              default: return 'transparent';
-            }
-          };
-          const getStatusTextColor = (status) => {
-            switch(status) {
-              case 'Available': return '#4ade80';
-              case 'Reserved': return '#facc15';
-              case 'Sold': return '#f87171';
-              default: return 'white';
-            }
-          };
+      {/* Slide-out Side Panel Removed per user request */}
 
-          return (
-            <>
-              <button 
-                onClick={() => setActiveHotspotData(null)}
-                style={{ position: 'absolute', top: '32px', right: '32px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.2s' }}
-                className="hover-lift"
-                onMouseOver={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
-              >
-                <X size={20} />
-              </button>
-              <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 8px 0', color: 'white', lineHeight: '1.2' }}>
-                {activeHotspotData.title.split(' ')[0]} <strong style={{ fontWeight: '800' }}>{activeHotspotData.title.split(' ').slice(1).join(' ')}</strong>
-              </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.6', marginBottom: '32px', paddingRight: '20px' }}>
-                {activeHotspotData.subtitle || 'Showcase your property with an immersive sense of presence. Let your buyers explore the space with freedom.'}
-              </p>
-              
-              {unitData ? (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '16px 0', marginBottom: '32px' }}>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Price</div>
-                    <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--accent-color)' }}>{unitData.price}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Area (Sqft)</div>
-                    <div style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>{unitData.sqft}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Status</div>
-                    <div style={{ 
-                      fontSize: '12px', fontWeight: '600', padding: '4px 8px', borderRadius: '12px', display: 'inline-block',
-                      background: getStatusColor(unitData.status), color: getStatusTextColor(unitData.status), border: `1px solid ${getStatusTextColor(unitData.status)}40` 
-                    }}>
-                      {unitData.status}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '16px 0', marginBottom: '32px' }}>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Total Area</div>
-                    <div style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>{activeHotspotData.area || 'N/A'}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Beds</div>
-                    <div style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>{activeHotspotData.beds || 'N/A'}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Roof Garden</div>
-                    <div style={{ fontSize: '18px', fontWeight: '600', color: 'white' }}>{activeHotspotData.roof || 'N/A'}</div>
-                  </div>
-                </div>
-              )}
-
-              {activeHotspotData.image && (
-                <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <img src={activeHotspotData.image} alt="Property" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              )}
-
-              <button className="hover-lift" style={{ width: '100%', padding: '16px', background: 'var(--accent-color)', border: 'none', color: 'white', borderRadius: '30px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px var(--accent-glow)' }}>
-                {unitData ? 'Inquire Unit #' + unitData.id : 'Book A Demo'}
-              </button>
-            </>
-          );
-        })()}
-      </div>
-
-      <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }} style={{ width: activeHotspotData ? 'calc(100% - 400px)' : '100%', transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+      <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }} style={{ width: '100%', height: '100%' }}>
         <Suspense fallback={null}>
           <SphericalPanorama showHotspots={true} onHotspotClick={handleHotspotClick} />
           <OrbitControls enableZoom={true} enablePan={false} rotateSpeed={-0.5} makeDefault />

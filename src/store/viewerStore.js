@@ -82,19 +82,6 @@ export const useViewerStore = create((set) => ({
           label: 'EXIT TO PATIO',
           targetNodeId: 'node_exterior',
           panelData: null
-        },
-        {
-          id: 'hs_info',
-          type: 'simple-pin',
-          position: [50, -50, -150],
-          label: 'Details',
-          targetNodeId: null,
-          unitId: '102',
-          panelData: {
-            title: 'Unit #102',
-            subtitle: 'South-facing corner unit with panoramic ocean views.',
-            image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop'
-          }
         }
       ]
     },
