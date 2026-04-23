@@ -1,6 +1,6 @@
 import React, { useRef, Suspense, useState } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { Environment, PointerLockControls, ContactShadows, Html, useFBX, useGLTF, PerformanceMonitor, SoftShadows, BakeShadows } from '@react-three/drei';
+import { Environment, PointerLockControls, ContactShadows, Html, useProgress, useFBX, useGLTF, PerformanceMonitor, SoftShadows, BakeShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
@@ -131,7 +131,7 @@ function LoadedArchModel() {
   const { customFBX, customGLB, primaryModel } = useViewerStore();
   
   // Prioritize newest uploaded model, fallback to GLB, then FBX, then default
-  const modelUrl = primaryModel || customGLB || customFBX || '/3D FINAL.fbx';
+  const modelUrl = primaryModel || customGLB || customFBX || '/3D_FINAL.fbx';
   const isGLTF = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
 
   return (
@@ -153,6 +153,27 @@ function CustomEnvironment({ url }) {
   texture.mapping = THREE.EquirectangularReflectionMapping;
   texture.colorSpace = THREE.SRGBColorSpace;
   return <Environment map={texture} background={false} environmentIntensity={1.2} />;
+}
+
+// Global 3D Loader
+function ModelLoader() {
+  const { progress } = useProgress();
+  return (
+    <Html center zIndexRange={[100, 0]}>
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(10, 12, 16, 0.8)', padding: '24px 48px', borderRadius: '24px',
+        backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)',
+        color: 'white', whiteSpace: 'nowrap', boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+      }}>
+        <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>Loading 3D Model</div>
+        <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+          <div style={{ width: `${progress}%`, height: '100%', background: 'var(--accent-color)', transition: 'width 0.3s ease' }} />
+        </div>
+        <div style={{ marginTop: '8px', fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}>{progress.toFixed(0)}% Complete</div>
+      </div>
+    </Html>
+  );
 }
 
 export default function ViewerCanvas() {
@@ -192,7 +213,7 @@ export default function ViewerCanvas() {
         <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
         
         <XR store={store}>
-          <Suspense fallback={null}>
+          <Suspense fallback={<ModelLoader />}>
             {/* Reverted SoftShadows to BakeShadows to prevent shader crash */}
             <BakeShadows />
             
