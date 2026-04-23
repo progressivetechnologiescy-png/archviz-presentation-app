@@ -472,7 +472,7 @@ export default function AssetManager() {
                       value={projectTitle || ''}
                       onChange={(e) => setProjectTitle(e.target.value)}
                       onBlur={(e) => updateBrandingConfig(supabase, { projectTitle: e.target.value })}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                     />
                   </div>
                   <div>
@@ -482,7 +482,7 @@ export default function AssetManager() {
                       value={companyName || ''}
                       onChange={(e) => setCompanyName(e.target.value)}
                       onBlur={(e) => updateBrandingConfig(supabase, { companyName: e.target.value })}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                     />
                   </div>
                   <div>
@@ -492,7 +492,7 @@ export default function AssetManager() {
                       onChange={(e) => setProjectDescription(e.target.value)}
                       onBlur={(e) => updateBrandingConfig(supabase, { projectDescription: e.target.value })}
                       rows={4}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', resize: 'vertical', fontFamily: 'inherit', fontSize: '15px', lineHeight: '1.5' }} 
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'white', outline: 'none', resize: 'vertical', fontFamily: 'inherit', fontSize: '15px', lineHeight: '1.5' }} 
                     />
                   </div>
                 </div>
@@ -547,6 +547,15 @@ export default function AssetManager() {
                         style={{ width: '48px', height: '48px', padding: '0', border: 'none', borderRadius: '8px', cursor: 'pointer', background: 'transparent' }} 
                       />
                       <span style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{accentColor}</span>
+                      <button 
+                        onClick={() => {
+                          setAccentColor('#3b82f6');
+                          updateBrandingConfig(supabase, { accentColor: '#3b82f6' });
+                        }}
+                        style={{ marginLeft: 'auto', padding: '6px 12px', borderRadius: '6px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '12px' }}
+                      >
+                        Reset Default
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -583,7 +592,7 @@ export default function AssetManager() {
                           updateBrandingConfig(supabase, { overviewVideoUrl: finalUrl });
                         }}
                         placeholder="https://youtu.be/..."
-                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
+                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                       />
                     {overviewVideoUrl && (
                       <div style={{ marginTop: '16px', width: '100%', aspectRatio: '16/9', borderRadius: '8px', overflow: 'hidden' }}>
@@ -632,7 +641,7 @@ export default function AssetManager() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <input type="text" value={gpsInput} onChange={(e) => setGpsInput(e.target.value)} placeholder="e.g., 'Limassol, Cyprus'" style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }} />
+                  <input type="text" value={gpsInput} onChange={(e) => setGpsInput(e.target.value)} placeholder="e.g., 'Limassol, Cyprus'" style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'white' }} />
                   <button onClick={handleSaveGPS} style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Save Location</button>
                 </div>
               </div>
@@ -649,7 +658,7 @@ export default function AssetManager() {
                     type="text" 
                     id="newFolderName"
                     placeholder="e.g. 'Living Room' or 'Exteriors'"
-                    style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }}
+                    style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'white' }}
                   />
                   <button 
                     onClick={() => {
@@ -959,8 +968,8 @@ export default function AssetManager() {
 
               <div style={{ display: 'flex', gap: '16px', marginBottom: '32px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <input id="new-video-title" type="text" placeholder="Video Title (e.g. Drone Flyover)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
-                  <input id="new-video-url" type="text" placeholder="YouTube Embed URL (e.g. https://www.youtube.com/embed/...)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} />
+                  <input id="new-video-title" type="text" placeholder="Video Title (e.g. Drone Flyover)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'white', outline: 'none' }} />
+                  <input id="new-video-url" type="text" placeholder="YouTube Embed URL (e.g. https://www.youtube.com/embed/...)" style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'white', outline: 'none' }} />
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <div style={{ flex: 1 }}>
                       <FileInput 
@@ -1096,7 +1105,7 @@ export default function AssetManager() {
                   </div>
                 ))}
                 {(!useViewerStore.getState().customVideos || useViewerStore.getState().customVideos.length === 0) && (
-                  <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                  <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)', background: 'var(--input-bg)', borderRadius: '8px' }}>
                     No videos added yet.
                   </div>
                 )}
@@ -1119,7 +1128,7 @@ export default function AssetManager() {
                     type="text" 
                     id="newPropertyBlock"
                     placeholder="e.g. 'Block A' or 'Villa Type 2'"
-                    style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }}
+                    style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'white' }}
                   />
                   <button 
                     onClick={() => {
@@ -1194,7 +1203,7 @@ export default function AssetManager() {
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') e.target.blur();
                         }}
-                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', width: '200px' }}
+                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'white', width: '200px' }}
                       />
                     </div>
                   </div>
@@ -1310,7 +1319,7 @@ export default function AssetManager() {
                                   onChange={(e) => {
                                     useViewerStore.getState().updateFloorplanPropertyType(supabase, plan.id, e.target.value);
                                   }}
-                                  style={{ background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white', padding: '6px', borderRadius: '6px' }}
+                                  style={{ background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'white', padding: '6px', borderRadius: '6px' }}
                                 >
                                   {Array.from(new Set([...propertyTypes, selectedFolder === 'All' ? 'Default Property' : selectedFolder])).map(t => (
                                     <option key={t} value={t}>{t}</option>
@@ -1435,49 +1444,49 @@ export default function AssetManager() {
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Apartment</label>
                       <input type="text" value={unit.id} 
                         onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { id: e.target.value })}
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 80px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Beds</label>
                       <input type="number" value={unit.beds} 
                         onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { beds: e.target.value === '' ? '' : Number(e.target.value) })}
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 80px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Baths</label>
                       <input type="number" step="0.5" value={unit.baths} 
                         onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { baths: e.target.value === '' ? '' : Number(e.target.value) })}
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 100px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Cov. m²</label>
                       <input type="number" value={unit.coveredSqM} 
                         onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { coveredSqM: e.target.value === '' ? '' : Number(e.target.value) })}
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '1 1 100px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Uncov. m²</label>
                       <input type="number" value={unit.uncoveredSqM} 
                         onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { uncoveredSqM: e.target.value === '' ? '' : Number(e.target.value) })}
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
                     </div>
 
                     <div style={{ flex: '2 1 140px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Price</label>
                       <input type="text" value={unit.price} 
                         onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { price: e.target.value })}
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold' }} />
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold' }} />
                     </div>
 
                     <div style={{ flex: '1 1 120px' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Status</label>
                       <select value={unit.status} 
                         onChange={(e) => useViewerStore.getState().updateInventoryUnit(supabase, unit.id, { status: e.target.value })}
-                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }}>
+                        style={{ width: '100%', padding: '10px', background: 'var(--input-bg)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }}>
                         <option value="Available">Available</option>
                         <option value="Reserved">Reserved</option>
                         <option value="Sold">Sold</option>
@@ -1512,11 +1521,11 @@ export default function AssetManager() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>GOOGLE GEMINI API KEY</label>
-                  <input type="password" value={geminiApiKey || ''} onChange={(e) => setGeminiApiKey(e.target.value)} placeholder="AIzaSy..." style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white' }} />
+                  <input type="password" value={geminiApiKey || ''} onChange={(e) => setGeminiApiKey(e.target.value)} placeholder="AIzaSy..." style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'white' }} />
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>PROPERTY SPECIFICATIONS (CONTEXT)</label>
-                  <textarea value={aiContext || ''} onChange={(e) => setAiContext(e.target.value)} placeholder="Paste pricing, square footage, materials..." style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', minHeight: '120px', resize: 'vertical', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', color: 'white', fontFamily: 'inherit' }} />
+                  <textarea value={aiContext || ''} onChange={(e) => setAiContext(e.target.value)} placeholder="Paste pricing, square footage, materials..." style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', minHeight: '120px', resize: 'vertical', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'white', fontFamily: 'inherit' }} />
                 </div>
                 <button 
                   onClick={async () => {
