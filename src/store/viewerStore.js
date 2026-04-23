@@ -35,11 +35,11 @@ export const useViewerStore = create((set) => ({
   activeFloorplanId: null,
 
   inventoryUnits: [
-    { id: '101', type: '2 Bed, 2 Bath', sqft: 1450, price: '€1,250,000', status: 'Sold' },
-    { id: '102', type: '3 Bed, 3 Bath', sqft: 2100, price: '€1,850,000', status: 'Available' },
-    { id: '201', type: '2 Bed, 2 Bath', sqft: 1500, price: '€1,350,000', status: 'Available' },
-    { id: '202', type: '3 Bed, 3.5 Bath', sqft: 2200, price: '€2,100,000', status: 'Reserved' },
-    { id: '301', type: 'Penthouse', sqft: 3500, price: '€4,500,000', status: 'Available' },
+    { id: '101', beds: 2, baths: 2, coveredSqM: 135, uncoveredSqM: 20, price: '€1,250,000', status: 'Sold' },
+    { id: '102', beds: 3, baths: 3, coveredSqM: 195, uncoveredSqM: 35, price: '€1,850,000', status: 'Available' },
+    { id: '201', beds: 2, baths: 2, coveredSqM: 140, uncoveredSqM: 25, price: '€1,350,000', status: 'Available' },
+    { id: '202', beds: 3, baths: 3.5, coveredSqM: 205, uncoveredSqM: 40, price: '€2,100,000', status: 'Reserved' },
+    { id: '301', beds: 4, baths: 4.5, coveredSqM: 325, uncoveredSqM: 150, price: '€4,500,000', status: 'Available' },
   ],
   
   // Interactive 360 Spatial Tour Database

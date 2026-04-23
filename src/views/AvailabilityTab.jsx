@@ -37,8 +37,8 @@ export default function AvailabilityTab() {
     e.stopPropagation();
     if (customFloorplans && customFloorplans.length > 0) {
       const match = customFloorplans.find(f => 
-        (f.level_name && unit.type && f.level_name.toLowerCase().includes(unit.type.toLowerCase().split(',')[0])) || 
-        (f.level_name && f.level_name.includes(unit.id))
+        (f.level_name && f.level_name.includes(unit.id)) ||
+        (f.level_name && f.level_name.includes(`${unit.beds} Bed`))
       );
       if (match) setPreviewImageUrl(match.image_url);
       else setPreviewImageUrl(customFloorplans[0].image_url);
@@ -100,8 +100,10 @@ export default function AvailabilityTab() {
             <thead>
               <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Unit</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Layout</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Sq. M.</th>
+                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Number of Bedrooms</th>
+                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Number of Bathrooms</th>
+                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Covered Square Meters</th>
+                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Uncovered Square Meters</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Price</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center' }}>Plan</th>
                 <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Status</th>
@@ -125,8 +127,10 @@ export default function AvailabilityTab() {
                       background: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'transparent'
                     }}>
                       <td style={{ padding: '24px', fontWeight: 'bold' }}>#{unit.id}</td>
-                      <td style={{ padding: '24px', color: 'var(--text-secondary)' }}>{unit.type}</td>
-                      <td style={{ padding: '24px' }}>{unit.sqft}</td>
+                      <td style={{ padding: '24px', color: 'var(--text-secondary)' }}>{unit.beds}</td>
+                      <td style={{ padding: '24px', color: 'var(--text-secondary)' }}>{unit.baths}</td>
+                      <td style={{ padding: '24px' }}>{unit.coveredSqM}</td>
+                      <td style={{ padding: '24px' }}>{unit.uncoveredSqM}</td>
                       <td style={{ padding: '24px', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: '500' }}>{unit.price}</td>
                       <td style={{ padding: '24px', textAlign: 'center' }}>
                         {customFloorplans && customFloorplans.length > 0 && (
@@ -159,7 +163,7 @@ export default function AvailabilityTab() {
                     {/* Live Financing Calculator Panel for Active Unit */}
                     {isSelected && (
                       <tr style={{ background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                        <td colSpan="6" style={{ padding: '32px' }}>
+                        <td colSpan="8" style={{ padding: '32px' }}>
                           <div className="financing-panel">
                             <div className="financing-left">
                               <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -235,7 +239,7 @@ export default function AvailabilityTab() {
                 );
               }) : (
                 <tr>
-                  <td colSpan="6" style={{ padding: '48px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  <td colSpan="8" style={{ padding: '48px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                     No availability found.
                   </td>
                 </tr>
