@@ -11,6 +11,7 @@ import PanoramaViewer from '../views/PanoramaViewer';
 import AvailabilityTab from '../views/AvailabilityTab';
 import AssetManager from '../views/AssetManager';
 import StandaloneView from './StandaloneView';
+import MobileARView from '../views/MobileARView';
 import ShareModal from '../components/ShareModal';
 import FloatingConcierge from '../components/FloatingConcierge';
 
@@ -62,6 +63,13 @@ export default function PresentationApp({ forceAdmin = false }) {
   const [activeTab, setActiveTab] = useState(isAdmin ? 'manage' : 'overview');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth <= 1100);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileDevice(window.innerWidth <= 1100);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Automatically wire the client state to the Cloud Database on app load!
   useEffect(() => {
@@ -283,9 +291,13 @@ export default function PresentationApp({ forceAdmin = false }) {
         {/* We reuse the StandaloneView for the 3D portion since it has the Sidebars built-in.
             It uses lazy execution naturally by mounting the Canvas only when this tab is selected! */}
         {activeTab === '3d' && (
-          <Suspense fallback={<div style={{color:'white', padding: 50}}>Loading WebGL Engine...</div>}>
-            <StandaloneView isNested={true} />
-          </Suspense>
+          isMobileDevice ? (
+            <MobileARView isEmbedded={true} />
+          ) : (
+            <Suspense fallback={<div style={{color:'white', padding: 50}}>Loading WebGL Engine...</div>}>
+              <StandaloneView isNested={true} />
+            </Suspense>
+          )
         )}
       </div>
 

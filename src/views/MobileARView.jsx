@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 import { supabase } from '../lib/supabase';
 
-export default function MobileARView() {
+export default function MobileARView({ isEmbedded = false }) {
   const { customGLB, customUSDZ, fetchCloudAssets } = useViewerStore();
   
   useEffect(() => {
@@ -63,11 +63,13 @@ export default function MobileARView() {
       fontFamily: 'Outfit, sans-serif'
     }}>
       
-      {/* Header */}
-      <div style={{ padding: '24px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <h1 style={{ color: 'white', margin: 0, fontSize: '24px' }}>The Pinnacle Residence</h1>
-        <p style={{ color: 'var(--accent-color)', margin: '4px 0 0 0', fontWeight: 'bold' }}>WebXR Interactive Layer</p>
-      </div>
+      {/* Header - Hidden when embedded inside PresentationApp */}
+      {!isEmbedded && (
+        <div style={{ padding: '24px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <h1 style={{ color: 'white', margin: 0, fontSize: '24px' }}>The Pinnacle Residence</h1>
+          <p style={{ color: 'var(--accent-color)', margin: '4px 0 0 0', fontWeight: 'bold' }}>WebXR Interactive Layer</p>
+        </div>
+      )}
 
       <div style={{ flex: 1, position: 'relative' }}>
         <model-viewer 
