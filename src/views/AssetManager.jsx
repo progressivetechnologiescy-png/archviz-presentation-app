@@ -163,7 +163,7 @@ export default function AssetManager() {
     });
     
     const existing = (customRenders || []).map(r => r.folder_name).filter(Boolean);
-    const uniqueFolders = [...new Set(['Interiors', 'Exteriors', ...existing])];
+    const uniqueFolders = existing.length > 0 ? [...new Set(existing)] : ['Interiors', 'Exteriors'];
     
     // Add any locally added folders that haven't been saved to DB yet
     setFolderList(prev => {
@@ -222,7 +222,7 @@ export default function AssetManager() {
     });
     
     const existing = (customFloorplans || []).map(f => f.property_type).filter(Boolean);
-    const uniqueBlocks = [...new Set(['Default Property', ...existing])];
+    const uniqueBlocks = existing.length > 0 ? [...new Set(existing)] : ['Default Property'];
     
     setPropertyBlockList(prev => {
       const localExtras = prev.filter(b => !uniqueBlocks.includes(b));
