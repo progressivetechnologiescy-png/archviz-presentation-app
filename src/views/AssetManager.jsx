@@ -418,7 +418,7 @@ export default function AssetManager() {
                       type="text" 
                       defaultValue={projectTitle}
                       onBlur={(e) => updateBrandingConfig(supabase, { projectTitle: e.target.value })}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                     />
                   </div>
                   <div>
@@ -427,7 +427,7 @@ export default function AssetManager() {
                       type="text" 
                       defaultValue={companyName}
                       onBlur={(e) => updateBrandingConfig(supabase, { companyName: e.target.value })}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }} 
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', fontFamily: 'inherit', fontSize: '15px' }} 
                     />
                   </div>
                   <div>
@@ -436,7 +436,7 @@ export default function AssetManager() {
                       defaultValue={projectDescription}
                       onBlur={(e) => updateBrandingConfig(supabase, { projectDescription: e.target.value })}
                       rows={4}
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', resize: 'vertical' }} 
+                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none', resize: 'vertical', fontFamily: 'inherit', fontSize: '15px', lineHeight: '1.5' }} 
                     />
                   </div>
                 </div>
