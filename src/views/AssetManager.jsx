@@ -105,6 +105,8 @@ export default function AssetManager() {
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, message: '', onConfirm: null });
   const [alertModal, setAlertModal] = useState({ isOpen: false, message: '' });
   const [pendingVideoThumb, setPendingVideoThumb] = useState(null);
+  const [draggedFolderId, setDraggedFolderId] = useState(null);
+  const [dragOverFolderId, setDragOverFolderId] = useState(null);
 
   const handleUploadVideoThumb = async (file) => {
     setIsUploading(true);
@@ -581,22 +583,35 @@ export default function AssetManager() {
                       onDragStart={(e) => {
                         e.dataTransfer.setData('text/plain', folder);
                         e.dataTransfer.effectAllowed = 'move';
+                        setDraggedFolderId(folder);
                       }}
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.dataTransfer.dropEffect = 'move';
+                        if (dragOverFolderId !== folder) setDragOverFolderId(folder);
+                      }}
+                      onDragLeave={() => {
+                        if (dragOverFolderId === folder) setDragOverFolderId(null);
+                      }}
+                      onDragEnd={() => {
+                        setDraggedFolderId(null);
+                        setDragOverFolderId(null);
                       }}
                       onDrop={(e) => {
                         e.preventDefault();
+                        setDraggedFolderId(null);
+                        setDragOverFolderId(null);
                         handleFolderDrop(e, folder);
                       }}
                       onClick={() => setSelectedFolder(folder)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
                         padding: '6px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'grab',
-                        border: selectedFolder === folder ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
-                        background: selectedFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
+                        border: selectedFolder === folder ? '1px solid var(--accent-color)' : (dragOverFolderId === folder ? '1px dashed var(--accent-color)' : '1px solid rgba(255,255,255,0.1)'),
+                        background: dragOverFolderId === folder ? 'rgba(255, 107, 0, 0.3)' : (selectedFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)'),
                         color: selectedFolder === folder ? 'var(--accent-color)' : 'var(--text-secondary)',
+                        opacity: draggedFolderId === folder ? 0.4 : 1,
+                        transform: dragOverFolderId === folder && draggedFolderId !== folder ? 'scale(1.05)' : 'scale(1)',
                         transition: 'all 0.2s', userSelect: 'none'
                       }}
                       title="Drag to reorder"
