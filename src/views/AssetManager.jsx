@@ -271,15 +271,6 @@ export default function AssetManager() {
 
   const [selectedFolder, setSelectedFolder] = useState(null);
 
-  // Auto-select the first folder dynamically rather than hardcoding 'Interiors'
-  useEffect(() => {
-    if (activeTab === 'floorplans') {
-      setSelectedFolder('All');
-    } else if (!selectedFolder && folderList && folderList.length > 0 && activeTab === 'renders') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedFolder(folderList[0]);
-    }
-  }, [folderList, selectedFolder, activeTab]);
 
   const [prevGps, setPrevGps] = useState(customGPS);
 
@@ -402,6 +393,16 @@ export default function AssetManager() {
   };
 
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Auto-select the first folder dynamically rather than hardcoding 'Interiors'
+  useEffect(() => {
+    if (activeTab === 'floorplans') {
+      setSelectedFolder('All');
+    } else if (!selectedFolder && folderList && folderList.length > 0 && activeTab === 'renders') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSelectedFolder(folderList[0]);
+    }
+  }, [folderList, selectedFolder, activeTab]);
 
   return (
     <div style={{ padding: '80px 32px 32px', height: '100%', overflowY: 'auto' }}>
@@ -1380,7 +1381,7 @@ export default function AssetManager() {
                       id: '', beds: '', baths: '', coveredSqM: '', uncoveredSqM: '', price: '', status: 'Available'
                     });
                   }}
-                  style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                  style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', whiteSpace: 'nowrap', flexShrink: 0 }}>
                   + Add New Unit
                 </button>
               </div>
