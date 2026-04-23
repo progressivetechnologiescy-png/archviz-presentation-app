@@ -196,7 +196,7 @@ export default function PresentationApp({ forceAdmin = false }) {
                 }
               }}
               className="glass-panel hover-lift header-manage-btn" 
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: activeTab === 'manage' ? 'rgba(255,255,255,0.1)' : 'var(--accent-color)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: activeTab === 'manage' ? 'var(--input-bg)' : 'var(--accent-color)', cursor: 'pointer', border: activeTab === 'manage' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white', fontWeight: 'bold' }}>
               {activeTab === 'manage' ? <Eye size={16} /> : <Settings size={16} />}
               <span className="action-text">{activeTab === 'manage' ? 'View App' : 'Manage'}</span>
             </button>
@@ -216,7 +216,7 @@ export default function PresentationApp({ forceAdmin = false }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center', 
               width: '48px', height: '48px', padding: '0', 
               borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', 
-              border: '1px solid rgba(255,255,255,0.1)', color: 'white' 
+              border: activeTab === 'manage' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white' 
             }}>
             <Maximize size={18} />
           </button>
@@ -231,7 +231,7 @@ export default function PresentationApp({ forceAdmin = false }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', 
                 width: '48px', height: '48px', padding: '0', 
                 borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', cursor: 'pointer', 
-                border: '1px solid rgba(255,255,255,0.1)', color: 'white' 
+                border: activeTab === 'manage' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white' 
               }}>
               <Share2 size={18} />
             </button>
@@ -243,7 +243,7 @@ export default function PresentationApp({ forceAdmin = false }) {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             style={{ 
               width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(10, 12, 16, 0.8)', 
-              border: '1px solid rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer',
+              border: activeTab === 'manage' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white', cursor: 'pointer',
               alignItems: 'center', justifyContent: 'center'
             }}
           >
@@ -278,7 +278,7 @@ export default function PresentationApp({ forceAdmin = false }) {
           <button 
             onClick={() => { setIsShareModalOpen(true); setIsMobileMenuOpen(false); }}
             className="glass-panel" 
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: activeTab === 'manage' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white', fontWeight: 'bold', fontSize: '18px' }}>
             <Share2 size={24} /> Share
           </button>
 
