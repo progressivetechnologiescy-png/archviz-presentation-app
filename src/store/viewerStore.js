@@ -155,7 +155,7 @@ export const useViewerStore = create((set) => ({
         overview_video_url: updates.overviewVideoUrl !== undefined ? updates.overviewVideoUrl : existing?.overview_video_url,
       };
 
-      const { error } = await supabaseClient.from('properties_config').upsert(payload);
+      const { error } = await supabaseClient.from('properties_config').upsert(payload, { onConflict: 'project_id' });
       if (error) console.error("Failed to update branding config:", error);
     } catch (e) {
       console.error("Failed to update branding config:", e);
