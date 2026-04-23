@@ -41,6 +41,15 @@ export const useViewerStore = create((set) => ({
     { id: '202', beds: 3, baths: 3.5, coveredSqM: 205, uncoveredSqM: 40, price: '€2,100,000', status: 'Reserved' },
     { id: '301', beds: 4, baths: 4.5, coveredSqM: 325, uncoveredSqM: 150, price: '€4,500,000', status: 'Available' },
   ],
+  updateInventoryUnit: (id, updatedData) => set((state) => ({
+    inventoryUnits: state.inventoryUnits.map(unit => unit.id === id ? { ...unit, ...updatedData } : unit)
+  })),
+  addInventoryUnit: (unit) => set((state) => ({
+    inventoryUnits: [...state.inventoryUnits, unit]
+  })),
+  deleteInventoryUnit: (id) => set((state) => ({
+    inventoryUnits: state.inventoryUnits.filter(unit => unit.id !== id)
+  })),
   
   // Interactive 360 Spatial Tour Database
   activeTourNodeId: 'node_exterior',

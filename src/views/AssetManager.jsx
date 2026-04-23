@@ -1366,14 +1366,89 @@ export default function AssetManager() {
 
           {/* TAB: AVAILABILITY */}
           {activeTab === 'availability' && (
-            <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '64px 24px', textAlign: 'center', background: 'var(--bg-panel)' }}>
-              <h3 style={{ fontSize: '24px', marginBottom: '16px' }}>Availability Data Grid</h3>
-              <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '0 auto 24px' }}>
-                Manage inventory, pricing, and live statuses here. This data will automatically sync with Emma AI.
-              </p>
-              <button style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
-                Build Module 4 Now
-              </button>
+            <div style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '32px', background: 'var(--bg-panel)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div>
+                  <h3 style={{ fontSize: '24px', margin: '0 0 8px 0' }}>Availability Data Grid</h3>
+                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage inventory, pricing, and live statuses. Syncs automatically with the front-end.</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    useViewerStore.getState().addInventoryUnit({
+                      id: `NEW-${Math.floor(Math.random() * 1000)}`,
+                      beds: 1, baths: 1, coveredSqM: 50, uncoveredSqM: 10, price: '€500,000', status: 'Available'
+                    });
+                  }}
+                  style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                  + Add New Unit
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gap: '16px' }}>
+                {useViewerStore.getState().inventoryUnits.map(unit => (
+                  <div key={unit.id} style={{ display: 'flex', gap: '16px', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', alignItems: 'center' }}>
+                    
+                    <div style={{ flex: 1 }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Apartment</label>
+                      <input type="text" value={unit.id} 
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { id: e.target.value })}
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                    </div>
+
+                    <div style={{ width: '70px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Beds</label>
+                      <input type="number" value={unit.beds} 
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { beds: Number(e.target.value) })}
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                    </div>
+
+                    <div style={{ width: '70px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Baths</label>
+                      <input type="number" step="0.5" value={unit.baths} 
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { baths: Number(e.target.value) })}
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                    </div>
+
+                    <div style={{ width: '90px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Cov. m²</label>
+                      <input type="number" value={unit.coveredSqM} 
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { coveredSqM: Number(e.target.value) })}
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                    </div>
+
+                    <div style={{ width: '90px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Uncov. m²</label>
+                      <input type="number" value={unit.uncoveredSqM} 
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { uncoveredSqM: Number(e.target.value) })}
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }} />
+                    </div>
+
+                    <div style={{ width: '140px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Price</label>
+                      <input type="text" value={unit.price} 
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { price: e.target.value })}
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold' }} />
+                    </div>
+
+                    <div style={{ width: '120px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>Status</label>
+                      <select value={unit.status} 
+                        onChange={(e) => useViewerStore.getState().updateInventoryUnit(unit.id, { status: e.target.value })}
+                        style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px', fontSize: '14px' }}>
+                        <option value="Available">Available</option>
+                        <option value="Reserved">Reserved</option>
+                        <option value="Sold">Sold</option>
+                      </select>
+                    </div>
+
+                    <button 
+                      onClick={() => useViewerStore.getState().deleteInventoryUnit(unit.id)}
+                      style={{ padding: '10px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '8px', cursor: 'pointer', marginTop: '18px', fontWeight: 'bold', transition: 'all 0.2s' }}>
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

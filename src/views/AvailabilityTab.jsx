@@ -152,7 +152,7 @@ export default function AvailabilityTab() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '32px', borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '32px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '32px', borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '32px', minWidth: '220px' }}>
                     <div>
                       <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '600', textAlign: 'center' }}>Plan</div>
                       {customFloorplans && customFloorplans.length > 0 ? (
