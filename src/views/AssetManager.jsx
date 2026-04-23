@@ -1214,6 +1214,7 @@ export default function AssetManager() {
 
         </div>
       </div>
+      </div>
 
       {/* CUSTOM CONFIRMATION MODAL */}
       {confirmModal.isOpen && (
