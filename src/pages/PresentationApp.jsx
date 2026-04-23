@@ -64,6 +64,7 @@ export default function PresentationApp({ forceAdmin = false }) {
   const accentColor = useViewerStore(state => state.accentColor);
   
   const [activeTab, setActiveTab] = useState(isAdmin ? 'manage' : 'overview');
+  const isDarkBackgroundTab = ['overview', '3d', 'map', 'panorama'].includes(activeTab);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth <= 1100);
@@ -153,8 +154,8 @@ export default function PresentationApp({ forceAdmin = false }) {
             )}
           </div>
           <div className="desktop-logo-text">
-            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', textShadow: activeTab === 'manage' ? 'none' : '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)', whiteSpace: 'nowrap', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white' }}>{projectTitle}</h1>
-            <p style={{ margin: '2px 0 0', color: activeTab === 'manage' ? 'var(--text-secondary)' : 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textShadow: activeTab === 'manage' ? 'none' : '0 1px 8px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>{companyName}</p>
+            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', textShadow: !isDarkBackgroundTab ? 'none' : '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)', whiteSpace: 'nowrap', color: !isDarkBackgroundTab ? 'var(--text-primary)' : 'white' }}>{projectTitle}</h1>
+            <p style={{ margin: '2px 0 0', color: !isDarkBackgroundTab ? 'var(--text-secondary)' : 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textShadow: !isDarkBackgroundTab ? 'none' : '0 1px 8px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>{companyName}</p>
           </div>
         </div>
 
