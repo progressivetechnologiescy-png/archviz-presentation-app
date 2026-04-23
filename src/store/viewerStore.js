@@ -35,8 +35,90 @@ export const useViewerStore = create((set) => ({
   activeFloorplanId: null,
   
   // Interactive 360 Spatial Tour Database
-  activeTourNodeId: null,
-  customTourNodes: {},
+  activeTourNodeId: 'node_aerial_01',
+  activeHotspotData: null,
+  setActiveHotspotData: (data) => set({ activeHotspotData: data }),
+  customTourNodes: {
+    'node_aerial_01': {
+      id: 'node_aerial_01',
+      url: 'https://images.unsplash.com/photo-1552083375-1447ce886485?q=80&w=3000&auto=format&fit=crop', // Temporary placeholder pano
+      title: 'City Aerial View',
+      hotspots: [
+        {
+          id: 'hs_1',
+          type: 'detailed-label',
+          position: [-200, -20, -300], // [x,y,z] in 3D space
+          label: 'VIEW ROYAL RESIDENCES',
+          subLabel: 'UNDER-CONSTRUCTION',
+          percentage: '5%',
+          targetNodeId: 'node_royal_res',
+          panelData: null // no panel, just navigates
+        },
+        {
+          id: 'hs_2',
+          type: 'detailed-label',
+          position: [50, -10, -400],
+          label: 'VIEW LEVANTAR',
+          subLabel: 'UNDER-CONSTRUCTION',
+          percentage: '10%',
+          targetNodeId: 'node_levantar',
+          panelData: null
+        },
+        {
+          id: 'hs_3',
+          type: 'detailed-label',
+          position: [300, 40, -350],
+          label: 'RITZ-CARLTON RESIDENCES',
+          subLabel: 'UNDER-CONSTRUCTION',
+          percentage: '95%',
+          targetNodeId: 'node_ritz',
+          panelData: null
+        },
+        {
+          id: 'hs_4',
+          type: 'text-box',
+          position: [-50, -80, -200],
+          label: 'THE LIMASSOL BUILDING',
+          panelData: {
+            title: 'The Limassol Building',
+            subtitle: 'Commercial & Office Space',
+            area: '12,500m2',
+            beds: 'N/A',
+            roof: 'Yes',
+            image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop'
+          }
+        },
+        {
+          id: 'hs_5',
+          type: 'simple-pin',
+          position: [150, -60, -250],
+          panelData: {
+            title: 'Seatera Apartments',
+            subtitle: 'Completed',
+            area: '150m2',
+            beds: '3',
+            roof: '50m2',
+            image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop'
+          }
+        }
+      ]
+    },
+    'node_ritz': {
+      id: 'node_ritz',
+      url: 'https://images.unsplash.com/photo-1541881519129-cbdd601247d4?q=80&w=3000&auto=format&fit=crop',
+      title: 'Ritz-Carlton Residences',
+      hotspots: [
+        {
+          id: 'hs_back',
+          type: 'text-box',
+          position: [0, 0, 400],
+          label: 'BACK TO CITY VIEW',
+          targetNodeId: 'node_aerial_01',
+          panelData: null
+        }
+      ]
+    }
+  },
   
   customRenders: [],
   customGPS: 'Beverly Hills, CA',

@@ -786,9 +786,9 @@ export default function AssetManager() {
                           key={render.id} 
                           style={{ 
                             position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px', 
-                            border: render.is_overview ? '2px solid var(--accent-color)' : (dragOverRenderId === render.id ? '2px dashed var(--accent-color)' : 'none'), 
-                            opacity: dragOverRenderId === render.id ? 0.7 : 1,
-                            transform: dragOverRenderId === render.id ? 'scale(1.05)' : 'scale(1)',
+                            border: render.is_overview ? '2px solid var(--accent-color)' : 'none', 
+                            opacity: 1,
+                            transform: 'scale(1)',
                             transition: 'all 0.2s',
                             cursor: 'grab' 
                           }}

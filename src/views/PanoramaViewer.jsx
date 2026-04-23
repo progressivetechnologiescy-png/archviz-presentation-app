@@ -1,19 +1,75 @@
 import React, { Suspense, useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, DeviceOrientationControls, Environment, useTexture, Html } from '@react-three/drei';
+import { OrbitControls, DeviceOrientationControls, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useViewerStore } from '../store/viewerStore';
-import { Smartphone } from 'lucide-react';
+import { Smartphone, ChevronLeft, Eye, EyeOff, Maximize, MapPin, Plus } from 'lucide-react';
+
+// Advanced Hotspot Marker
+function TourHotspot({ spot, onClick }) {
+  // Styles based on spot type
+  const isDetailed = spot.type === 'detailed-label';
+  const isTextBox = spot.type === 'text-box';
+  const isPin = spot.type === 'simple-pin';
+
+  return (
+    <div 
+      onClick={(e) => { e.stopPropagation(); onClick(spot); }}
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer',
+        transform: 'translate(-50%, -100%)', // Anchor at bottom center
+        pointerEvents: 'auto', userSelect: 'none'
+      }}
+    >
+      {isDetailed && (
+        <>
+          <div style={{ background: 'rgba(20, 25, 30, 0.9)', color: 'white', padding: '6px 16px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '4px', border: '1px solid rgba(255,255,255,0.1)', whiteSpace: 'nowrap' }}>
+            {spot.label}
+          </div>
+          <div style={{ background: 'white', color: '#10b981', padding: '4px 12px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '12px', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            {spot.subLabel}
+          </div>
+          <div style={{ width: '32px', height: '32px', background: '#dcfce7', border: '2px solid white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a', fontSize: '11px', fontWeight: 'bold', zIndex: 2 }}>
+            {spot.percentage}
+          </div>
+          <div style={{ width: '2px', height: '60px', background: 'rgba(255,255,255,0.6)', marginTop: '-2px', zIndex: 1 }} />
+        </>
+      )}
+
+      {isTextBox && (
+        <>
+          <div style={{ background: 'white', color: '#1f2937', padding: '10px 16px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}>
+            {spot.label}
+          </div>
+          <div style={{ width: '1px', height: '80px', background: 'rgba(255,255,255,0.8)', zIndex: 1 }} />
+          <div style={{ width: '24px', height: '24px', background: '#dcfce7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a', zIndex: 2, marginTop: '-2px' }}>
+            <Plus size={14} strokeWidth={3} />
+          </div>
+        </>
+      )}
+
+      {isPin && (
+        <>
+          <div style={{ background: 'white', color: '#1f2937', padding: '8px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', marginBottom: '6px', whiteSpace: 'nowrap', opacity: spot.label ? 1 : 0 }}>
+            {spot.label || 'Details'}
+          </div>
+          <div style={{ width: '36px', height: '36px', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)', border: '2px solid white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1f2937', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
+            <Plus size={18} strokeWidth={2.5} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 // Subcomponent to handle the actual texture loading and applying hotspots safely
-function PanoramaSphere({ textureUrl, activeNode, setActiveTourNodeId }) {
+function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick }) {
   const texture = useTexture(textureUrl);
   
-  // Safely clone the texture to avoid mutating the shared cache returned by useTexture
   const clonedTexture = useMemo(() => {
     const clone = texture.clone();
     clone.wrapS = THREE.RepeatWrapping;
-    clone.repeat.x = -1; // Flip the image so it reads correctly from the inside
+    clone.repeat.x = -1; 
     clone.needsUpdate = true;
     return clone;
   }, [texture]);
@@ -25,26 +81,9 @@ function PanoramaSphere({ textureUrl, activeNode, setActiveTourNodeId }) {
         <meshBasicMaterial map={clonedTexture} side={THREE.BackSide} />
       </mesh>
 
-      {/* Render spatial interactive hotspots */}
-      {activeNode && activeNode.hotspots && activeNode.hotspots.map((spot) => (
-        <Html key={spot.id} position={spot.position} center>
-          <button 
-            className="hover-lift"
-            onClick={() => setActiveTourNodeId(spot.targetId)}
-            style={{
-              background: 'rgba(59, 130, 246, 0.8)',
-              backdropFilter: 'blur(8px)',
-              padding: '12px 24px',
-              borderRadius: '30px',
-              border: '2px solid rgba(255,255,255,0.4)',
-              color: 'white',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 8px 32px rgba(59, 130, 246, 0.5)'
-            }}>
-            {spot.label}
-          </button>
+      {showHotspots && activeNode?.hotspots?.map((spot) => (
+        <Html key={spot.id} position={spot.position} center zIndexRange={[100, 0]}>
+          <TourHotspot spot={spot} onClick={onHotspotClick} />
         </Html>
       ))}
     </group>
@@ -52,11 +91,8 @@ function PanoramaSphere({ textureUrl, activeNode, setActiveTourNodeId }) {
 }
 
 // An inverted sphere holding a 360 latlong image
-function SphericalPanorama() {
-  const { customPanorama, customTourNodes, activeTourNodeId, setActiveTourNodeId } = useViewerStore();
-  
-  // Use the standalone custom panorama first (from the Asset Manager)
-  // Otherwise fallback to the complex spatial tour network
+function SphericalPanorama({ showHotspots, onHotspotClick }) {
+  const { customPanorama, customTourNodes, activeTourNodeId } = useViewerStore();
   const activeNode = customTourNodes ? customTourNodes[activeTourNodeId] : null;
   const textureUrl = customPanorama || (activeNode ? activeNode.url : null);
 
@@ -73,79 +109,117 @@ function SphericalPanorama() {
     <PanoramaSphere 
       textureUrl={textureUrl} 
       activeNode={activeNode} 
-      setActiveTourNodeId={setActiveTourNodeId} 
+      showHotspots={showHotspots}
+      onHotspotClick={onHotspotClick}
     />
   );
 }
 
 export default function PanoramaViewer() {
   const [useGyro, setUseGyro] = useState(false);
+  const [showHotspots, setShowHotspots] = useState(true);
+  
+  const { companyName, activeTourNodeId, customTourNodes, setActiveTourNodeId, activeHotspotData, setActiveHotspotData } = useViewerStore();
 
-  const toggleGyro = () => {
-    if (useGyro) {
-      setUseGyro(false);
-      return;
-    }
-    
-    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-      DeviceOrientationEvent.requestPermission()
-        .then(permissionState => {
-          if (permissionState === 'granted') {
-            setUseGyro(true);
-          } else {
-            alert('Gyroscope access denied. Please enable it in your browser settings.');
-          }
-        })
-        .catch(console.error);
-    } else {
-      // Non-iOS 13+ devices
-      setUseGyro(true);
+  const handleHotspotClick = (spot) => {
+    if (spot.targetNodeId && customTourNodes[spot.targetNodeId]) {
+      setActiveTourNodeId(spot.targetNodeId);
+      setActiveHotspotData(null); // Clear panel on navigation
+    } else if (spot.panelData) {
+      setActiveHotspotData(spot.panelData);
     }
   };
 
   const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div style={{ position: 'absolute', top: '120px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-        <div className="glass-panel" style={{ padding: '8px 24px', borderRadius: '30px', animation: 'fadeOutOld 10s ease-in forwards' }}>
-          Drag to look around 360°
+    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#0a0c10' }}>
+      
+      {/* Top Navigation Overlay */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, width: '100%', padding: '24px 32px', zIndex: 50,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', pointerEvents: 'none'
+      }}>
+        <div style={{ fontSize: '20px', fontWeight: '900', letterSpacing: '1px', color: 'white', textTransform: 'uppercase', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+          {companyName || 'ARCHVIZ STUDIOS'}
+        </div>
+        
+        <div style={{ display: 'flex', gap: '12px', pointerEvents: 'auto' }}>
+          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.9)', color: '#1f2937', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
+            <ChevronLeft size={16} /> BACK
+          </button>
+          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
+            <MapPin size={16} /> CITY
+          </button>
+          <button className="glass-panel hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}>
+            PROPERTIES
+          </button>
+          <button onClick={() => setShowHotspots(!showHotspots)} className="glass-panel hover-lift" style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', cursor: 'pointer' }}>
+            {showHotspots ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+          <button className="glass-panel hover-lift" style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', cursor: 'pointer' }}>
+            <Maximize size={18} />
+          </button>
         </div>
       </div>
 
-      {isTouchDevice && !useGyro && (
-        <div className="gyro-btn-wrapper" style={{ position: 'absolute', top: '180px', left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
-          <button 
-            onClick={toggleGyro}
-            className="glass-panel hover-lift"
-            style={{ 
-              display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', 
-              borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)',
-              background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)',
-              color: 'white', fontWeight: 'bold', cursor: 'pointer',
-              boxShadow: useGyro ? '0 8px 32px var(--accent-glow)' : '0 8px 32px rgba(0,0,0,0.5)'
-            }}
-          >
-            <Smartphone size={20} />
-            {useGyro ? 'Disable Gyroscope' : 'Enable Gyroscope'}
-          </button>
-        </div>
-      )}
+      {/* Slide-out Side Panel */}
+      <div style={{
+        position: 'absolute', top: 0, right: 0, height: '100%', width: '400px', maxWidth: '100%', zIndex: 40,
+        background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(20px)',
+        transform: activeHotspotData ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        padding: '100px 32px 32px 32px', display: 'flex', flexDirection: 'column',
+        boxShadow: '-10px 0 30px rgba(0,0,0,0.1)'
+      }}>
+        {activeHotspotData && (
+          <>
+            <button 
+              onClick={() => setActiveHotspotData(null)}
+              style={{ position: 'absolute', top: '32px', right: '32px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280' }}
+            >
+              CLOSE ✕
+            </button>
+            <h2 style={{ fontSize: '48px', fontWeight: '300', margin: '0 0 16px 0', color: '#111827', lineHeight: '1.1' }}>
+              {activeHotspotData.title.split(' ')[0]}<br/>
+              <strong style={{ fontWeight: '800' }}>{activeHotspotData.title.split(' ').slice(1).join(' ')}</strong>
+            </h2>
+            <p style={{ color: '#4b5563', fontSize: '15px', lineHeight: '1.6', marginBottom: '32px' }}>
+              {activeHotspotData.subtitle || 'Showcase your property with an immersive sense of presence. Let your buyers explore the space with freedom.'}
+            </p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', padding: '16px 0', marginBottom: '32px' }}>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>Total Area</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#111827' }}>{activeHotspotData.area}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>Beds</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#111827' }}>{activeHotspotData.beds}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>Roof Garden</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#111827' }}>{activeHotspotData.roof}</div>
+              </div>
+            </div>
 
-      <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }}>
+            {activeHotspotData.image && (
+              <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', marginBottom: '24px' }}>
+                <img src={activeHotspotData.image} alt="Property" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            )}
+
+            <button style={{ width: '100%', padding: '16px', background: 'transparent', border: '2px solid #16a34a', color: '#16a34a', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}>
+              Book A Demo
+            </button>
+          </>
+        )}
+      </div>
+
+      <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }} style={{ width: activeHotspotData ? 'calc(100% - 400px)' : '100%', transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
         <Suspense fallback={null}>
-          <SphericalPanorama />
-          
-          {useGyro ? (
-            <DeviceOrientationControls makeDefault />
-          ) : (
-            <OrbitControls 
-              enableZoom={false} 
-              enablePan={false} 
-              rotateSpeed={-0.5} 
-              makeDefault 
-            />
-          )}
+          <SphericalPanorama showHotspots={showHotspots} onHotspotClick={handleHotspotClick} />
+          <OrbitControls enableZoom={true} enablePan={false} rotateSpeed={-0.5} makeDefault />
         </Suspense>
       </Canvas>
     </div>
