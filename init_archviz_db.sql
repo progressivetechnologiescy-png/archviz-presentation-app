@@ -145,3 +145,11 @@ create policy "Allow anonymous updates on videos"
 create policy "Allow anonymous deletes on videos"
   on project_videos for delete
   using (true);
+
+create policy "Allow anonymous inserts on config"
+  on properties_config for insert
+  with check (true);
+
+create policy "Allow anonymous updates on config"
+  on properties_config for update
+  using (true);
