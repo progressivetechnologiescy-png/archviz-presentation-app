@@ -95,18 +95,18 @@ export default function AvailabilityTab() {
           </div>
         </div>
 
-        <div className="glass-panel table-wrapper" style={{ borderRadius: '16px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
+        <div className="table-wrapper" style={{ borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', background: 'var(--bg-panel)', padding: '0 24px 24px 24px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
             <thead>
-              <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Unit</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Number of Bedrooms</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Number of Bathrooms</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Covered Square Meters</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Uncovered Square Meters</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Price</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center' }}>Plan</th>
-                <th style={{ padding: '24px', fontWeight: '600', color: 'var(--text-secondary)' }}>Status</th>
+              <tr>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Unit</th>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Beds</th>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Baths</th>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Covered Area</th>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Uncovered Area</th>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Price</th>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>Plan</th>
+                <th style={{ padding: '24px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -120,19 +120,22 @@ export default function AvailabilityTab() {
                         setActiveUnitId(isSelected ? null : unit.id);
                         setInquireStatus('idle');
                       }} 
-                      className="hover-lift" style={{ 
+                      style={{ 
                       borderBottom: (index === filteredUnits.length - 1 && !isSelected) ? 'none' : '1px solid rgba(255,255,255,0.05)',
                       transition: 'background 0.2s',
                       cursor: 'pointer',
-                      background: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'transparent'
-                    }}>
-                      <td style={{ padding: '24px', fontWeight: 'bold' }}>#{unit.id}</td>
-                      <td style={{ padding: '24px', color: 'var(--text-secondary)' }}>{unit.beds}</td>
-                      <td style={{ padding: '24px', color: 'var(--text-secondary)' }}>{unit.baths}</td>
-                      <td style={{ padding: '24px' }}>{unit.coveredSqM}</td>
-                      <td style={{ padding: '24px' }}>{unit.uncoveredSqM}</td>
-                      <td style={{ padding: '24px', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: '500' }}>{unit.price}</td>
-                      <td style={{ padding: '24px', textAlign: 'center' }}>
+                      background: isSelected ? 'rgba(255,255,255,0.05)' : 'transparent'
+                    }}
+                    onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; }}
+                    onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <td style={{ padding: '24px 16px', fontWeight: '700', fontSize: '15px' }}>#{unit.id}</td>
+                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.beds} Bed</td>
+                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.baths} Bath</td>
+                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.coveredSqM} m²</td>
+                      <td style={{ padding: '24px 16px', color: 'var(--text-secondary)', fontSize: '15px' }}>{unit.uncoveredSqM} m²</td>
+                      <td style={{ padding: '24px 16px', fontSize: '16px', color: isSelected ? 'var(--accent-color)' : 'white', fontWeight: '600' }}>{unit.price}</td>
+                      <td style={{ padding: '24px 16px', textAlign: 'center' }}>
                         {customFloorplans && customFloorplans.length > 0 && (
                           <button 
                             onClick={(e) => handlePreviewFloorplan(e, unit)}
@@ -149,7 +152,7 @@ export default function AvailabilityTab() {
                           </button>
                         )}
                       </td>
-                      <td style={{ padding: '24px' }}>
+                      <td style={{ padding: '24px 16px' }}>
                         <span style={{ 
                           padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px',
                           background: getStatusColor(unit.status), color: getStatusTextColor(unit.status), border: `1px solid ${getStatusTextColor(unit.status)}40`,
@@ -162,7 +165,7 @@ export default function AvailabilityTab() {
                     
                     {/* Live Financing Calculator Panel for Active Unit */}
                     {isSelected && (
-                      <tr style={{ background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <td colSpan="8" style={{ padding: '32px' }}>
                           <div className="financing-panel">
                             <div className="financing-left">
