@@ -91,6 +91,7 @@ export default function AssetManager() {
     customGLB, setCustomGLB,
     customUSDZ, setCustomUSDZ,
     customFloorplan, setCustomFloorplan, 
+    customFloorplans,
     customPanorama, setCustomPanorama, 
     customRenders, addCustomRender, clearCustomRenders,
     customGPS, setCustomGPS,
