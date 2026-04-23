@@ -871,7 +871,7 @@ export default function AssetManager() {
                             }
                           }}
                         >
-                          <img src={render.image_url} alt="render thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }} />
+                          <img src={render.image_url} alt="render thumbnail" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }} />
                           <button
                             onClick={() => useViewerStore.getState().toggleOverviewRender(supabase, render.id, render.is_overview)}
                             title={render.is_overview ? "Remove from Overview Slideshow" : "Add to Overview Slideshow"}

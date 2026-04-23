@@ -180,7 +180,7 @@ export default function RendersGallery() {
                       }}
                       style={{ 
                          height: gridStyles.height, 
-                         background: isRealImage ? `url(${src}) center/cover` : `linear-gradient(45deg, #1f2937, #111827)`,
+                         background: `linear-gradient(45deg, #1f2937, #111827)`,
                          display: 'flex', alignItems: 'center', justifyContent: 'center',
                          color: 'rgba(255,255,255,0.2)', fontSize: '14px',
                          borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
@@ -188,7 +188,16 @@ export default function RendersGallery() {
                          transition: 'height 0.3s ease'
                       }}
                     >
-                      {!isRealImage && `Render Placeholder ${src}`}
+                      {isRealImage ? (
+                        <img 
+                          src={src} 
+                          alt="Render Thumbnail" 
+                          loading="lazy" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }} 
+                        />
+                      ) : (
+                        <span style={{ zIndex: 1 }}>{`Render Placeholder ${src}`}</span>
+                      )}
                     </div>
                   );
                 })}
