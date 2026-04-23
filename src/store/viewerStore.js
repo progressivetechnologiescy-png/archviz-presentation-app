@@ -45,7 +45,7 @@ export const useViewerStore = create((set) => ({
     inventoryUnits: state.inventoryUnits.map(unit => unit.id === id ? { ...unit, ...updatedData } : unit)
   })),
   addInventoryUnit: (unit) => set((state) => ({
-    inventoryUnits: [...state.inventoryUnits, unit]
+    inventoryUnits: [unit, ...state.inventoryUnits]
   })),
   deleteInventoryUnit: (id) => set((state) => ({
     inventoryUnits: state.inventoryUnits.filter(unit => unit.id !== id)
