@@ -107,7 +107,7 @@ export default function CinematicsTab() {
           
           <div className="cinematics-header">
             <div>
-              <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 12px 0' }}>Cinematic Films</h2>
+              <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 12px 0' }}>Property Videos</h2>
               <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '18px' }}>
                 Experience the property through ultra high-definition drone flyovers and narrative tours.
               </p>
@@ -134,7 +134,7 @@ export default function CinematicsTab() {
 
           {videos.length === 0 ? (
             <div style={{ padding: '64px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-              <h3 style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '8px' }}>No Cinematic Videos Yet</h3>
+              <h3 style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '8px' }}>No Videos Yet</h3>
               <p style={{ color: 'rgba(255,255,255,0.4)' }}>Add YouTube or Vimeo URLs from the Admin CMS to populate this gallery.</p>
             </div>
           ) : (

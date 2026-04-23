@@ -396,7 +396,7 @@ export default function AssetManager() {
                 {tab === 'overview' && 'Overview & Branding'}
                 {tab === 'models' && '3D Models & Scene'}
                 {tab === 'renders' && 'Render Gallery'}
-                {tab === 'cinematics' && 'Cinematics'}
+                {tab === 'cinematics' && 'Videos'}
                 {tab === 'floorplans' && 'Floorplans'}
                 {tab === 'tours' && '360° Tours'}
                 {tab === 'availability' && 'Availability Grid'}
