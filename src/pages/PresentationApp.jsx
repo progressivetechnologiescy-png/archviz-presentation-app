@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video, Menu, X, Maximize } from 'lucide-react';
+import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video, Menu, X, Maximize, Eye } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 import { supabase } from '../lib/supabase';
 import ProjectOverview from '../views/ProjectOverview';
@@ -136,33 +136,37 @@ export default function PresentationApp({ forceAdmin = false }) {
         </div>
 
         {/* Desktop Navigation Pill */}
-        <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
-          <div className="glass-panel" style={{ 
-            display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px',
-            background: 'rgba(10, 12, 16, 0.8)',
-            boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
-          }}>
-            <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" onClick={() => setActiveTab('overview')} />
-            <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" onClick={() => setActiveTab('renders')} />
-            <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" onClick={() => setActiveTab('cinematics')} />
-            <TabButton active={activeTab === 'floorplans'} icon={Layers} label="Floorplans" onClick={() => setActiveTab('floorplans')} />
-            <TabButton active={activeTab === 'availability'} icon={ListChecks} label="Availability" onClick={() => setActiveTab('availability')} />
-            <TabButton active={activeTab === 'map'} icon={Map} label="Location" onClick={() => setActiveTab('map')} />
-            <TabButton active={activeTab === 'panorama'} icon={Hexagon} label="360° Tours" onClick={() => setActiveTab('panorama')} />
-            <TabButton active={activeTab === '3d'} icon={Component} label="3D Interactive" onClick={() => setActiveTab('3d')} />
+        {activeTab !== 'manage' ? (
+          <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
+            <div className="glass-panel" style={{ 
+              display: 'flex', gap: '4px', padding: '6px', borderRadius: '40px',
+              background: 'rgba(10, 12, 16, 0.8)',
+              boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
+            }}>
+              <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" onClick={() => setActiveTab('overview')} />
+              <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" onClick={() => setActiveTab('renders')} />
+              <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" onClick={() => setActiveTab('cinematics')} />
+              <TabButton active={activeTab === 'floorplans'} icon={Layers} label="Floorplans" onClick={() => setActiveTab('floorplans')} />
+              <TabButton active={activeTab === 'availability'} icon={ListChecks} label="Availability" onClick={() => setActiveTab('availability')} />
+              <TabButton active={activeTab === 'map'} icon={Map} label="Location" onClick={() => setActiveTab('map')} />
+              <TabButton active={activeTab === 'panorama'} icon={Hexagon} label="360° Tours" onClick={() => setActiveTab('panorama')} />
+              <TabButton active={activeTab === '3d'} icon={Component} label="3D Interactive" onClick={() => setActiveTab('3d')} />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="desktop-nav" style={{ flex: 1 }} /> /* Empty spacer when in manage mode */
+        )}
 
         {/* Desktop Global Controls */}
         <div className="header-actions-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 102, flexShrink: 0 }}>
           
           {isAdmin && (
             <button 
-              onClick={() => setActiveTab('manage')}
+              onClick={() => setActiveTab(activeTab === 'manage' ? 'overview' : 'manage')}
               className="glass-panel hover-lift header-manage-btn" 
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: 'var(--accent-color)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
-              <Settings size={16} />
-              <span className="action-text">Manage</span>
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: activeTab === 'manage' ? 'rgba(255,255,255,0.1)' : 'var(--accent-color)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
+              {activeTab === 'manage' ? <Eye size={16} /> : <Settings size={16} />}
+              <span className="action-text">{activeTab === 'manage' ? 'View App' : 'Manage'}</span>
             </button>
           )}
 
