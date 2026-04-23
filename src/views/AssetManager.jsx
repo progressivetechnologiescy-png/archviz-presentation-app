@@ -426,7 +426,7 @@ export default function AssetManager() {
         <div className="cms-layout">
           {/* Sidebar Menu */}
           <div className="cms-sidebar">
-            {['overview', 'models', 'renders', 'cinematics', 'floorplans', 'tours', 'availability', 'ai_settings'].map(tab => (
+            {['overview', 'models', 'renders', 'cinematics', 'floorplans', 'availability', 'tours', 'ai_settings'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
