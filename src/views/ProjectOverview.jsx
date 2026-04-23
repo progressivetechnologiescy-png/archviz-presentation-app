@@ -86,8 +86,8 @@ export default function ProjectOverview({ onNavigate }) {
 
       {/* Content Block */}
       <div style={{
-        position: 'absolute', bottom: 0, left: 0, zIndex: 20,
-        width: '100%'
+        position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', zIndex: 20,
+        width: '90%', maxWidth: '800px'
       }}>
         <style>{`
           .overview-content { padding: 40px 32px; }
@@ -96,18 +96,15 @@ export default function ProjectOverview({ onNavigate }) {
           .overview-btn { font-size: 18px; padding: 16px 32px; }
           
           @media (max-width: 768px) {
-            .overview-content { padding: 32px 16px 100px; } /* Extra bottom padding for mobile menu clearance */
+            .overview-content { padding: 32px 16px; margin-bottom: 60px; } /* Extra bottom margin for mobile menu clearance */
             .overview-title { font-size: 32px; margin-bottom: 12px !important; }
             .overview-desc { font-size: 15px; padding: 0; }
             .overview-btn { font-size: 16px; padding: 14px 24px; }
           }
         `}</style>
         
-        <div className="overview-content" style={{ 
-          background: 'linear-gradient(to top, rgba(10, 12, 16, 0.95) 0%, rgba(10, 12, 16, 0.6) 50%, transparent 100%)',
-          textAlign: 'center',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
+        <div className="overview-content glass-panel" style={{ 
+          textAlign: 'center'
         }}>
           <h1 className="overview-title" style={{ fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.5px' }}>
             {projectTitle}
