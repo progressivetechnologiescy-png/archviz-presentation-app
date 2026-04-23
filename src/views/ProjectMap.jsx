@@ -48,7 +48,7 @@ export default function ProjectMap() {
             style={{
                padding: '10px 24px', borderRadius: '12px', border: 'none',
                background: mapMode === mode ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
-               color: mapMode === mode ? 'white' : 'var(--text-primary)',
+               color: mapMode === mode ? 'white' : 'rgba(255,255,255,0.6)',
                fontWeight: mapMode === mode ? 'bold' : '600', cursor: 'pointer', textTransform: 'capitalize',
                transition: 'all 0.3s ease',
                boxShadow: mapMode === mode ? '0 4px 16px var(--accent-glow)' : 'none'
