@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UploadCloud, FileType, CheckCircle, MapPin, X } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 
@@ -63,7 +63,7 @@ import { supabase } from '../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
 function extractYoutubeId(url) {
-  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
 }
@@ -90,14 +90,12 @@ export default function AssetManager() {
     customFBX, setCustomFBX, 
     customGLB, setCustomGLB,
     customUSDZ, setCustomUSDZ,
-    customFloorplan, setCustomFloorplan, 
     customFloorplans,
     customPanorama, setCustomPanorama, 
-    customRenders, addCustomRender, clearCustomRenders,
+    customRenders, addCustomRender,
     customGPS, setCustomGPS,
     geminiApiKey, setGeminiApiKey,
-    aiContext, setAiContext,
-    modelRoughness, modelMetalness, modelEnvMapIntensity, setModelProperties
+    aiContext, setAiContext
   } = useViewerStore();
 
 
@@ -167,6 +165,7 @@ export default function AssetManager() {
     const uniqueFolders = [...new Set(existing)];
     
     // Add any locally added folders that haven't been saved to DB yet
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFolderList(prev => {
       const localExtras = prev.filter(f => !uniqueFolders.includes(f));
       const merged = [...new Set([...uniqueFolders, ...localExtras])].sort((a, b) => {
@@ -225,6 +224,7 @@ export default function AssetManager() {
     const existing = (customFloorplans || []).map(f => f.property_type).filter(Boolean);
     const uniqueBlocks = [...new Set(existing)];
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPropertyBlockList(prev => {
       const localExtras = prev.filter(b => !uniqueBlocks.includes(b));
       const merged = [...new Set([...uniqueBlocks, ...localExtras])].sort((a, b) => {
@@ -275,16 +275,18 @@ export default function AssetManager() {
   // Auto-select the first folder dynamically rather than hardcoding 'Interiors'
   useEffect(() => {
     if (!selectedFolder && folderList && folderList.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedFolder(folderList[0]);
     }
   }, [folderList, selectedFolder]);
 
-  // Sync the form field if Cloud DB fetches the GPS late
-  useEffect(() => {
-    if (customGPS && customGPS !== 'Beverly Hills, CA') {
-      setGpsInput(customGPS);
-    }
-  }, [customGPS]);
+  const [prevGps, setPrevGps] = useState(customGPS);
+
+  // Sync the form field if Cloud DB fetches the GPS late (Render-phase state update)
+  if (customGPS && customGPS !== 'Beverly Hills, CA' && customGPS !== prevGps) {
+    setPrevGps(customGPS);
+    setGpsInput(customGPS);
+  }
 
   const uploadSingleFile = async (file, assetType, setLocalUpdate) => {
     if (!supabase) {
@@ -325,7 +327,7 @@ export default function AssetManager() {
       // 4. Clean out old database rows
       try {
         await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: assetType });
-      } catch (delErr) {
+      } catch {
         console.warn("Delete policy blocked old asset removal, proceeding with insert anyway.");
       }
 
@@ -361,42 +363,7 @@ export default function AssetManager() {
   const handleUploadFBX = (file) => uploadSingleFile(file, '3d_model_fbx', setCustomFBX);
   const handleUploadGLB = (file) => uploadSingleFile(file, '3d_model_glb', setCustomGLB);
   const handleUploadUSDZ = (file) => uploadSingleFile(file, '3d_model_usdz', setCustomUSDZ);
-  const handleUploadFloorplan = (file) => uploadSingleFile(file, 'floorplan', setCustomFloorplan);
   const handleUploadPanorama = (file) => uploadSingleFile(file, 'panorama', setCustomPanorama);
-  
-  const handleUploadRenders = async (files) => {
-    if (!supabase) {
-      setAlertModal({ isOpen: true, message: "Database offline. Using local RAM." });
-      files.forEach(f => addCustomRender(URL.createObjectURL(f)));
-      return;
-    }
-    setIsUploading(true);
-    try {
-      for (const file of files) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${uuidv4()}.${fileExt}`;
-        const filePath = `renders/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
-
-        const { error: dbError } = await supabase.from('presentation_assets').insert({
-          project_id: 'demo_project', asset_type: 'render', asset_url: publicUrl
-        });
-        if (dbError) throw dbError;
-
-        addCustomRender(publicUrl);
-      }
-      setAlertModal({ isOpen: true, message: `Successfully uploaded ${files.length} renders to the Cloud Database!` });
-    } catch (error) {
-      console.error("Upload error:", error);
-      setAlertModal({ isOpen: true, message: `Render Upload Failed: ${error.message || JSON.stringify(error)}` });
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const handleSaveGPS = async () => {
     let inputStr = gpsInput.trim();

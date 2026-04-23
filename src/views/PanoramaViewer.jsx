@@ -1,34 +1,28 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, DeviceOrientationControls, Environment, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useViewerStore } from '../store/viewerStore';
 import { Smartphone } from 'lucide-react';
 
-// An inverted sphere holding a 360 latlong image
-function SphericalPanorama() {
-  const { customPanorama, customTourNodes, activeTourNodeId, setActiveTourNodeId } = useViewerStore();
+// Subcomponent to handle the actual texture loading and applying hotspots safely
+function PanoramaSphere({ textureUrl, activeNode, setActiveTourNodeId }) {
+  const texture = useTexture(textureUrl);
   
-  // Use the standalone custom panorama first (from the Asset Manager)
-  // Otherwise fallback to the complex spatial tour network
-  const activeNode = customTourNodes ? customTourNodes[activeTourNodeId] : null;
-  const textureUrl = customPanorama || (activeNode ? activeNode.url : null);
-
-  const texture = textureUrl ? useTexture(textureUrl) : null;
-  if(texture) {
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.repeat.x = -1; // Flip the image so it reads correctly from the inside!
-  }
+  // Safely clone the texture to avoid mutating the shared cache returned by useTexture
+  const clonedTexture = useMemo(() => {
+    const clone = texture.clone();
+    clone.wrapS = THREE.RepeatWrapping;
+    clone.repeat.x = -1; // Flip the image so it reads correctly from the inside
+    clone.needsUpdate = true;
+    return clone;
+  }, [texture]);
 
   return (
     <group>
       <mesh>
         <sphereGeometry args={[500, 60, 40]} />
-        {texture ? (
-          <meshBasicMaterial map={texture} side={THREE.BackSide} />
-        ) : (
-          <meshBasicMaterial color="#1f2937" side={THREE.BackSide} wireframe /> // Wireframe placeholder
-        )}
+        <meshBasicMaterial map={clonedTexture} side={THREE.BackSide} />
       </mesh>
 
       {/* Render spatial interactive hotspots */}
@@ -54,6 +48,33 @@ function SphericalPanorama() {
         </Html>
       ))}
     </group>
+  );
+}
+
+// An inverted sphere holding a 360 latlong image
+function SphericalPanorama() {
+  const { customPanorama, customTourNodes, activeTourNodeId, setActiveTourNodeId } = useViewerStore();
+  
+  // Use the standalone custom panorama first (from the Asset Manager)
+  // Otherwise fallback to the complex spatial tour network
+  const activeNode = customTourNodes ? customTourNodes[activeTourNodeId] : null;
+  const textureUrl = customPanorama || (activeNode ? activeNode.url : null);
+
+  if (!textureUrl) {
+    return (
+      <mesh>
+        <sphereGeometry args={[500, 60, 40]} />
+        <meshBasicMaterial color="#1f2937" side={THREE.BackSide} wireframe />
+      </mesh>
+    );
+  }
+
+  return (
+    <PanoramaSphere 
+      textureUrl={textureUrl} 
+      activeNode={activeNode} 
+      setActiveTourNodeId={setActiveTourNodeId} 
+    />
   );
 }
 

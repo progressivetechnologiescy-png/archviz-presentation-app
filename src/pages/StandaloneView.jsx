@@ -4,8 +4,8 @@ import VirtualRemote from '../components/VirtualRemote';
 import { Sun, Moon, Sunrise, Play, Square, MousePointer2 } from 'lucide-react';
 import ViewerCanvas from '../components/ViewerCanvas';
 
-export default function StandaloneView({ isNested }) {
-  const { lightingPreset, setLightingPreset, isTouring, toggleTouring, setMovement } = useViewerStore();
+export default function StandaloneView() {
+  const { isTouring, toggleTouring, setMovement } = useViewerStore();
 
   useEffect(() => {
     const handleKeyDown = (e) => {

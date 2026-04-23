@@ -26,11 +26,13 @@ export default function FloorplanViewer() {
   );
 
   // Filter floorplans by the selected property type, and sort them by order_index
-  const filteredFloorplans = customFloorplans
-    ? customFloorplans
-        .filter(f => (f.property_type || 'Default Property') === activePropertyType)
-        .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
-    : [];
+  const filteredFloorplans = React.useMemo(() => {
+    return customFloorplans
+      ? [...customFloorplans]
+          .filter(f => (f.property_type || 'Default Property') === activePropertyType)
+          .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+      : [];
+  }, [customFloorplans, activePropertyType]);
 
   // When changing property type, automatically select its first floorplan
   React.useEffect(() => {

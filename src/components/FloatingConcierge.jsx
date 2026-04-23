@@ -47,6 +47,7 @@ export default function FloatingConcierge() {
     const coords = extractCoordinates(str);
     
     if (coords) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCoordinates(coords);
       // Reverse Geocode using Nominatim
       fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${coords.lat}&lon=${coords.lon}`)
@@ -82,8 +83,10 @@ export default function FloatingConcierge() {
   // Update Initial Greeting
   useEffect(() => {
     if (messages.length === 0 || (messages.length === 1 && messages[0].role === 'agent')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMessages([{ role: 'agent', text: `Hi! I am Emma, your digital concierge for the property at ${humanReadableLocation}. How can I help you today?` }]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [humanReadableLocation]);
 
   const scrollToBottom = () => {

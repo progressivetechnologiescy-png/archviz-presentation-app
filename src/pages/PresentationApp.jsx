@@ -14,33 +14,34 @@ import StandaloneView from './StandaloneView';
 import ShareModal from '../components/ShareModal';
 import FloatingConcierge from '../components/FloatingConcierge';
 
-const TabButton = ({ active, icon: Icon, label, onClick, isMobile = false }) => {
+const TabButton = (props) => {
   const [isHovered, setIsHovered] = useState(false);
+  const IconToRender = props.icon;
   return (
     <button 
       className="nav-tab-btn"
-      onClick={onClick}
+      onClick={props.onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: isMobile ? '16px' : '30px',
-        background: active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'),
+        display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: props.isMobile ? '16px' : '30px',
+        background: props.active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'),
         border: 'none',
         color: 'white',
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600',
-        boxShadow: active ? '0 4px 12px var(--accent-glow)' : 'none',
+        boxShadow: props.active ? '0 4px 12px var(--accent-glow)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
-        opacity: active ? 1 : (isHovered ? 1 : 0.85),
-        padding: isMobile ? '16px 24px' : undefined,
-        width: isMobile ? '100%' : 'auto',
-        justifyContent: isMobile ? 'flex-start' : 'center',
-        fontSize: isMobile ? '18px' : undefined,
-        gap: isMobile ? '16px' : undefined
+        opacity: props.active ? 1 : (isHovered ? 1 : 0.85),
+        padding: props.isMobile ? '16px 24px' : undefined,
+        width: props.isMobile ? '100%' : 'auto',
+        justifyContent: props.isMobile ? 'flex-start' : 'center',
+        fontSize: props.isMobile ? '18px' : undefined,
+        gap: props.isMobile ? '16px' : undefined
       }}
     >
-      <Icon className="nav-tab-icon" style={isMobile ? { width: '24px', height: '24px', display: 'block' } : undefined} /> 
-      <span className="nav-tab-label">{label}</span>
+      <IconToRender className="nav-tab-icon" style={props.isMobile ? { width: '24px', height: '24px', display: 'block' } : undefined} /> 
+      <span className="nav-tab-label">{props.label}</span>
     </button>
   );
 };
@@ -70,6 +71,7 @@ export default function PresentationApp({ forceAdmin = false }) {
   // Reset scroll state on tab switch
   useEffect(() => {
     useViewerStore.getState().setGlobalScrolled(false);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileMenuOpen(false); // Close mobile menu on navigate
   }, [activeTab]);
 

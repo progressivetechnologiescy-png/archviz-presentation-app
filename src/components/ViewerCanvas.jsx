@@ -1,4 +1,4 @@
-import React, { useRef, Suspense, useState } from 'react';
+import React, { Suspense, useState, useMemo } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Environment, PointerLockControls, ContactShadows, Html, useProgress, useFBX, useGLTF, PerformanceMonitor, SoftShadows, BakeShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
@@ -150,9 +150,15 @@ const store = createXRStore();
 // Wrapper for custom JPEG/PNG panoramas to act as HDRI Environment
 function CustomEnvironment({ url }) {
   const texture = useLoader(THREE.TextureLoader, url);
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  texture.colorSpace = THREE.SRGBColorSpace;
-  return <Environment map={texture} background={false} environmentIntensity={1.2} />;
+  const clonedTexture = useMemo(() => {
+    const clone = texture.clone();
+    clone.mapping = THREE.EquirectangularReflectionMapping;
+    clone.colorSpace = THREE.SRGBColorSpace;
+    clone.needsUpdate = true;
+    return clone;
+  }, [texture]);
+  
+  return <Environment map={clonedTexture} background={false} environmentIntensity={1.2} />;
 }
 
 // Global 3D Loader
@@ -177,7 +183,7 @@ function ModelLoader() {
 }
 
 export default function ViewerCanvas() {
-  const { lightingPreset, isTouring, customPanorama } = useViewerStore();
+  const { lightingPreset, customPanorama } = useViewerStore();
   // Dynamic scaling for smoothness
   const [dpr, setDpr] = useState(1.5);
   const [showQR, setShowQR] = useState(false);

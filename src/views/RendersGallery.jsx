@@ -50,7 +50,6 @@ export default function RendersGallery() {
   const [activeFolder, setActiveFolder] = useState('All');
 
   // Filter images based on active folder
-  const filteredImages = displayImages.filter(r => activeFolder === 'All' || r.folder_name === activeFolder);
 
   if (displayImages.length === 0) {
     return (
@@ -281,6 +280,10 @@ export default function RendersGallery() {
               animation: 'fadeIn 0.5s ease-out'
             }}
           />
+
+          {/* Image Preloader for Cache Optimization */}
+          <img src={displayImages[(selectedIndex + 1) % displayImages.length]?.image_url} style={{ display: 'none' }} alt="" />
+          <img src={displayImages[(selectedIndex === 0 ? displayImages.length - 1 : selectedIndex - 1)]?.image_url} style={{ display: 'none' }} alt="" />
         </div>
       )}
     </div>

@@ -2,26 +2,29 @@ import React from 'react';
 import { useViewerStore } from '../store/viewerStore';
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCcw, RotateCw } from 'lucide-react';
 
-export default function VirtualRemote() {
-  const setMovement = useViewerStore(state => state.setMovement);
-
-  const ArrowButton = ({ direction, icon: Icon, style }) => (
+const ArrowButton = (props) => {
+  const IconToRender = props.icon;
+  return (
     <button
       className="glass-panel hover-lift"
-      onPointerDown={(e) => { e.preventDefault(); setMovement(direction, true); }}
-      onPointerUp={(e) => { e.preventDefault(); setMovement(direction, false); }}
-      onPointerLeave={(e) => { e.preventDefault(); setMovement(direction, false); }}
+      onPointerDown={(e) => { e.preventDefault(); props.setMovement(props.direction, true); }}
+      onPointerUp={(e) => { e.preventDefault(); props.setMovement(props.direction, false); }}
+      onPointerLeave={(e) => { e.preventDefault(); props.setMovement(props.direction, false); }}
       style={{
         width: '48px', height: '48px',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         border: 'none', background: 'rgba(255,255,255,0.05)', color: 'white',
         cursor: 'pointer', borderRadius: '12px',
-        ...style
+        ...props.style
       }}
     >
-      <Icon size={24} />
+      <IconToRender size={24} />
     </button>
   );
+};
+
+export default function VirtualRemote() {
+  const setMovement = useViewerStore(state => state.setMovement);
 
   return (
     <>
@@ -57,26 +60,26 @@ export default function VirtualRemote() {
       <div className="glass-panel virtual-joystick-left">
         {/* Top Row */}
         <div style={{ gridColumn: '2' }}>
-          <ArrowButton direction="moveForward" icon={ArrowUp} style={{ width: '100%', height: '100%' }} />
+          <ArrowButton direction="moveForward" icon={ArrowUp} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
         
         {/* Bottom Row */}
         <div style={{ gridColumn: '1', gridRow: '2' }}>
-          <ArrowButton direction="moveLeft" icon={ArrowLeft} style={{ width: '100%', height: '100%' }} />
+          <ArrowButton direction="moveLeft" icon={ArrowLeft} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
         <div style={{ gridColumn: '2', gridRow: '2' }}>
-          <ArrowButton direction="moveBackward" icon={ArrowDown} style={{ width: '100%', height: '100%' }} />
+          <ArrowButton direction="moveBackward" icon={ArrowDown} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
         <div style={{ gridColumn: '3', gridRow: '2' }}>
-          <ArrowButton direction="moveRight" icon={ArrowRight} style={{ width: '100%', height: '100%' }} />
+          <ArrowButton direction="moveRight" icon={ArrowRight} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
       </div>
 
       {/* Secondary Camera Rotation Pad (Right Side Joystick) */}
       <div className="glass-panel virtual-joystick-right">
-        <ArrowButton direction="lookLeft" icon={RotateCcw} style={{ width: '64px' }} />
+        <ArrowButton direction="lookLeft" icon={RotateCcw} style={{ width: '64px' }} setMovement={setMovement} />
         <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>Look</span>
-        <ArrowButton direction="lookRight" icon={RotateCw} style={{ width: '64px' }} />
+        <ArrowButton direction="lookRight" icon={RotateCw} style={{ width: '64px' }} setMovement={setMovement} />
       </div>
     </>
   );

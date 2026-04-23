@@ -41,7 +41,7 @@ export default function MobileARView() {
           if (mat.pbrMetallicRoughness.baseColorTexture) {
             mat.pbrMetallicRoughness.baseColorTexture.texture = null;
           }
-        } catch (e) {
+        } catch {
           // Ignore if API doesn't support texture removal
         }
         

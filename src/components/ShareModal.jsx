@@ -24,7 +24,7 @@ export default function ShareModal({ onClose }) {
           url: shareUrl,
         });
         onClose();
-      } catch (err) {
+      } catch {
         console.log('User cancelled native share.');
       }
     } else {

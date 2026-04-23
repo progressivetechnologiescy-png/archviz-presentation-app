@@ -29,7 +29,7 @@ export const useViewerStore = create((set) => ({
   moveRight: false,
   lookLeft: false,
   lookRight: false,
-  setMovement: (direction, isMoving) => set((state) => ({ [direction]: isMoving })),
+  setMovement: (direction, isMoving) => set(() => ({ [direction]: isMoving })),
 
   customFloorplans: [],
   activeFloorplanId: null,
@@ -238,7 +238,6 @@ export const useViewerStore = create((set) => ({
   setGlobalScrolled: (val) => set({ isGlobalScrolled: val }),
   
   // Complex Renders Array [{ id, folder_name, image_url }]
-  customRenders: [],
   addCustomRender: (renderObj) => set((state) => ({ customRenders: [...state.customRenders, renderObj] })),
   clearCustomRenders: () => set({ customRenders: [] }),
   toggleOverviewRender: async (supabaseClient, id, currentStatus) => {
