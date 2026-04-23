@@ -210,7 +210,7 @@ export default function RendersGallery() {
       {selectedIndex !== null && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 99999,
-          background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(20px)',
+          background: 'rgba(5, 5, 5, 0.98)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           animation: 'fadeIn 0.2s ease-out'
         }}>

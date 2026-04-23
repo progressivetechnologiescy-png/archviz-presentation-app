@@ -99,3 +99,9 @@ body {
   transform: translate3d(-50%, -90%, 0) scale(0.9);
   pointer-events: none;
 }
+
+.drag-over {
+  border: 2px dashed var(--accent-color) !important;
+  background: rgba(255, 107, 0, 0.3) !important;
+  transform: scale(1.02) !important;
+}
