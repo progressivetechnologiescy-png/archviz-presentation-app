@@ -275,6 +275,41 @@ export const useViewerStore = create((set) => ({
       console.error('Update Overview Order failed', e);
     }
   },
+  updateRenderOrdersBatch: async (supabaseClient, orderedIds) => {
+    if (!supabaseClient || !orderedIds || orderedIds.length === 0) return;
+    
+    const now = Date.now();
+    
+    // 1. Optimistic UI update instantly
+    set((state) => {
+      const newRenders = [...(state.customRenders || [])];
+      orderedIds.forEach((id, index) => {
+        const renderIndex = newRenders.findIndex(r => r.id === id);
+        if (renderIndex !== -1) {
+          // Subtract seconds to maintain DESC chronological sort (index 0 is newest)
+          newRenders[renderIndex] = { 
+            ...newRenders[renderIndex], 
+            created_at: new Date(now - index * 1000).toISOString() 
+          };
+        }
+      });
+      // Need to re-sort so the UI updates immediately
+      newRenders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      return { customRenders: newRenders };
+    });
+
+    // 2. Background database sync
+    try {
+      for (let i = 0; i < orderedIds.length; i++) {
+        await supabaseClient
+          .from('project_renders')
+          .update({ created_at: new Date(now - i * 1000).toISOString() })
+          .eq('id', orderedIds[i]);
+      }
+    } catch (e) {
+      console.error('Batch update render orders failed', e);
+    }
+  },
   renameFolder: async (supabaseClient, oldName, newName) => {
     if (!supabaseClient || !oldName || !newName || oldName === newName) return;
     try {

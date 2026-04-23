@@ -108,6 +108,7 @@ export default function AssetManager() {
   const [pendingVideoThumb, setPendingVideoThumb] = useState(null);
   const [draggedFolderId, setDraggedFolderId] = useState(null);
   const [dragOverFolderId, setDragOverFolderId] = useState(null);
+  const [dragOverRenderId, setDragOverRenderId] = useState(null);
 
   const handleUploadVideoThumb = async (file) => {
     setIsUploading(true);
@@ -815,11 +816,52 @@ export default function AssetManager() {
                       {customRenders.filter(r => r.folder_name === selectedFolder).map(render => (
                         <div 
                           key={render.id} 
-                          style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px', border: render.is_overview ? '2px solid var(--accent-color)' : 'none', cursor: 'grab' }}
+                          style={{ 
+                            position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '100px', 
+                            border: render.is_overview ? '2px solid var(--accent-color)' : (dragOverRenderId === render.id ? '2px dashed var(--accent-color)' : 'none'), 
+                            opacity: dragOverRenderId === render.id ? 0.7 : 1,
+                            transform: dragOverRenderId === render.id ? 'scale(1.05)' : 'scale(1)',
+                            transition: 'all 0.2s',
+                            cursor: 'grab' 
+                          }}
                           draggable
                           onDragStart={(e) => {
                             e.dataTransfer.setData('text/plain', `render:${render.id}`);
                             e.dataTransfer.effectAllowed = 'move';
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'move';
+                            if (dragOverRenderId !== render.id) setDragOverRenderId(render.id);
+                          }}
+                          onDragLeave={() => {
+                            if (dragOverRenderId === render.id) setDragOverRenderId(null);
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            setDragOverRenderId(null);
+                            const payload = e.dataTransfer.getData('text/plain');
+                            if (payload.startsWith('render:')) {
+                              const draggedId = payload.replace('render:', '');
+                              if (draggedId === render.id) return;
+
+                              const folderRenders = customRenders
+                                .filter(r => r.folder_name === selectedFolder)
+                                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                              
+                              const dragIdx = folderRenders.findIndex(r => r.id === draggedId);
+                              const dropIdx = folderRenders.findIndex(r => r.id === render.id);
+                              
+                              if (dragIdx !== -1 && dropIdx !== -1) {
+                                const newOrder = [...folderRenders];
+                                const [draggedItem] = newOrder.splice(dragIdx, 1);
+                                newOrder.splice(dropIdx, 0, draggedItem);
+                                
+                                if (supabase) {
+                                  useViewerStore.getState().updateRenderOrdersBatch(supabase, newOrder.map(r => r.id));
+                                }
+                              }
+                            }
                           }}
                         >
                           <img src={render.image_url} alt="render thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }} />
