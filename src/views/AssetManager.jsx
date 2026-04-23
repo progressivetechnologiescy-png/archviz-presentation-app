@@ -163,7 +163,7 @@ export default function AssetManager() {
     });
     
     const existing = (customRenders || []).map(r => r.folder_name).filter(Boolean);
-    const uniqueFolders = existing.length > 0 ? [...new Set(existing)] : ['Interiors', 'Exteriors'];
+    const uniqueFolders = [...new Set(existing)];
     
     // Add any locally added folders that haven't been saved to DB yet
     setFolderList(prev => {
@@ -222,7 +222,7 @@ export default function AssetManager() {
     });
     
     const existing = (customFloorplans || []).map(f => f.property_type).filter(Boolean);
-    const uniqueBlocks = existing.length > 0 ? [...new Set(existing)] : ['Default Property'];
+    const uniqueBlocks = [...new Set(existing)];
     
     setPropertyBlockList(prev => {
       const localExtras = prev.filter(b => !uniqueBlocks.includes(b));
@@ -1152,13 +1152,13 @@ export default function AssetManager() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
                   <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.2)' }}>
-                    <h3 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-secondary)' }}>Upload to: <strong style={{color: 'white'}}>{selectedFolder === 'All' ? 'Default Property' : selectedFolder}</strong></h3>
+                    <h3 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-secondary)' }}>Upload to: <strong style={{color: 'white'}}>{selectedFolder === 'All' ? 'Uncategorized' : selectedFolder}</strong></h3>
                     <FileInput 
-                      label={`Drop floorplans for ${selectedFolder === 'All' ? 'Default Property' : selectedFolder}`}
+                      label={`Drop floorplans for ${selectedFolder === 'All' ? 'Uncategorized' : selectedFolder}`}
                       accept="image/*,.pdf" 
                       multiple={true}
                       onDrop={async (files) => {
-                        const targetProperty = selectedFolder === 'All' ? 'Default Property' : selectedFolder;
+                        const targetProperty = selectedFolder === 'All' ? 'Uncategorized' : selectedFolder;
                         if (!supabase) {
                           files.forEach((f, i) => useViewerStore.getState().addCustomFloorplan({ id: uuidv4(), property_type: targetProperty, level_name: `Level ${i+1}`, image_url: URL.createObjectURL(f), order_index: 0 }));
                           return;
@@ -1417,7 +1417,13 @@ export default function AssetManager() {
             width: '90%', maxWidth: '400px', border: '1px solid rgba(255,255,255,0.1)',
             boxShadow: '0 24px 48px rgba(0,0,0,0.5)', textAlign: 'center'
           }}>
-            <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 16px 0', color: 'white' }}>Notice</h3>
+            {(() => {
+              const isSuccess = alertModal.message.toLowerCase().includes('success') || alertModal.message.toLowerCase().includes('saved');
+              const isError = alertModal.message.toLowerCase().includes('fail') || alertModal.message.toLowerCase().includes('error');
+              const title = isError ? 'Error' : isSuccess ? 'Successful' : 'Notice';
+              const titleColor = isError ? '#ef4444' : isSuccess ? '#22c55e' : 'white';
+              return <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 16px 0', color: titleColor }}>{title}</h3>;
+            })()}
             <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', lineHeight: '1.5', whiteSpace: 'pre-line' }}>{alertModal.message}</p>
             <button 
               onClick={() => setAlertModal({ isOpen: false, message: '' })}
