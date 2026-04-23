@@ -438,9 +438,9 @@ export default function AssetManager() {
                 className="hover-lift"
                 style={{
                   padding: '14px 20px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left',
-                  background: activeTab === tab ? 'var(--accent-color)' : 'rgba(0,0,0,0.2)',
+                  background: activeTab === tab ? 'var(--accent-color)' : 'transparent',
                   color: activeTab === tab ? 'white' : 'var(--text-secondary)',
-                  border: activeTab === tab ? '1px solid rgba(255,255,255,0.1)' : '1px solid var(--border-glass)', 
+                  border: activeTab === tab ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent', 
                   transition: 'all 0.2s', whiteSpace: 'nowrap'
                 }}
               >
@@ -703,8 +703,8 @@ export default function AssetManager() {
                       style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
                         padding: '6px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'grab',
-                        border: selectedFolder === folder ? '1px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
-                        background: selectedFolder === folder ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)',
+                        border: selectedFolder === folder ? '1px solid var(--accent-color)' : '1px solid var(--border-color)',
+                        background: selectedFolder === folder ? 'var(--accent-glow)' : 'var(--input-bg)',
                         color: selectedFolder === folder ? 'var(--accent-color)' : 'var(--text-secondary)',
                         opacity: draggedFolderId === folder ? 0.4 : 1,
                         transition: 'all 0.2s', userSelect: 'none'
