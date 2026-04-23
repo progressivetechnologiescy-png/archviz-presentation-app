@@ -210,6 +210,64 @@ export default function AssetManager() {
     }
   };
 
+  const [propertyBlockList, setPropertyBlockList] = useState([]);
+  
+  useEffect(() => {
+    const orderMap = {};
+    (customFloorplans || []).forEach(f => {
+      if (f.property_type) {
+        orderMap[f.property_type] = Number(f.property_type_order) || 0;
+      }
+    });
+    
+    const existing = (customFloorplans || []).map(f => f.property_type).filter(Boolean);
+    const uniqueBlocks = [...new Set(['Default Property', ...existing])];
+    
+    setPropertyBlockList(prev => {
+      const localExtras = prev.filter(b => !uniqueBlocks.includes(b));
+      const merged = [...new Set([...uniqueBlocks, ...localExtras])].sort((a, b) => {
+        return (orderMap[a] || 0) - (orderMap[b] || 0);
+      });
+      if (JSON.stringify(merged) !== JSON.stringify(prev)) {
+        return merged;
+      }
+      return prev;
+    });
+  }, [customFloorplans]);
+
+  const handlePropertyBlockDrop = async (e, targetBlock) => {
+    const payload = e.dataTransfer.getData('text/plain');
+    if (!payload) return;
+
+    if (payload.startsWith('floorplan:')) {
+      const floorplanId = payload.replace('floorplan:', '');
+      if (supabase) useViewerStore.getState().updateFloorplanPropertyType(supabase, floorplanId, targetBlock);
+      return;
+    }
+
+    if (payload.startsWith('property_block:')) {
+      const draggedBlock = payload.replace('property_block:', '');
+      if (draggedBlock === targetBlock) return;
+      
+      setPropertyBlockList(prev => {
+        const newList = [...prev];
+        const dragIdx = newList.indexOf(draggedBlock);
+        const dropIdx = newList.indexOf(targetBlock);
+        if (dragIdx === -1 || dropIdx === -1) return prev;
+        
+        newList.splice(dragIdx, 1);
+        newList.splice(dropIdx, 0, draggedBlock);
+        
+        if (supabase) {
+          newList.forEach((block, idx) => {
+            useViewerStore.getState().updateFloorplanPropertyBlockOrder(supabase, block, idx);
+          });
+        }
+        return newList;
+      });
+    }
+  };
+
   const [selectedFolder, setSelectedFolder] = useState('Interiors');
 
   // Sync the form field if Cloud DB fetches the GPS late
@@ -1025,9 +1083,16 @@ export default function AssetManager() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px' }}>
-                  {Array.from(new Set([...propertyTypes, selectedFolder === 'All' ? 'Default Property' : selectedFolder])).map(type => (
-                    <button 
+                  {propertyBlockList.map(type => (
+                    <div 
                       key={type}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', `property_block:${type}`);
+                        e.dataTransfer.effectAllowed = 'move';
+                        setDraggedFolderId(type);
+                      }}
+                      onDragEnd={() => setDraggedFolderId(null)}
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.dataTransfer.dropEffect = 'move';
@@ -1039,26 +1104,50 @@ export default function AssetManager() {
                       onDrop={(e) => {
                         e.preventDefault();
                         setDragOverFolderId(null);
-                        const payload = e.dataTransfer.getData('text/plain');
-                        if (payload.startsWith('floorplan:')) {
-                           const floorplanId = payload.replace('floorplan:', '');
-                           if (supabase) useViewerStore.getState().updateFloorplanPropertyType(supabase, floorplanId, type);
-                        }
+                        handlePropertyBlockDrop(e, type);
                       }}
                       onClick={() => setSelectedFolder(type)}
                       style={{
-                        padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', cursor: 'grab',
                         border: selectedFolder === type ? '1px solid var(--accent-color)' : (dragOverFolderId === type ? '1px dashed var(--accent-color)' : '1px solid rgba(255,255,255,0.1)'),
                         background: dragOverFolderId === type ? 'rgba(255, 107, 0, 0.3)' : (selectedFolder === type ? 'rgba(255, 107, 0, 0.15)' : 'rgba(0,0,0,0.2)'),
                         color: selectedFolder === type ? 'var(--accent-color)' : 'var(--text-secondary)',
-                        transform: dragOverFolderId === type ? 'scale(1.05)' : 'scale(1)',
-                        transition: 'all 0.2s'
+                        opacity: draggedFolderId === type ? 0.4 : 1,
+                        transform: dragOverFolderId === type && draggedFolderId !== type ? 'scale(1.05)' : 'scale(1)',
+                        transition: 'all 0.2s', userSelect: 'none'
                       }}
+                      title="Drag to reorder"
                     >
+                      <span style={{ opacity: 0.5, fontSize: '14px', cursor: 'grab' }}>⋮⋮</span>
                       {type}
-                    </button>
+                    </div>
                   ))}
                 </div>
+
+                {selectedFolder && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ margin: 0, color: 'var(--text-secondary)' }}>Rename Block:</h4>
+                      <input 
+                        key={`rename-${selectedFolder}`}
+                        type="text" 
+                        defaultValue={selectedFolder}
+                        onBlur={(e) => {
+                          const newName = e.target.value.trim();
+                          if (newName && newName !== selectedFolder) {
+                            useViewerStore.getState().renameFloorplanPropertyBlock(supabase, selectedFolder, newName);
+                            setSelectedFolder(newName);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') e.target.blur();
+                        }}
+                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white', width: '200px' }}
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
                   <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.2)' }}>

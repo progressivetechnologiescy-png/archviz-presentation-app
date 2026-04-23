@@ -6,10 +6,20 @@ export default function FloorplanViewer() {
 
   const activePlan = customFloorplans?.find(f => f.id === activeFloorplanId);
 
-  // Extract unique property types
-  const propertyTypes = customFloorplans && customFloorplans.length > 0
-    ? [...new Set(customFloorplans.map(f => f.property_type || 'Default Property'))]
-    : [];
+  // Extract unique property types sorted by custom order
+  const propertyTypes = React.useMemo(() => {
+    if (!customFloorplans || customFloorplans.length === 0) return [];
+    
+    const orderMap = {};
+    customFloorplans.forEach(f => {
+      if (f.property_type) {
+        orderMap[f.property_type] = Number(f.property_type_order) || 0;
+      }
+    });
+    
+    const uniqueBlocks = [...new Set(customFloorplans.map(f => f.property_type || 'Default Property'))];
+    return uniqueBlocks.sort((a, b) => (orderMap[a] || 0) - (orderMap[b] || 0));
+  }, [customFloorplans]);
 
   const [activePropertyType, setActivePropertyType] = React.useState(
     activePlan ? (activePlan.property_type || 'Default Property') : (propertyTypes[0] || 'Default Property')

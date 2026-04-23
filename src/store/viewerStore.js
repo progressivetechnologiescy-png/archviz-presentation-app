@@ -114,6 +114,40 @@ export const useViewerStore = create((set) => ({
       console.error('Batch update floorplan orders failed', e);
     }
   },
+  renameFloorplanPropertyBlock: async (supabaseClient, oldName, newName) => {
+    if (!supabaseClient || !oldName || !newName || oldName === newName) return;
+    try {
+      const { error } = await supabaseClient
+        .from('project_floorplans')
+        .update({ property_type: newName })
+        .eq('property_type', oldName);
+      
+      if (!error) {
+        set((state) => ({
+          customFloorplans: state.customFloorplans.map(f => f.property_type === oldName ? { ...f, property_type: newName } : f)
+        }));
+      }
+    } catch (e) {
+      console.error('Rename property block failed', e);
+    }
+  },
+  updateFloorplanPropertyBlockOrder: async (supabaseClient, propertyType, newOrder) => {
+    if (!supabaseClient || !propertyType) return;
+    try {
+      const { error } = await supabaseClient
+        .from('project_floorplans')
+        .update({ property_type_order: newOrder })
+        .eq('property_type', propertyType);
+      
+      if (!error) {
+        set((state) => ({
+          customFloorplans: state.customFloorplans.map(f => f.property_type === propertyType ? { ...f, property_type_order: newOrder } : f)
+        }));
+      }
+    } catch (e) {
+      console.error('Update property block order failed', e);
+    }
+  },
   primaryModel: null,
   customFBX: null,
   customGLB: null,
