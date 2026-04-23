@@ -145,7 +145,7 @@ export default function AssetManager() {
       updateBrandingConfig(supabase, { logoUrl: publicUrl });
     } catch (e) {
       console.error(e);
-      alert("Failed to upload logo.");
+      setAlertModal({ isOpen: true, message: "Failed to upload logo." });
     } finally {
       setIsUploading(false);
     }
@@ -280,7 +280,7 @@ export default function AssetManager() {
 
   const uploadSingleFile = async (file, assetType, setLocalUpdate) => {
     if (!supabase) {
-      alert("Database offline. Using local RAM.");
+      setAlertModal({ isOpen: true, message: "Database offline. Using local RAM." });
       setLocalUpdate(URL.createObjectURL(file));
       return;
     }
@@ -328,10 +328,10 @@ export default function AssetManager() {
       if (dbError) throw dbError;
 
       setLocalUpdate(publicUrl);
-      alert(`Successfully uploaded ${assetType} to Cloud Database!`);
+      setAlertModal({ isOpen: true, message: `Successfully uploaded ${assetType} to Cloud Database!` });
     } catch (error) {
       console.error(`Upload error for ${assetType}:`, error);
-      alert(`Upload Failed: ${error.message || JSON.stringify(error)}\n\n(If this says 'new row violates row-level security', you need an INSERT/UPDATE policy in Supabase!)`);
+      setAlertModal({ isOpen: true, message: `Upload Failed: ${error.message || JSON.stringify(error)}\n\n(If this says 'new row violates row-level security', you need an INSERT/UPDATE policy in Supabase!)` });
     } finally {
       setIsUploading(false);
     }
@@ -358,7 +358,7 @@ export default function AssetManager() {
   
   const handleUploadRenders = async (files) => {
     if (!supabase) {
-      alert("Database offline. Using local RAM.");
+      setAlertModal({ isOpen: true, message: "Database offline. Using local RAM." });
       files.forEach(f => addCustomRender(URL.createObjectURL(f)));
       return;
     }
@@ -381,10 +381,10 @@ export default function AssetManager() {
 
         addCustomRender(publicUrl);
       }
-      alert(`Successfully uploaded ${files.length} renders to the Cloud Database!`);
+      setAlertModal({ isOpen: true, message: `Successfully uploaded ${files.length} renders to the Cloud Database!` });
     } catch (error) {
       console.error("Upload error:", error);
-      alert(`Render Upload Failed: ${error.message || JSON.stringify(error)}`);
+      setAlertModal({ isOpen: true, message: `Render Upload Failed: ${error.message || JSON.stringify(error)}` });
     } finally {
       setIsUploading(false);
     }
@@ -401,7 +401,7 @@ export default function AssetManager() {
 
     if (inputStr.match(/^https?:\/\//i)) {
       if (!inputStr.includes('google.com/maps/embed') && !inputStr.includes('maps.google.com/maps?q=')) {
-        alert("To use a URL, you must use the 'Embed a map' link from Google Maps (or the <iframe> code). Standard share links like 'maps.app.goo.gl' cannot be embedded due to Google's security rules.\n\nAlternatively, just type the physical address text here!");
+        setAlertModal({ isOpen: true, message: "To use a URL, you must use the 'Embed a map' link from Google Maps (or the <iframe> code). Standard share links like 'maps.app.goo.gl' cannot be embedded due to Google's security rules.\n\nAlternatively, just type the physical address text here!" });
         return;
       }
     }
@@ -418,9 +418,9 @@ export default function AssetManager() {
       
       if (error) {
         console.error("Failed to save GPS:", error);
-        alert("Failed to save location to the Cloud. (Check if you ran the SQL policy for properties_config!)");
+        setAlertModal({ isOpen: true, message: "Failed to save location to the Cloud. (Check if you ran the SQL policy for properties_config!)" });
       } else {
-        alert("Location Saved to Cloud DB!");
+        setAlertModal({ isOpen: true, message: "Location Saved to Cloud DB!" });
       }
     }
   };
@@ -798,10 +798,10 @@ export default function AssetManager() {
                           
                           addCustomRender(dbData);
                         }
-                        alert(`Successfully uploaded ${files.length} renders to '${selectedFolder}'!`);
+                        setAlertModal({ isOpen: true, message: `Successfully uploaded ${files.length} renders to '${selectedFolder}'!` });
                       } catch (error) {
                         console.error("Upload error:", error);
-                        alert(`Render Upload Failed: ${error.message}`);
+                        setAlertModal({ isOpen: true, message: `Render Upload Failed: ${error.message}` });
                       } finally {
                         setIsUploading(false);
                       }
@@ -935,7 +935,7 @@ export default function AssetManager() {
                     const title = document.getElementById('new-video-title').value.trim();
                     const url = document.getElementById('new-video-url').value.trim();
                     if (!title || !url) {
-                      alert('Title and Video URL are required.');
+                      setAlertModal({ isOpen: true, message: 'Title and Video URL are required.' });
                       return;
                     }
                     
@@ -1350,8 +1350,8 @@ export default function AssetManager() {
                   onClick={async () => {
                     if (supabase) {
                       const { error } = await supabase.from('properties_config').update({ gemini_api_key: geminiApiKey, ai_context: aiContext }).match({ project_id: 'demo_project' });
-                      if (error) alert(`Failed to save: ${error.message}`);
-                      else alert("Emma AI Configuration Saved!");
+                      if (error) setAlertModal({ isOpen: true, message: `Failed to save: ${error.message}` });
+                      else setAlertModal({ isOpen: true, message: "Emma AI Configuration Saved!" });
                     }
                   }}
                   style={{ padding: '12px 24px', borderRadius: '8px', alignSelf: 'flex-start', background: 'white', color: 'black', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
