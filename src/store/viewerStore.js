@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 let inventorySyncTimeout = null;
 const syncInventoryToCloud = (supabaseClient, newList) => {
@@ -15,7 +16,9 @@ const syncInventoryToCloud = (supabaseClient, newList) => {
 };
 
 // Simple store to manage our 3D UI states
-export const useViewerStore = create((set) => ({
+export const useViewerStore = create(
+  persist(
+    (set) => ({
   // Environment / Lighting
   lightingPreset: 'noon', // 'morning', 'noon', 'night'
   setLightingPreset: (preset) => set({ lightingPreset: preset }),
@@ -694,4 +697,9 @@ export const useViewerStore = create((set) => ({
       set({ isFetchingAssets: false });
     }
   }
-}));
+}),
+  {
+    name: 'archviz-renders-cache',
+    partialize: (state) => ({ customRenders: state.customRenders })
+  }
+));
