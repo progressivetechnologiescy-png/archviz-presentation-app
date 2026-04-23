@@ -162,7 +162,13 @@ export default function PresentationApp({ forceAdmin = false }) {
           
           {isAdmin && (
             <button 
-              onClick={() => setActiveTab(activeTab === 'manage' ? 'overview' : 'manage')}
+              onClick={() => {
+                if (activeTab === 'manage') {
+                  window.open(window.location.origin, '_blank');
+                } else {
+                  setActiveTab('manage');
+                }
+              }}
               className="glass-panel hover-lift header-manage-btn" 
               style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: activeTab === 'manage' ? 'rgba(255,255,255,0.1)' : 'var(--accent-color)', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold' }}>
               {activeTab === 'manage' ? <Eye size={16} /> : <Settings size={16} />}
