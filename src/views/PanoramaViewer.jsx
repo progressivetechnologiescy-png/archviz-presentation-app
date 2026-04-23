@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, DeviceOrientationControls, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useViewerStore } from '../store/viewerStore';
-import { Smartphone, ChevronLeft, Eye, EyeOff, Maximize, MapPin, Plus } from 'lucide-react';
+import { Smartphone, ChevronLeft, Eye, EyeOff, Maximize, MapPin, Plus, X } from 'lucide-react';
 
 // Advanced Hotspot Marker
 function TourHotspot({ spot, onClick }) {
@@ -170,16 +170,17 @@ export default function PanoramaViewer() {
             <>
               <button 
                 onClick={() => setActiveHotspotData(null)}
-                style={{ position: 'absolute', top: '32px', right: '32px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', transition: 'all 0.2s' }}
+                style={{ position: 'absolute', top: '32px', right: '32px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.2s' }}
                 className="hover-lift"
+                onMouseOver={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+                onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
               >
-                ✕
+                <X size={20} />
               </button>
-              <h2 style={{ fontSize: '48px', fontWeight: '300', margin: '0 0 16px 0', color: 'white', lineHeight: '1.1' }}>
-                {activeHotspotData.title.split(' ')[0]}<br/>
-                <strong style={{ fontWeight: '800' }}>{activeHotspotData.title.split(' ').slice(1).join(' ')}</strong>
+              <h2 style={{ fontSize: '32px', fontWeight: '300', margin: '0 0 8px 0', color: 'white', lineHeight: '1.2' }}>
+                {activeHotspotData.title.split(' ')[0]} <strong style={{ fontWeight: '800' }}>{activeHotspotData.title.split(' ').slice(1).join(' ')}</strong>
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: '1.6', marginBottom: '32px' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: '1.6', marginBottom: '32px', paddingRight: '20px' }}>
                 {activeHotspotData.subtitle || 'Showcase your property with an immersive sense of presence. Let your buyers explore the space with freedom.'}
               </p>
               
@@ -226,7 +227,7 @@ export default function PanoramaViewer() {
                 </div>
               )}
 
-              <button className="hover-lift" style={{ width: '100%', padding: '16px', background: 'var(--accent-color)', border: 'none', color: 'white', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 15px var(--accent-glow)' }}>
+              <button className="hover-lift" style={{ width: '100%', padding: '16px', background: 'var(--accent-color)', border: 'none', color: 'white', borderRadius: '30px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px var(--accent-glow)' }}>
                 {unitData ? 'Inquire Unit #' + unitData.id : 'Book A Demo'}
               </button>
             </>
