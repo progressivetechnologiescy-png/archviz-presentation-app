@@ -148,6 +148,31 @@ export const useViewerStore = create((set) => ({
       console.error('Update property block order failed', e);
     }
   },
+  updateFloorplanPropertyBlockOrdersBatch: async (supabaseClient, blockMap) => {
+    if (!supabaseClient) return;
+    
+    // 1. Optimistic UI update instantly
+    set((state) => ({
+      customFloorplans: state.customFloorplans.map(f => {
+        if (f.property_type && blockMap[f.property_type] !== undefined) {
+          return { ...f, property_type_order: blockMap[f.property_type] };
+        }
+        return f;
+      })
+    }));
+
+    // 2. Background database sync
+    try {
+      for (const [propertyType, newOrder] of Object.entries(blockMap)) {
+        await supabaseClient
+          .from('project_floorplans')
+          .update({ property_type_order: newOrder })
+          .eq('property_type', propertyType);
+      }
+    } catch (e) {
+      console.error('Batch update property block orders failed', e);
+    }
+  },
   primaryModel: null,
   customFBX: null,
   customGLB: null,

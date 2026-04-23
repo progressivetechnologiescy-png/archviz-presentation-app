@@ -202,9 +202,9 @@ export default function AssetManager() {
         newList.splice(dropIdx, 0, draggedFolder);
         
         if (supabase) {
-          newList.forEach((folder, idx) => {
-            useViewerStore.getState().updateFolderOrder(supabase, folder, idx);
-          });
+          const folderMap = {};
+          newList.forEach((folder, idx) => { folderMap[folder] = idx; });
+          useViewerStore.getState().updateFolderOrdersBatch(supabase, folderMap);
         }
         return newList;
       });
@@ -260,9 +260,9 @@ export default function AssetManager() {
         newList.splice(dropIdx, 0, draggedBlock);
         
         if (supabase) {
-          newList.forEach((block, idx) => {
-            useViewerStore.getState().updateFloorplanPropertyBlockOrder(supabase, block, idx);
-          });
+          const blockMap = {};
+          newList.forEach((block, idx) => { blockMap[block] = idx; });
+          useViewerStore.getState().updateFloorplanPropertyBlockOrdersBatch(supabase, blockMap);
         }
         return newList;
       });
