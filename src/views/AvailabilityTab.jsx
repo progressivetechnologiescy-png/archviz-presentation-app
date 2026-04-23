@@ -62,8 +62,8 @@ export default function AvailabilityTab() {
         
         @media (max-width: 768px) {
           .availability-container { padding: 100px 16px 120px !important; }
-          .availability-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-          .availability-filters { overflow-x: auto; max-width: 100%; white-space: nowrap; -webkit-overflow-scrolling: touch; width: 100%; }
+          .availability-header { flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+          .availability-filters { overflow-x: auto; max-width: 100%; white-space: nowrap; -webkit-overflow-scrolling: touch; width: 100%; justify-content: center; }
           .financing-panel { flex-direction: column; gap: 24px; align-items: stretch; }
           .financing-left { padding-right: 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 24px; }
           .table-wrapper { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
