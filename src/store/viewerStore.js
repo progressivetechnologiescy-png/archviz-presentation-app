@@ -35,102 +35,74 @@ export const useViewerStore = create((set) => ({
   activeFloorplanId: null,
   
   // Interactive 360 Spatial Tour Database
-  activeTourNodeId: 'node_limassol_aerial',
+  activeTourNodeId: 'node_exterior',
   activeHotspotData: null,
   setActiveHotspotData: (data) => set({ activeHotspotData: data }),
   customTourNodes: {
-    'node_limassol_aerial': {
-      id: 'node_limassol_aerial',
-      url: 'https://images.unsplash.com/photo-1552083375-1447ce886485?q=80&w=3000&auto=format&fit=crop', // Temporary placeholder pano
-      title: 'Limassol Aerial View',
+    'node_exterior': {
+      id: 'node_exterior',
+      url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=3000&auto=format&fit=crop', 
+      title: 'Villa Exterior',
       hotspots: [
         {
-          id: 'hs_1',
-          type: 'detailed-label',
-          position: [-200, -20, -300], // [x,y,z] in 3D space
-          label: 'VIEW ROYAL RESIDENCES',
-          subLabel: 'UNDER-CONSTRUCTION',
-          percentage: '5%',
-          targetNodeId: 'node_royal_res',
-          panelData: null // no panel, just navigates
-        },
-        {
-          id: 'hs_2',
-          type: 'detailed-label',
-          position: [50, -10, -400],
-          label: 'VIEW LEVANTAR',
-          subLabel: 'UNDER-CONSTRUCTION',
-          percentage: '10%',
-          targetNodeId: 'node_levantar',
-          panelData: null
-        },
-        {
-          id: 'hs_3',
-          type: 'detailed-label',
-          position: [300, 40, -350],
-          label: 'RITZ-CARLTON RESIDENCES',
-          subLabel: 'UNDER-CONSTRUCTION',
-          percentage: '95%',
-          targetNodeId: 'node_ritz',
-          panelData: null
-        },
-        {
-          id: 'hs_4',
+          id: 'hs_enter',
           type: 'text-box',
-          position: [-50, -80, -200],
-          label: 'THE LIMASSOL BUILDING',
-          panelData: {
-            title: 'The Limassol Building',
-            subtitle: 'Commercial & Office Space',
-            area: '12,500m2',
-            beds: 'N/A',
-            roof: 'Yes',
-            image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop'
-          }
+          position: [0, -10, -300],
+          label: 'ENTER LIVING ROOM',
+          targetNodeId: 'node_living_room',
+          panelData: null
+        }
+      ]
+    },
+    'node_living_room': {
+      id: 'node_living_room',
+      url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=3000&auto=format&fit=crop',
+      title: 'Main Living Room',
+      hotspots: [
+        {
+          id: 'hs_to_bedroom',
+          type: 'text-box',
+          position: [200, 0, -200],
+          label: 'GO TO BEDROOM',
+          targetNodeId: 'node_bedroom',
+          panelData: null
         },
         {
-          id: 'hs_5',
+          id: 'hs_exit',
+          type: 'text-box',
+          position: [-300, 0, 100],
+          label: 'EXIT TO PATIO',
+          targetNodeId: 'node_exterior',
+          panelData: null
+        },
+        {
+          id: 'hs_info',
           type: 'simple-pin',
-          position: [150, -60, -250],
+          position: [50, -50, -150],
+          label: 'Details',
+          targetNodeId: null,
           panelData: {
-            title: 'Seatera Apartments',
-            subtitle: 'Completed',
-            area: '150m2',
-            beds: '3',
-            roof: '50m2',
-            image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop'
+            title: 'Modern Living Space',
+            subtitle: 'Featuring custom Italian furniture and smart home integration.',
+            area: '85m2',
+            beds: 'N/A',
+            roof: 'N/A',
+            image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=800&auto=format&fit=crop'
           }
         }
       ]
     },
-    'node_larnaca_aerial': {
-      id: 'node_larnaca_aerial',
-      url: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=3000&auto=format&fit=crop',
-      title: 'Larnaca Aerial View',
+    'node_bedroom': {
+      id: 'node_bedroom',
+      url: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=3000&auto=format&fit=crop',
+      title: 'Master Bedroom',
       hotspots: [
         {
-          id: 'hs_larnaca_1',
-          type: 'detailed-label',
-          position: [-100, -20, 300],
-          label: 'MARINA RESIDENCES',
-          subLabel: 'COMPLETED',
-          percentage: '100%',
-          targetNodeId: 'node_limassol_aerial', // just link back for demo
-          panelData: null
-        }
-      ]
-    },
-    'node_ritz': {
-      id: 'node_ritz',
-      url: 'https://images.unsplash.com/photo-1541881519129-cbdd601247d4?q=80&w=3000&auto=format&fit=crop',
-      title: 'Ritz-Carlton Residences',
-      hotspots: [
-        {
-          id: 'hs_back',
+          id: 'hs_back_living',
           type: 'text-box',
-          position: [0, 0, 400],
-          label: 'BACK TO LIMASSOL VIEW',
-          targetNodeId: 'node_limassol_aerial',
+          position: [0, 0, 300],
+          label: 'BACK TO LIVING ROOM',
+          targetNodeId: 'node_living_room',
           panelData: null
         }
       ]

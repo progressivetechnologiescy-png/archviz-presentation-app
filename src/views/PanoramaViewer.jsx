@@ -135,34 +135,12 @@ export default function PanoramaViewer() {
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#0a0c10' }}>
       
-      {/* Top Controls Overlay (Positioned below the global header) */}
+      {/* Minimal Top Controls */}
       <div style={{
         position: 'absolute', top: '90px', right: '32px', zIndex: 30,
         display: 'flex', gap: '12px', pointerEvents: 'none'
       }}>
         <div style={{ pointerEvents: 'auto', display: 'flex', gap: '8px' }}>
-          
-          <select 
-            className="glass-panel hover-lift" 
-            style={{ 
-              padding: '8px 16px', background: 'rgba(10, 12, 16, 0.6)', backdropFilter: 'blur(12px)', 
-              color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', 
-              fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', outline: 'none', appearance: 'none'
-            }}
-            onChange={(e) => {
-              if (e.target.value === 'limassol' && customTourNodes['node_limassol_aerial']) {
-                setActiveTourNodeId('node_limassol_aerial');
-                setActiveHotspotData(null);
-              } else if (e.target.value === 'larnaca' && customTourNodes['node_larnaca_aerial']) {
-                setActiveTourNodeId('node_larnaca_aerial');
-                setActiveHotspotData(null);
-              }
-            }}
-          >
-            <option value="limassol">📍 CITY: LIMASSOL</option>
-            <option value="larnaca">📍 CITY: LARNACA</option>
-          </select>
-
           <button onClick={() => setShowHotspots(!showHotspots)} className="glass-panel hover-lift" style={{ padding: '8px 12px', background: 'rgba(10, 12, 16, 0.6)', backdropFilter: 'blur(12px)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: 'pointer' }}>
             {showHotspots ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
