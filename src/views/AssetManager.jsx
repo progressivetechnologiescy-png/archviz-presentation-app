@@ -108,6 +108,7 @@ export default function AssetManager() {
   const [alertModal, setAlertModal] = useState({ isOpen: false, message: '' });
   const [pendingVideoThumb, setPendingVideoThumb] = useState(null);
   const [draggedFolderId, setDraggedFolderId] = useState(null);
+  const [hotspotPrompt, setHotspotPrompt] = useState({ isOpen: false, coords: null, label: '', targetNodeId: '' });
 
   const handleUploadVideoThumb = async (file) => {
     setIsUploading(true);
@@ -1361,59 +1362,223 @@ export default function AssetManager() {
           {/* TAB: TOURS */}
           {activeTab === 'tours' && (
             <>
+              {hotspotPrompt.isOpen && (
+                <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="glass-panel" style={{ width: '400px', padding: '24px', borderRadius: '16px', background: 'var(--bg-panel)' }}>
+                    <h3 style={{ marginTop: 0 }}>Add Interactive Hotspot</h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Link this area to another 360 panorama node.</p>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold' }}>Hotspot Label</label>
+                    <input 
+                      type="text" 
+                      value={hotspotPrompt.label} 
+                      onChange={e => setHotspotPrompt(p => ({ ...p, label: e.target.value }))}
+                      placeholder="e.g., ENTER LIVING ROOM"
+                      style={{ width: '100%', padding: '12px', marginBottom: '16px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}
+                    />
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: 'bold' }}>Target Panorama Node</label>
+                    <select 
+                      value={hotspotPrompt.targetNodeId}
+                      onChange={e => setHotspotPrompt(p => ({ ...p, targetNodeId: e.target.value }))}
+                      style={{ width: '100%', padding: '12px', marginBottom: '24px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}
+                    >
+                      <option value="">-- Select Target Node --</option>
+                      {Object.values(useViewerStore.getState().customTourNodes)
+                        .filter(n => n.id !== useViewerStore.getState().activeTourNodeId)
+                        .map(n => <option key={n.id} value={n.id}>{n.title}</option>)}
+                    </select>
+                    
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button onClick={() => setHotspotPrompt({ isOpen: false, coords: null, label: '', targetNodeId: '' })} style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                      <button 
+                        onClick={() => {
+                          const state = useViewerStore.getState();
+                          const activeNode = state.customTourNodes[state.activeTourNodeId];
+                          if (!activeNode || !hotspotPrompt.targetNodeId) return;
+                          
+                          const newHotspot = {
+                            id: 'hs_' + Date.now(),
+                            type: 'text-box',
+                            position: [hotspotPrompt.coords.x, hotspotPrompt.coords.y, hotspotPrompt.coords.z],
+                            label: hotspotPrompt.label || 'New Hotspot',
+                            targetNodeId: hotspotPrompt.targetNodeId,
+                            panelData: null
+                          };
+                          
+                          state.updateTourNode(supabase, state.activeTourNodeId, { hotspots: [...(activeNode.hotspots || []), newHotspot] });
+                          setHotspotPrompt({ isOpen: false, coords: null, label: '', targetNodeId: '' });
+                        }}
+                        style={{ flex: 1, padding: '12px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                      >
+                        Save Hotspot
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <div>
                   <h3 style={{ fontSize: '24px', margin: '0 0 8px 0', color: 'var(--text-primary)' }}>360 Spatial Tour Builder</h3>
                   <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Upload panoramas and visually place interactive hotspots.</p>
                 </div>
-                <button className="hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
-                  <Plus size={18} /> New Panorama Node
-                </button>
+                <div>
+                  <input type="file" id="upload-pano" style={{ display: 'none' }} accept="image/jpeg,image/png,image/webp" onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    setIsUploading(true);
+                    try {
+                      const fileExt = file.name.split('.').pop();
+                      const fileName = `${Date.now()}.${fileExt}`;
+                      const filePath = `panoramas/${fileName}`;
+                      if (supabase) {
+                        const { error } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                        if (error) throw error;
+                        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+                        const newNodeName = prompt('Enter a name for this Panorama (e.g. Living Room):', 'New Panorama') || 'New Panorama';
+                        
+                        const isFirst = Object.keys(useViewerStore.getState().customTourNodes).length === 0;
+                        
+                        const newRow = {
+                          project_id: 'demo_project',
+                          node_name: newNodeName,
+                          image_url: publicUrl,
+                          hotspots: [],
+                          is_starting_node: isFirst
+                        };
+                        const { data } = await supabase.from('project_tours').insert(newRow).select().single();
+                        if (data) {
+                           useViewerStore.getState().addTourNode(null, {
+                             id: data.id, url: data.image_url, title: data.node_name, hotspots: data.hotspots, is_starting_node: data.is_starting_node, initial_camera: data.initial_camera
+                           });
+                           useViewerStore.getState().setActiveTourNodeId(data.id);
+                        }
+                      }
+                    } catch(err) {
+                      setAlertModal({ isOpen: true, message: 'Upload failed: ' + err.message });
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  }} />
+                  <label htmlFor="upload-pano" className="hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
+                    {isUploading ? 'Uploading...' : <><Plus size={18} /> Upload New Panorama</>}
+                  </label>
+                </div>
               </div>
 
-              {/* Node List (Mock) */}
+              {/* Node List */}
               <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '12px' }}>
+                {Object.values(useViewerStore.getState().customTourNodes).length === 0 && (
+                   <div style={{ color: 'var(--text-secondary)', padding: '24px', border: '1px dashed var(--border-color)', borderRadius: '12px', width: '100%', textAlign: 'center' }}>No panoramas uploaded yet. Upload one to start building your tour.</div>
+                )}
                 {Object.values(useViewerStore.getState().customTourNodes).map(node => (
                   <div key={node.id} className="hover-lift" style={{ minWidth: '200px', height: '120px', borderRadius: '12px', background: `url(${node.url}) center/cover`, position: 'relative', border: node.id === useViewerStore.getState().activeTourNodeId ? '2px solid var(--accent-color)' : '2px solid transparent', cursor: 'pointer' }} onClick={() => useViewerStore.getState().setActiveTourNodeId(node.id)}>
-                    <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>
+                    {node.is_starting_node && (
+                      <div style={{ position: 'absolute', top: 8, right: 8, background: 'var(--accent-color)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold' }}>START</div>
+                    )}
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', color: 'white', fontWeight: 'bold', fontSize: '12px' }}>
                       {node.title}
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Visual 3D Editor Canvas */}
-              <div style={{ width: '100%', height: '500px', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10, display: 'flex', gap: '12px' }}>
-                  <div className="glass-panel" style={{ padding: '8px 16px', borderRadius: '8px', background: 'rgba(10,12,16,0.8)', border: '1px solid var(--accent-color)', color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '12px' }}>
-                    EDITING MODE: {useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId]?.title}
+              {useViewerStore.getState().activeTourNodeId && useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId] && (
+                <>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                    <button 
+                      onClick={() => {
+                         const state = useViewerStore.getState();
+                         const currentId = state.activeTourNodeId;
+                         Object.values(state.customTourNodes).forEach(node => {
+                            state.updateTourNode(supabase, node.id, { is_starting_node: node.id === currentId });
+                         });
+                      }}
+                      style={{ padding: '8px 16px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+                      🌟 Set as Starting Node
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const state = useViewerStore.getState();
+                        const currentId = state.activeTourNodeId;
+                        if (window.__currentPanoCamera) {
+                           state.updateTourNode(supabase, currentId, { initial_camera: window.__currentPanoCamera });
+                           setAlertModal({ isOpen: true, message: 'Initial view angle saved!' });
+                        }
+                      }}
+                      style={{ padding: '8px 16px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+                      🎥 Set Current View as Default
+                    </button>
+                    
+                    <div style={{ flex: 1 }} />
+                    <button 
+                      onClick={() => {
+                         setConfirmModal({
+                           isOpen: true,
+                           message: 'Are you sure you want to delete this panorama?',
+                           onConfirm: () => {
+                              useViewerStore.getState().deleteTourNode(supabase, useViewerStore.getState().activeTourNodeId);
+                           }
+                         });
+                      }}
+                      style={{ padding: '8px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+                      <X size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} /> Delete Panorama
+                    </button>
                   </div>
-                  <div className="glass-panel" style={{ padding: '8px 16px', borderRadius: '8px', background: 'rgba(10,12,16,0.8)', color: 'var(--text-primary)', fontSize: '12px' }}>
-                    Click anywhere to drop a new Hotspot
-                  </div>
-                </div>
 
-                <PanoramaViewer />
-              </div>
-
-              <div style={{ marginTop: '24px', padding: '24px', background: 'rgba(10, 12, 16, 0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <h4 style={{ margin: '0 0 16px 0', color: 'var(--text-primary)' }}>Current Hotspots</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
-                  {useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId]?.hotspots.map(hs => (
-                    <div key={hs.id} style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '12px' }}>{hs.type.toUpperCase()}</span>
-                        <span style={{ color: '#6b7280', fontSize: '12px' }}>[X: {hs.position[0].toFixed(0)}, Z: {hs.position[2].toFixed(0)}]</span>
+                  {/* Visual 3D Editor Canvas */}
+                  <div style={{ width: '100%', height: '500px', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 10, display: 'flex', gap: '12px' }}>
+                      <div className="glass-panel" style={{ padding: '8px 16px', borderRadius: '8px', background: 'rgba(10,12,16,0.8)', border: '1px solid var(--accent-color)', color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '12px' }}>
+                        EDITING MODE: {useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId]?.title}
                       </div>
-                      <div style={{ color: 'var(--text-primary)', fontWeight: 'bold', marginBottom: '4px' }}>{hs.label || 'No Label'}</div>
-                      <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                        <button style={{ flex: 1, padding: '6px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'var(--text-primary)', borderRadius: '4px', cursor: 'pointer' }}>Edit Data</button>
-                        <button style={{ padding: '6px 12px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#ef4444', borderRadius: '4px', cursor: 'pointer' }}>Delete</button>
+                      <div className="glass-panel" style={{ padding: '8px 16px', borderRadius: '8px', background: 'rgba(10,12,16,0.8)', color: 'white', fontSize: '12px' }}>
+                        Click anywhere to drop a new Hotspot
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+
+                    <PanoramaViewer 
+                      isEditing={true} 
+                      onCanvasClick={(point) => {
+                        setHotspotPrompt({ isOpen: true, coords: point, label: '', targetNodeId: '' });
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ marginTop: '24px', padding: '24px', background: 'rgba(10, 12, 16, 0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <h4 style={{ margin: '0 0 16px 0', color: 'var(--text-primary)' }}>Current Hotspots</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
+                      {useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId]?.hotspots.length === 0 && (
+                         <div style={{ color: 'var(--text-secondary)' }}>No hotspots placed. Click on the 360 viewer above to add one.</div>
+                      )}
+                      {useViewerStore.getState().customTourNodes[useViewerStore.getState().activeTourNodeId]?.hotspots.map(hs => (
+                        <div key={hs.id} style={{ padding: '16px', background: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <span style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '12px' }}>{hs.type.toUpperCase()}</span>
+                            <span style={{ color: '#6b7280', fontSize: '12px' }}>[X: {hs.position[0].toFixed(0)}, Z: {hs.position[2].toFixed(0)}]</span>
+                          </div>
+                          <div style={{ color: 'var(--text-primary)', fontWeight: 'bold', marginBottom: '4px' }}>{hs.label || 'No Label'}</div>
+                          <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>
+                            Target: {useViewerStore.getState().customTourNodes[hs.targetNodeId]?.title || 'Unknown'}
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                            <button 
+                              onClick={() => {
+                                const state = useViewerStore.getState();
+                                const activeNode = state.customTourNodes[state.activeTourNodeId];
+                                const updatedHotspots = activeNode.hotspots.filter(h => h.id !== hs.id);
+                                state.updateTourNode(supabase, state.activeTourNodeId, { hotspots: updatedHotspots });
+                              }}
+                              style={{ width: '100%', padding: '6px 12px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#ef4444', borderRadius: '4px', cursor: 'pointer' }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </>
           )}
 

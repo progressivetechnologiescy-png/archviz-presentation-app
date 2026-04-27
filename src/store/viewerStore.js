@@ -85,62 +85,48 @@ export const useViewerStore = create(
   }),
   
   // Interactive 360 Spatial Tour Database
-  activeTourNodeId: 'node_exterior',
+  activeTourNodeId: null,
   activeHotspotData: null,
   setActiveHotspotData: (data) => set({ activeHotspotData: data }),
-  customTourNodes: {
-    'node_exterior': {
-      id: 'node_exterior',
-      url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=3000&auto=format&fit=crop', 
-      title: 'Villa Exterior',
-      hotspots: [
-        {
-          id: 'hs_enter',
-          type: 'text-box',
-          position: [0, -10, -300],
-          label: 'ENTER LIVING ROOM',
-          targetNodeId: 'node_living_room',
-          panelData: null
-        }
-      ]
-    },
-    'node_living_room': {
-      id: 'node_living_room',
-      url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=3000&auto=format&fit=crop',
-      title: 'Main Living Room',
-      hotspots: [
-        {
-          id: 'hs_to_bedroom',
-          type: 'text-box',
-          position: [200, 0, -200],
-          label: 'GO TO BEDROOM',
-          targetNodeId: 'node_bedroom',
-          panelData: null
-        },
-        {
-          id: 'hs_exit',
-          type: 'text-box',
-          position: [-300, 0, 100],
-          label: 'EXIT TO PATIO',
-          targetNodeId: 'node_exterior',
-          panelData: null
-        }
-      ]
-    },
-    'node_bedroom': {
-      id: 'node_bedroom',
-      url: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=3000&auto=format&fit=crop',
-      title: 'Master Bedroom',
-      hotspots: [
-        {
-          id: 'hs_back_living',
-          type: 'text-box',
-          position: [0, 0, 300],
-          label: 'BACK TO LIVING ROOM',
-          targetNodeId: 'node_living_room',
-          panelData: null
-        }
-      ]
+  setActiveTourNodeId: (id) => set({ activeTourNodeId: id }),
+  customTourNodes: {},
+  addTourNode: async (supabaseClient, nodeData) => {
+    set((state) => ({ customTourNodes: { ...state.customTourNodes, [nodeData.id]: nodeData } }));
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('project_tours').insert(nodeData);
+      if (error) console.error('Add tour node error:', error);
+    }
+  },
+  updateTourNode: async (supabaseClient, nodeId, updates) => {
+    set((state) => {
+      const oldNode = state.customTourNodes[nodeId];
+      if (!oldNode) return state;
+      return { 
+        customTourNodes: { 
+          ...state.customTourNodes, 
+          [nodeId]: { ...oldNode, ...updates } 
+        } 
+      };
+    });
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('project_tours').update(updates).eq('id', nodeId);
+      if (error) console.error('Update tour node error:', error);
+    }
+  },
+  deleteTourNode: async (supabaseClient, nodeId) => {
+    set((state) => {
+      const newNodes = { ...state.customTourNodes };
+      delete newNodes[nodeId];
+      let newActiveId = state.activeTourNodeId;
+      if (newActiveId === nodeId) {
+        const remainingIds = Object.keys(newNodes);
+        newActiveId = remainingIds.length > 0 ? remainingIds[0] : null;
+      }
+      return { customTourNodes: newNodes, activeTourNodeId: newActiveId };
+    });
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('project_tours').delete().eq('id', nodeId);
+      if (error) console.error('Delete tour node error:', error);
     }
   },
   
@@ -669,6 +655,37 @@ export const useViewerStore = create(
         if (singleFloorplan) {
             set({ customFloorplan: singleFloorplan.asset_url });
         }
+      }
+
+      // Fetch Spatial Tours
+      const { data: toursData, error: toursError } = await supabaseClient
+        .from('project_tours')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: true });
+
+      if (!toursError && toursData && toursData.length > 0) {
+        const nodesObj = {};
+        let startingNodeId = null;
+        toursData.forEach(d => {
+          nodesObj[d.id] = {
+            id: d.id,
+            url: d.image_url,
+            title: d.node_name,
+            hotspots: d.hotspots || [],
+            is_starting_node: d.is_starting_node,
+            initial_camera: d.initial_camera
+          };
+          if (d.is_starting_node) startingNodeId = d.id;
+        });
+        set({ customTourNodes: nodesObj });
+        if (startingNodeId) {
+          set({ activeTourNodeId: startingNodeId });
+        } else {
+          set({ activeTourNodeId: toursData[0].id });
+        }
+      } else if (!toursError && toursData && toursData.length === 0) {
+        set({ customTourNodes: {}, activeTourNodeId: null });
       }
 
       // Fetch Cinematic Videos

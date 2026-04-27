@@ -43,6 +43,7 @@ create table if not exists project_tours (
     image_url text not null,
     hotspots jsonb default '[]'::jsonb,
     is_starting_node boolean default false,
+    initial_camera jsonb, -- e.g. {"position": [0,0,0], "rotation": [0,0,0]}
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 

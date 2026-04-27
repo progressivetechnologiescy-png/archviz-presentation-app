@@ -1,9 +1,52 @@
-import React, { Suspense, useState, useMemo } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { Suspense, useState, useMemo, useEffect } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, DeviceOrientationControls, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useViewerStore } from '../store/viewerStore';
 import { Smartphone, ChevronLeft, Eye, EyeOff, Maximize, MapPin, Plus, X } from 'lucide-react';
+
+// Helper to track camera rotation for the CMS "Set Starting View"
+function CameraTracker() {
+  const { camera } = useThree();
+  useEffect(() => {
+    const handleUpdate = () => {
+      window.__currentPanoCamera = {
+        position: [camera.position.x, camera.position.y, camera.position.z],
+        rotation: [camera.rotation.x, camera.rotation.y, camera.rotation.z],
+        target: [0, 0, 0]
+      };
+    };
+    camera.parent?.addEventListener('change', handleUpdate);
+    return () => camera.parent?.removeEventListener('change', handleUpdate);
+  }, [camera]);
+  return null;
+}
+
+// Applies the saved initial camera orientation when the active node changes
+function CameraPatcher({ activeNode }) {
+  const { camera } = useThree();
+  const controls = useThree(state => state.controls);
+  
+  useEffect(() => {
+    if (activeNode && activeNode.initial_camera) {
+      camera.position.set(...activeNode.initial_camera.position);
+      camera.rotation.set(...activeNode.initial_camera.rotation);
+      if (controls && activeNode.initial_camera.target) {
+        controls.target.set(...activeNode.initial_camera.target);
+        controls.update();
+      }
+    } else {
+      camera.position.set(0, 0, 0.1);
+      camera.rotation.set(0, 0, 0);
+      if (controls) {
+        controls.target.set(0, 0, 0);
+        controls.update();
+      }
+    }
+  }, [activeNode, camera, controls]);
+  
+  return null;
+}
 
 // Advanced Hotspot Marker
 function TourHotspot({ spot, onClick }) {
@@ -63,7 +106,7 @@ function TourHotspot({ spot, onClick }) {
 }
 
 // Subcomponent to handle the actual texture loading and applying hotspots safely
-function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick }) {
+function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick, onSphereClick }) {
   const texture = useTexture(textureUrl);
   
   const clonedTexture = useMemo(() => {
@@ -76,7 +119,14 @@ function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick }
 
   return (
     <group>
-      <mesh>
+      <mesh 
+        onClick={(e) => {
+          if (onSphereClick) {
+            e.stopPropagation();
+            onSphereClick(e.point);
+          }
+        }}
+      >
         <sphereGeometry args={[500, 60, 40]} />
         <meshBasicMaterial map={clonedTexture} side={THREE.BackSide} />
       </mesh>
@@ -91,7 +141,7 @@ function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick }
 }
 
 // An inverted sphere holding a 360 latlong image
-function SphericalPanorama({ showHotspots, onHotspotClick }) {
+function SphericalPanorama({ showHotspots, onHotspotClick, onSphereClick }) {
   const { customPanorama, customTourNodes, activeTourNodeId } = useViewerStore();
   const activeNode = customTourNodes ? customTourNodes[activeTourNodeId] : null;
   const textureUrl = customPanorama || (activeNode ? activeNode.url : null);
@@ -111,11 +161,12 @@ function SphericalPanorama({ showHotspots, onHotspotClick }) {
       activeNode={activeNode} 
       showHotspots={showHotspots}
       onHotspotClick={onHotspotClick}
+      onSphereClick={onSphereClick}
     />
   );
 }
 
-export default function PanoramaViewer() {
+export default function PanoramaViewer({ isEditing = false, onCanvasClick = null }) {
   const [useGyro, setUseGyro] = useState(false);
   const inventoryUnits = useViewerStore(state => state.inventoryUnits);
   
@@ -139,8 +190,25 @@ export default function PanoramaViewer() {
 
       <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }} style={{ width: '100%', height: '100%' }}>
         <Suspense fallback={null}>
-          <SphericalPanorama showHotspots={true} onHotspotClick={handleHotspotClick} />
-          <OrbitControls enableZoom={true} enablePan={false} rotateSpeed={-0.5} makeDefault />
+          <CameraTracker />
+          <CameraPatcher activeNode={customTourNodes ? customTourNodes[activeTourNodeId] : null} />
+          <SphericalPanorama showHotspots={true} onHotspotClick={handleHotspotClick} onSphereClick={isEditing ? onCanvasClick : null} />
+          <OrbitControls 
+            enableZoom={true} 
+            enablePan={false} 
+            rotateSpeed={-0.5} 
+            makeDefault 
+            onChange={(e) => {
+               // The CameraTracker handles the update on camera.parent change, 
+               // but we can also forcefully update here if needed.
+               const cam = e.target.object;
+               window.__currentPanoCamera = {
+                 position: [cam.position.x, cam.position.y, cam.position.z],
+                 rotation: [cam.rotation.x, cam.rotation.y, cam.rotation.z],
+                 target: [e.target.target.x, e.target.target.y, e.target.target.z]
+               };
+            }}
+          />
         </Suspense>
       </Canvas>
     </div>
