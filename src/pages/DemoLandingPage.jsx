@@ -93,53 +93,49 @@ export default function DemoLandingPage() {
         }
       `}</style>
 
-      {/* HERO */}
-      <section style={{ paddingTop: '180px', paddingBottom: '120px', textAlign: 'left', position: 'relative', overflow: 'hidden', minHeight: '900px' }}>
-        <div style={{ position: 'absolute', top: '30%', left: '30%', transform: 'translate(-50%, -50%)', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 60%)', zIndex: 0 }} />
-        
-        {/* Cinematic Transparent House SVG Background */}
-        <div style={{ position: 'absolute', top: '10%', left: '0%', opacity: 0.15, zIndex: 0, width: '100%', maxWidth: '1200px', pointerEvents: 'none', animation: 'float 8s ease-in-out infinite, pulse-glow 4s ease-in-out infinite' }}>
-          <svg viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M100 350 L100 150 L400 150 L400 50 L900 50 L900 200 L1100 200 L1100 350 Z" stroke="#3b82f6" strokeWidth="2" fill="url(#houseGrad)" />
-            <path d="M150 350 L150 200 L350 200 L350 350" stroke="#3b82f6" strokeWidth="1" />
-            <path d="M450 350 L450 100 L850 100 L850 350" stroke="#3b82f6" strokeWidth="1" />
-            <path d="M500 350 L500 150 L800 150 L800 350" stroke="#3b82f6" strokeWidth="2" />
-            <path d="M950 350 L950 250 L1050 250 L1050 350" stroke="#3b82f6" strokeWidth="1" />
-            <defs>
-              <linearGradient id="houseGrad" x1="600" y1="50" x2="600" y2="350" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#3b82f6" stopOpacity="0.3"/>
-                <stop offset="1" stopColor="#3b82f6" stopOpacity="0"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+      {/* HERO REDESIGNED */}
+      <section style={{ 
+        position: 'relative', 
+        height: '100vh', 
+        minHeight: '800px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        textAlign: 'center',
+        overflow: 'hidden'
+      }}>
+        {/* Fullscreen Property Background */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundImage: 'url(/hero-bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 0,
+          animation: 'float 20s ease-in-out infinite alternate'
+        }} />
 
-        {/* Real Estate Agent Overlay */}
-        <div className="agent-image" style={{ position: 'absolute', bottom: '0', right: '10%', zIndex: 2, height: '650px', pointerEvents: 'none' }}>
-          <video 
-            src="/agent.webm" 
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
-            style={{ height: '100%', objectFit: 'contain', mixBlendMode: 'screen', opacity: 0.45 }} 
-          />
-        </div>
+        {/* Cinematic Gradient Overlays */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, #050505 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.4) 60%, #050505 100%)', zIndex: 1 }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(5,5,5,0.8) 100%)', zIndex: 1 }} />
 
-        <div style={{ position: 'relative', zIndex: 3, maxWidth: '1200px', margin: '0 auto', padding: '0 40px', display: 'flex' }}>
-          <div style={{ flex: '1', maxWidth: '900px' }}>
-            <div className="hero-title">
-              <div style={{ display: 'inline-block', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa', padding: '8px 20px', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', marginBottom: '24px', letterSpacing: '1px' }}>
-                THE COMPLETE VISUALIZATION SUITE
-              </div>
-              <h1 style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1.1', marginBottom: '32px', letterSpacing: '-2px', textShadow: '0 4px 24px rgba(0,0,0,0.8)' }}>
-                Everything you need to <br/>
-                <span style={{ color: '#3b82f6' }}>showcase and sell.</span>
-              </h1>
+        <div style={{ position: 'relative', zIndex: 3, maxWidth: '1000px', padding: '0 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div className="hero-title">
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)', backdropFilter: 'blur(10px)', color: '#60a5fa', padding: '10px 24px', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', marginBottom: '32px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+              <span style={{ width: '8px', height: '8px', background: '#3b82f6', borderRadius: '50%', boxShadow: '0 0 10px #3b82f6' }}></span>
+              Featured Property: The Azure Villa
             </div>
-            <p className="hero-subtitle" style={{ fontSize: '22px', color: '#a1a1aa', maxWidth: '800px', marginBottom: '48px', lineHeight: '1.6', textShadow: '0 2px 12px rgba(0,0,0,0.8)' }}>
-              A full-stack, interactive presentation application. Combining real-time 3D models, stunning renders, 360° tours, and live CRM data into one seamless browser experience.
-            </p>
+            <h1 style={{ fontSize: '84px', fontWeight: '900', lineHeight: '1.05', marginBottom: '32px', letterSpacing: '-2px', textShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
+              Experience Unbuilt <br/>
+              <span style={{ color: '#fff', WebkitTextStroke: '1px rgba(255,255,255,0.5)', textShadow: '0 0 40px rgba(255,255,255,0.2)' }}>Architecture.</span>
+            </h1>
+          </div>
+          <p className="hero-subtitle" style={{ fontSize: '24px', color: '#e4e4e7', maxWidth: '800px', marginBottom: '48px', lineHeight: '1.6', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
+            The ultimate 3D presentation platform. Interactive web-based models, high-fidelity renders, and integrated CRM—all in one seamless experience.
+          </p>
+          <div className="agent-image" style={{ display: 'flex', gap: '16px' }}>
+            <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '16px 36px', borderRadius: '50px', fontSize: '18px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', transition: 'all 0.3s', boxShadow: '0 10px 20px rgba(59,130,246,0.3)' }}>
+              Explore Platform <ArrowRight size={20} />
+            </Link>
           </div>
         </div>
       </section>
