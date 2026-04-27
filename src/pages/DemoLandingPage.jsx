@@ -51,14 +51,16 @@ export default function DemoLandingPage() {
     }}>
       
       {/* Dynamic Nav */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', background: 'rgba(5, 5, 5, 0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%)', pointerEvents: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
           <Box color="#3b82f6" size={28} />
           <span style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '1px' }}>3DS PLATFORM</span>
         </div>
-        <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '12px 28px', borderRadius: '50px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s' }}>
-          Launch App Demo <Play fill="white" size={16} />
-        </Link>
+        <div style={{ pointerEvents: 'auto' }}>
+          <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '12px 28px', borderRadius: '50px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s' }}>
+            Launch App Demo <Play fill="white" size={16} />
+          </Link>
+        </div>
       </nav>
 
       <style>{`
@@ -66,6 +68,11 @@ export default function DemoLandingPage() {
           0% { transform: translate(-50%, 0px); }
           50% { transform: translate(-50%, -20px); }
           100% { transform: translate(-50%, 0px); }
+        }
+        @keyframes text-float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+          100% { transform: translateY(0px); }
         }
         @keyframes pulse-glow {
           0% { opacity: 0.15; }
@@ -76,19 +83,11 @@ export default function DemoLandingPage() {
           0% { opacity: 0; transform: translateY(40px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes breathe {
-          0% { transform: scale(1) translateY(0px); }
-          100% { transform: scale(1.02) translateY(-10px); }
-        }
         .hero-title {
-          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, text-float 6s ease-in-out infinite alternate 1s;
         }
         .hero-subtitle {
-          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
-          opacity: 0;
-        }
-        .agent-image {
-          animation: slide-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards, text-float 6s ease-in-out infinite alternate 1.2s;
           opacity: 0;
         }
       `}</style>
@@ -119,28 +118,19 @@ export default function DemoLandingPage() {
         />
 
         {/* Cinematic Gradient Overlays */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, #050505 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.4) 60%, #050505 100%)', zIndex: 1 }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, rgba(5,5,5,0.2) 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.6) 100%)', zIndex: 1 }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(5,5,5,0.8) 100%)', zIndex: 1 }} />
 
         <div style={{ position: 'relative', zIndex: 3, maxWidth: '1000px', padding: '0 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div className="hero-title">
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)', backdropFilter: 'blur(10px)', color: '#60a5fa', padding: '10px 24px', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', marginBottom: '32px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              <span style={{ width: '8px', height: '8px', background: '#3b82f6', borderRadius: '50%', boxShadow: '0 0 10px #3b82f6' }}></span>
-              Featured Property: The Azure Villa
-            </div>
             <h1 style={{ fontSize: '84px', fontWeight: '900', lineHeight: '1.05', marginBottom: '32px', letterSpacing: '-2px', textShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
-              Experience Unbuilt <br/>
+              Experience <span style={{ color: '#3b82f6' }}>Unbuilt</span> <br/>
               <span style={{ color: '#fff', WebkitTextStroke: '1px rgba(255,255,255,0.5)', textShadow: '0 0 40px rgba(255,255,255,0.2)' }}>Architecture.</span>
             </h1>
           </div>
           <p className="hero-subtitle" style={{ fontSize: '24px', color: '#e4e4e7', maxWidth: '800px', marginBottom: '48px', lineHeight: '1.6', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
             The ultimate 3D presentation platform. Interactive web-based models, high-fidelity renders, and integrated CRM—all in one seamless experience.
           </p>
-          <div className="agent-image" style={{ display: 'flex', gap: '16px' }}>
-            <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '16px 36px', borderRadius: '50px', fontSize: '18px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', transition: 'all 0.3s', boxShadow: '0 10px 20px rgba(59,130,246,0.3)' }}>
-              Explore Platform <ArrowRight size={20} />
-            </Link>
-          </div>
         </div>
       </section>
 
