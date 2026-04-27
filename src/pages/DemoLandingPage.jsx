@@ -116,7 +116,14 @@ export default function DemoLandingPage() {
 
         {/* Real Estate Agent Overlay */}
         <div className="agent-image" style={{ position: 'absolute', bottom: '0', right: '10%', zIndex: 2, height: '650px', pointerEvents: 'none' }}>
-          <img src="/agent.png" alt="Real Estate Agent" style={{ height: '100%', objectFit: 'contain', mixBlendMode: 'screen', animation: 'breathe 4s ease-in-out infinite alternate', opacity: 0.35 }} />
+          <video 
+            src="/agent.webm" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            style={{ height: '100%', objectFit: 'contain', mixBlendMode: 'screen', opacity: 0.45 }} 
+          />
         </div>
 
         <div style={{ position: 'relative', zIndex: 3, maxWidth: '1200px', margin: '0 auto', padding: '0 40px', display: 'flex' }}>
