@@ -115,22 +115,22 @@ export default function DemoLandingPage() {
         </div>
 
         {/* Real Estate Agent Overlay */}
-        <div className="agent-image" style={{ position: 'absolute', bottom: '0', right: '0%', zIndex: 2, height: '850px', pointerEvents: 'none' }}>
-          <img src="/agent.png" alt="Real Estate Agent" style={{ height: '100%', objectFit: 'contain', mixBlendMode: 'screen', animation: 'breathe 4s ease-in-out infinite alternate' }} />
+        <div className="agent-image" style={{ position: 'absolute', bottom: '0', right: '10%', zIndex: 2, height: '650px', pointerEvents: 'none' }}>
+          <img src="/agent.png" alt="Real Estate Agent" style={{ height: '100%', objectFit: 'contain', mixBlendMode: 'screen', animation: 'breathe 4s ease-in-out infinite alternate', opacity: 0.35 }} />
         </div>
 
         <div style={{ position: 'relative', zIndex: 3, maxWidth: '1200px', margin: '0 auto', padding: '0 40px', display: 'flex' }}>
-          <div style={{ flex: '0 1 650px' }}>
+          <div style={{ flex: '1', maxWidth: '900px' }}>
             <div className="hero-title">
               <div style={{ display: 'inline-block', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa', padding: '8px 20px', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', marginBottom: '24px', letterSpacing: '1px' }}>
                 THE COMPLETE VISUALIZATION SUITE
               </div>
-              <h1 style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1.1', marginBottom: '32px', letterSpacing: '-2px' }}>
+              <h1 style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1.1', marginBottom: '32px', letterSpacing: '-2px', textShadow: '0 4px 24px rgba(0,0,0,0.8)' }}>
                 Everything you need to <br/>
                 <span style={{ color: '#3b82f6' }}>showcase and sell.</span>
               </h1>
             </div>
-            <p className="hero-subtitle" style={{ fontSize: '22px', color: '#a1a1aa', maxWidth: '600px', marginBottom: '48px', lineHeight: '1.6' }}>
+            <p className="hero-subtitle" style={{ fontSize: '22px', color: '#a1a1aa', maxWidth: '800px', marginBottom: '48px', lineHeight: '1.6', textShadow: '0 2px 12px rgba(0,0,0,0.8)' }}>
               A full-stack, interactive presentation application. Combining real-time 3D models, stunning renders, 360° tours, and live CRM data into one seamless browser experience.
             </p>
           </div>
