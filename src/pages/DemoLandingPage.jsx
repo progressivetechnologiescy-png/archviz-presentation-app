@@ -326,19 +326,7 @@ export default function DemoLandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding: '60px 20px 40px', textAlign: 'center', background: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ marginBottom: '32px' }}>
-          <a href="mailto:progressivetechnologiescy@gmail.com?subject=Book%20a%20Meeting" style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            background: 'rgba(59,130,246,0.1)', color: '#3b82f6',
-            border: '1px solid rgba(59,130,246,0.3)',
-            padding: '12px 24px', borderRadius: '50px',
-            textDecoration: 'none', fontWeight: 'bold', fontSize: '16px',
-            transition: 'all 0.2s'
-          }}>
-            <Calendar size={18} /> Book a Meeting with Us
-          </a>
-        </div>
+      <footer style={{ padding: '40px 20px', textAlign: 'center', background: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
           Designed and developed by <a href="https://progressivetechnologies.com.cy" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>Progressive Technologies</a>
         </p>
