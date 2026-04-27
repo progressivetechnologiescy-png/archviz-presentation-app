@@ -67,7 +67,7 @@ export default function DemoLandingPage() {
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%)', pointerEvents: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
           <Box color="#3b82f6" size={28} />
-          <span style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '1px' }}>3DS PLATFORM</span>
+          <span style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '1px' }}>PROTECH APP</span>
         </div>
         <div style={{ pointerEvents: 'auto' }}>
           <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '12px 28px', borderRadius: '50px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s' }}>
@@ -163,118 +163,33 @@ export default function DemoLandingPage() {
           )}
 
           {heroPhase === 'features' && (
-            <div className="hero-features" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', maxWidth: '1100px', textAlign: 'left', width: '100%' }}>
-              {[
-                { icon: <Box size={24} color="#3b82f6" />, title: 'Interactive 3D WebGL', desc: 'Real-time architectural exploration in the browser.' },
-                { icon: <Image size={24} color="#10b981" />, title: 'High-Res Renders', desc: 'Cinematic gallery for your finest visual assets.' },
-                { icon: <Layers size={24} color="#8b5cf6" />, title: 'Multi-Level Floorplans', desc: 'High-resolution SVG floorplans with dynamic navigation.' },
-                { icon: <Map size={24} color="#f59e0b" />, title: '360° Spatial Tours', desc: 'Photorealistic virtual walkthroughs with hotspots.' },
-                { icon: <LayoutGrid size={24} color="#ec4899" />, title: 'Live Inventory', desc: 'Real-time unit availability connected to CRM.' },
-                { icon: <Video size={24} color="#14b8a6" />, title: 'Cinematic Video Hub', desc: 'Distraction-free theater mode for fly-throughs.' },
-                { icon: <MessageSquare size={24} color="#06b6d4" />, title: 'Emma: AI Concierge', desc: 'Context-aware AI assistant built natively.' },
-                { icon: <Settings size={24} color="#f97316" />, title: 'CMS Asset Manager', desc: 'Full control over application content via admin panel.' },
-                { icon: <Smartphone size={24} color="#eab308" />, title: 'AR Technology', desc: 'Project architecture into the real world natively.' }
-              ].map((f, i) => (
-                <div key={i} style={{ background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(20px)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                  <div style={{ marginBottom: '12px' }}>{f.icon}</div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: '#fff' }}>{f.title}</h3>
-                  <p style={{ color: '#a1a1aa', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>{f.desc}</p>
-                </div>
-              ))}
+            <div className="hero-features" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '1100px' }}>
+              <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '32px', color: '#fff', textShadow: '0 4px 12px rgba(0,0,0,0.8)', letterSpacing: '1px' }}>Key Features</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', textAlign: 'left', width: '100%' }}>
+                {[
+                  { icon: <Smartphone size={24} color="#eab308" />, title: 'AR Technology', desc: 'Project architecture into the real world natively.' },
+                  { icon: <Box size={24} color="#3b82f6" />, title: 'Interactive 3D WebGL', desc: 'Real-time architectural exploration in the browser.' },
+                  { icon: <Image size={24} color="#10b981" />, title: 'High-Res Renders', desc: 'Cinematic gallery for your finest visual assets.' },
+                  { icon: <Layers size={24} color="#8b5cf6" />, title: 'Multi-Level Floorplans', desc: 'High-resolution SVG floorplans with dynamic navigation.' },
+                  { icon: <Map size={24} color="#f59e0b" />, title: '360° Spatial Tours', desc: 'Photorealistic virtual walkthroughs with hotspots.' },
+                  { icon: <LayoutGrid size={24} color="#ec4899" />, title: 'Live Inventory', desc: 'Real-time unit availability connected to CRM.' },
+                  { icon: <Video size={24} color="#14b8a6" />, title: 'Cinematic Video Hub', desc: 'Distraction-free theater mode for fly-throughs.' },
+                  { icon: <MessageSquare size={24} color="#06b6d4" />, title: 'Emma: AI Concierge', desc: 'Context-aware AI assistant built natively.' },
+                  { icon: <Settings size={24} color="#f97316" />, title: 'CMS Asset Manager', desc: 'Full control over application content via admin panel.' }
+                ].map((f, i) => (
+                  <div key={i} style={{ background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(20px)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                    <div style={{ marginBottom: '12px' }}>{f.icon}</div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: '#fff' }}>{f.title}</h3>
+                    <p style={{ color: '#a1a1aa', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>{f.desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
       </section>
 
-      {/* FEATURE 1: 3D VIEWER */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<Box size={40} color="#3b82f6" />}
-        title="Interactive 3D WebGL Viewer"
-        description="Allow clients to freely orbit, walk through, and explore the architecture in real-time. Our optimized WebGL engine runs massive FBX and GLB files directly in the browser at 60FPS."
-        features={["First-person game-like movement controls", "Real-time material swapping (e.g., Marble vs Wood)", "Dynamic time-of-day lighting (Morning, Noon, Night)", "Cross-platform WebXR support for VR headsets"]}
-        imageUrl="/mockups/3d_viewer.png"
-      />
-
-      {/* FEATURE 2: RENDERS */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<Image size={40} color="#10b981" />}
-        title="High-Res Render Gallery"
-        description="A beautiful, distraction-free gallery to showcase your highest quality static assets. Organized logically so you can tell the perfect visual story."
-        features={["Categorized folders (e.g., Interiors, Exteriors, Amenities)", "Fullscreen immersive lightbox viewing", "Automated background image slideshow mode", "Favorites system to star the best shots"]}
-        imageUrl="/mockups/render_gallery.png"
-      />
-
-      {/* FEATURE 3: FLOORPLANS */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<Layers size={40} color="#8b5cf6" />}
-        title="Multi-Level Floorplans"
-        description="Say goodbye to confusing PDFs. Interactive floorplans allow clients to switch between building levels and explore individual units with clarity."
-        features={["Level selector (Ground Floor, Level 1, Penthouse)", "High-resolution SVG and PNG support", "Interactive panning and zooming", "Seamless transition into 360 tours"]}
-        imageUrl="/mockups/floorplan.png"
-      />
-
-      {/* FEATURE 4: 360 TOURS */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<Map size={40} color="#f59e0b" />}
-        title="360° Spatial Tours"
-        description="Transport buyers directly inside the property. Link multiple panoramic renders together to create a photorealistic virtual walkthrough."
-        features={["Interactive teleportation hotspots", "Information tags pinned to specific objects", "Gyroscope support for mobile devices", "High-performance equirectangular rendering"]}
-        imageUrl="/mockups/spatial_tour.png"
-      />
-
-      {/* FEATURE 5: AVAILABILITY GRID */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<LayoutGrid size={40} color="#ec4899" />}
-        title="Live Availability & Inventory"
-        description="Never sell the same unit twice. The application connects directly to a live Supabase database to show real-time unit statuses."
-        features={["Color-coded statuses (Available, Reserved, Sold)", "Instant filtering by Beds, Baths, or Price", "Detailed unit specifications and metrics", "Direct lead capture forms for specific units"]}
-        imageUrl="/mockups/availability_grid.png"
-      />
-
-      {/* FEATURE 6: CINEMATIC VIDEO */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<Video size={40} color="#14b8a6" />}
-        title="Cinematic Video Hub"
-        description="Keep all your high-budget architectural fly-throughs in one place without leaving the app experience."
-        features={["Embedded YouTube loop support", "Direct MP4 playback", "Distraction-free theater mode", "Use videos as ambient app backgrounds"]}
-        imageUrl="/mockups/video_hub.png"
-      />
-
-      {/* FEATURE 7: AI CONCIERGE */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<MessageSquare size={40} color="#06b6d4" />}
-        title="Emma: The AI Agent"
-        description="A floating, context-aware AI assistant built right into the interface. Emma is trained specifically on your property's data."
-        features={["Answers complex questions about amenities and pricing", "Multi-lingual support out of the box", "Understands the current 3D view context", "Books viewings and captures lead data 24/7"]}
-        imageUrl="/mockups/ai_concierge.png"
-      />
-
-      {/* FEATURE 8: ASSET MANAGER */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<Settings size={40} color="#f97316" />}
-        title="Full CMS Asset Manager"
-        description="You have complete control over the application. Our built-in admin panel lets you update assets without writing a single line of code."
-        features={["Bulk folder upload for 3D Models (FBX, GLB, OBJ)", "Drag-and-drop render and floorplan management", "Global theme customization (Colors, Light/Dark mode)", "Database synchronization"]}
-        imageUrl="/mockups/asset_manager.png"
-      />
-
-      {/* FEATURE 9: AR TECHNOLOGY */}
+      {/* FEATURE 1: AR TECHNOLOGY */}
       <FeatureSection 
         bgVariant="dark"
         reversed={false}
@@ -283,6 +198,94 @@ export default function DemoLandingPage() {
         description="Bring your architecture into the real world. Let clients project full 3D models onto their desks or living room floors using our native AR integration."
         features={["Project scale 1:1 architectural models natively", "Walk through actual dimensions using device cameras", "Instantly toggle between digital and AR views", "Compatible with LiDAR-enabled iOS devices"]}
         imageUrl="/mockups/ar_technology.png"
+      />
+
+      {/* FEATURE 2: 3D VIEWER */}
+      <FeatureSection 
+        bgVariant="light"
+        reversed={true}
+        icon={<Box size={40} color="#3b82f6" />}
+        title="Interactive 3D WebGL Viewer"
+        description="Allow clients to freely orbit, walk through, and explore the architecture in real-time. Our optimized WebGL engine runs massive FBX and GLB files directly in the browser at 60FPS."
+        features={["First-person game-like movement controls", "Real-time material swapping (e.g., Marble vs Wood)", "Dynamic time-of-day lighting (Morning, Noon, Night)", "Cross-platform WebXR support for VR headsets"]}
+        imageUrl="/mockups/3d_viewer.png"
+      />
+
+      {/* FEATURE 3: RENDERS */}
+      <FeatureSection 
+        bgVariant="dark"
+        reversed={false}
+        icon={<Image size={40} color="#10b981" />}
+        title="High-Res Render Gallery"
+        description="A beautiful, distraction-free gallery to showcase your highest quality static assets. Organized logically so you can tell the perfect visual story."
+        features={["Categorized folders (e.g., Interiors, Exteriors, Amenities)", "Fullscreen immersive lightbox viewing", "Automated background image slideshow mode", "Favorites system to star the best shots"]}
+        imageUrl="/mockups/render_gallery.png"
+      />
+
+      {/* FEATURE 4: FLOORPLANS */}
+      <FeatureSection 
+        bgVariant="light"
+        reversed={true}
+        icon={<Layers size={40} color="#8b5cf6" />}
+        title="Multi-Level Floorplans"
+        description="Say goodbye to confusing PDFs. Interactive floorplans allow clients to switch between building levels and explore individual units with clarity."
+        features={["Level selector (Ground Floor, Level 1, Penthouse)", "High-resolution SVG and PNG support", "Interactive panning and zooming", "Seamless transition into 360 tours"]}
+        imageUrl="/mockups/floorplan.png"
+      />
+
+      {/* FEATURE 5: 360 TOURS */}
+      <FeatureSection 
+        bgVariant="dark"
+        reversed={false}
+        icon={<Map size={40} color="#f59e0b" />}
+        title="360° Spatial Tours"
+        description="Transport buyers directly inside the property. Link multiple panoramic renders together to create a photorealistic virtual walkthrough."
+        features={["Interactive teleportation hotspots", "Information tags pinned to specific objects", "Gyroscope support for mobile devices", "High-performance equirectangular rendering"]}
+        imageUrl="/mockups/spatial_tour.png"
+      />
+
+      {/* FEATURE 6: AVAILABILITY GRID */}
+      <FeatureSection 
+        bgVariant="light"
+        reversed={true}
+        icon={<LayoutGrid size={40} color="#ec4899" />}
+        title="Live Availability & Inventory"
+        description="Never sell the same unit twice. The application connects directly to a live Supabase database to show real-time unit statuses."
+        features={["Color-coded statuses (Available, Reserved, Sold)", "Instant filtering by Beds, Baths, or Price", "Detailed unit specifications and metrics", "Direct lead capture forms for specific units"]}
+        imageUrl="/mockups/availability_grid.png"
+      />
+
+      {/* FEATURE 7: CINEMATIC VIDEO */}
+      <FeatureSection 
+        bgVariant="dark"
+        reversed={false}
+        icon={<Video size={40} color="#14b8a6" />}
+        title="Cinematic Video Hub"
+        description="Keep all your high-budget architectural fly-throughs in one place without leaving the app experience."
+        features={["Embedded YouTube loop support", "Direct MP4 playback", "Distraction-free theater mode", "Use videos as ambient app backgrounds"]}
+        imageUrl="/mockups/video_hub.png"
+      />
+
+      {/* FEATURE 8: AI CONCIERGE */}
+      <FeatureSection 
+        bgVariant="light"
+        reversed={true}
+        icon={<MessageSquare size={40} color="#06b6d4" />}
+        title="Emma: The AI Agent"
+        description="A floating, context-aware AI assistant built right into the interface. Emma is trained specifically on your property's data."
+        features={["Answers complex questions about amenities and pricing", "Multi-lingual support out of the box", "Understands the current 3D view context", "Books viewings and captures lead data 24/7"]}
+        imageUrl="/mockups/ai_concierge.png"
+      />
+
+      {/* FEATURE 9: ASSET MANAGER */}
+      <FeatureSection 
+        bgVariant="dark"
+        reversed={false}
+        icon={<Settings size={40} color="#f97316" />}
+        title="Full CMS Asset Manager"
+        description="You have complete control over the application. Our built-in admin panel lets you update assets without writing a single line of code."
+        features={["Bulk folder upload for 3D Models (FBX, GLB, OBJ)", "Drag-and-drop render and floorplan management", "Global theme customization (Colors, Light/Dark mode)", "Database synchronization"]}
+        imageUrl="/mockups/asset_manager.png"
       />
 
       {/* FINAL CTA */}
