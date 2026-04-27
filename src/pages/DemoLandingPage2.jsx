@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Image, Layers, LayoutGrid, MessageSquare, Smartphone, ArrowRight } from 'lucide-react';
+import { Box, Image, Layers, LayoutGrid, MessageSquare, Smartphone, ArrowRight, Map, Video, Settings } from 'lucide-react';
 
 export default function DemoLandingPage2() {
   const scrollContainerRef = useRef(null);
@@ -26,7 +26,7 @@ export default function DemoLandingPage2() {
         </div>
         <div>
           <Link to="/" style={{ background: '#f8fafc', color: '#0f172a', textDecoration: 'none', padding: '12px 32px', borderRadius: '8px', fontWeight: 'bold', fontSize: '15px', transition: 'all 0.3s', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            Open Viewer <ArrowRight size={18} />
+            View Live App <ArrowRight size={18} />
           </Link>
         </div>
       </nav>
@@ -176,6 +176,39 @@ export default function DemoLandingPage2() {
               <Layers size={32} color="#8b5cf6" style={{ marginBottom: '20px' }} />
               <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>Smart Floorplans</h3>
               <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Multi-level interactive vector navigation.</p>
+            </div>
+          </div>
+
+          {/* 360 Tours (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/spatial_tour.png" className="bento-img" alt="360 Tours" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Map size={32} color="#f59e0b" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>360° Tours</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Photorealistic virtual walkthroughs.</p>
+            </div>
+          </div>
+
+          {/* Cinematic Video (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/video_hub.png" className="bento-img" alt="Video Hub" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Video size={32} color="#14b8a6" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>Video Hub</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Distraction-free theater mode.</p>
+            </div>
+          </div>
+
+          {/* Asset Manager (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/asset_manager.png" className="bento-img" alt="Asset Manager" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Settings size={32} color="#f97316" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>CMS Manager</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Full content control via admin panel.</p>
             </div>
           </div>
 
