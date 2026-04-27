@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ViewerCanvas from '../components/ViewerCanvas';
+import { useViewerStore } from '../store/viewerStore';
+import { supabase } from '../lib/supabase';
 
 export default function EmbedView() {
-  // In a real app, query params could override initial Zustand state here
-  // e.g., ?model=house&lighting=night
+  const fetchCloudAssets = useViewerStore(state => state.fetchCloudAssets);
+  
+  useEffect(() => {
+    fetchCloudAssets(supabase);
+  }, [fetchCloudAssets]);
 
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#000' }}>
