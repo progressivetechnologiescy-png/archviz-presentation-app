@@ -29,7 +29,7 @@ export default function DemoLandingPage() {
       }}
     >
       {/* NAVBAR */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 48px', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 48px', background: 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Box color="#38bdf8" size={32} />
           <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '2px', background: 'linear-gradient(90deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PROTECH</span>
@@ -54,13 +54,23 @@ export default function DemoLandingPage() {
             Immersive <br />
             <span style={{ color: '#38bdf8' }}>Architecture.</span>
           </h1>
-          <p style={{ fontSize: '24px', color: '#94a3b8', maxWidth: '700px', margin: '0 auto 32px' }}>
+          <p className="hero-p" style={{ fontSize: '24px', color: '#94a3b8', maxWidth: '700px', margin: '0 auto 32px' }}>
             Ditch the static PDFs. Deliver interactive, full-scale 3D experiences right in your client's browser.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px', maxWidth: '800px', margin: '0 auto' }}>
-            {['AR Technology', '3D WebGL Viewer', 'Cinematic Gallery', 'Smart Floorplans', '360° Tours', 'Live Inventory', 'Video Hub', 'AI Concierge', 'CMS Manager'].map(feat => (
-              <span key={feat} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 20px', borderRadius: '50px', fontSize: '15px', color: '#e2e8f0', backdropFilter: 'blur(10px)' }}>
-                <Check size={16} color="#38bdf8" /> {feat}
+          <div className="hero-feature-pills" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px', maxWidth: '800px', margin: '0 auto' }}>
+            {[
+              { label: 'AR Technology', icon: <Smartphone size={16} color="#eab308" /> },
+              { label: '3D WebGL Viewer', icon: <Box size={16} color="#3b82f6" /> },
+              { label: 'Cinematic Gallery', icon: <Image size={16} color="#10b981" /> },
+              { label: 'Smart Floorplans', icon: <Layers size={16} color="#8b5cf6" /> },
+              { label: '360° Tours', icon: <Map size={16} color="#f59e0b" /> },
+              { label: 'Live Inventory', icon: <LayoutGrid size={16} color="#ec4899" /> },
+              { label: 'Video Hub', icon: <Video size={16} color="#14b8a6" /> },
+              { label: 'AI Concierge', icon: <MessageSquare size={16} color="#06b6d4" /> },
+              { label: 'CMS Manager', icon: <Settings size={16} color="#f97316" /> }
+            ].map(feat => (
+              <span className="hero-feature-pill" key={feat.label} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 20px', borderRadius: '50px', fontSize: '15px', color: '#e2e8f0', backdropFilter: 'blur(10px)' }}>
+                {feat.icon} {feat.label}
               </span>
             ))}
           </div>
@@ -121,12 +131,25 @@ export default function DemoLandingPage() {
                grid-column: span 12 !important;
             }
           }
+          @media (max-width: 768px) {
+            h1 { font-size: 56px !important; margin-bottom: 24px !important; }
+            .hero-p { font-size: 18px !important; padding: 0 16px !important; }
+            nav { padding: 16px 20px !important; }
+            nav span { font-size: 20px !important; }
+            .bento-card { padding: 24px !important; height: auto !important; min-height: 350px !important; }
+            .bento-card h3 { font-size: 24px !important; }
+            .bento-card p { font-size: 16px !important; }
+            .hero-feature-pills { gap: 8px !important; }
+            .hero-feature-pill { padding: 6px 14px !important; font-size: 13px !important; }
+            .everything-title { font-size: 40px !important; margin-bottom: 40px !important; }
+            section { padding: 60px 20px !important; }
+          }
         `}</style>
       </section>
 
       {/* BENTO GRID */}
       <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '100px 40px' }}>
-        <h2 style={{ fontSize: '56px', fontWeight: '900', marginBottom: '80px', textAlign: 'center', letterSpacing: '-2px' }}>Everything you need.</h2>
+        <h2 className="everything-title" style={{ fontSize: '56px', fontWeight: '900', marginBottom: '80px', textAlign: 'center', letterSpacing: '-2px' }}>Everything you need.</h2>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '24px', gridAutoRows: 'minmax(400px, auto)' }}>
           
