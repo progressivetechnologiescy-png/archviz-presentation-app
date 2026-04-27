@@ -1508,6 +1508,17 @@ export default function AssetManager() {
                       style={{ padding: '8px 16px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
                       🎥 Set Current View as Default
                     </button>
+                    <button 
+                      onClick={() => {
+                         const state = useViewerStore.getState();
+                         const currentId = state.activeTourNodeId;
+                         if (confirm('Are you sure you want to delete this panorama and all its hotspots?')) {
+                            state.deleteTourNode(supabase, currentId);
+                         }
+                      }}
+                      style={{ padding: '8px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', marginLeft: 'auto' }}>
+                      🗑️ Delete Panorama
+                    </button>
                     
                     <div style={{ flex: 1 }} />
                     <button 
