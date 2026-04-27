@@ -109,6 +109,7 @@ export default function AssetManager() {
   const [pendingVideoThumb, setPendingVideoThumb] = useState(null);
   const [draggedFolderId, setDraggedFolderId] = useState(null);
   const [hotspotPrompt, setHotspotPrompt] = useState({ isOpen: false, coords: null, label: '', targetNodeId: '' });
+  const [uploadPanoPrompt, setUploadPanoPrompt] = useState({ isOpen: false, file: null, name: 'New Panorama' });
 
   const handleUploadVideoThumb = async (file) => {
     setIsUploading(true);
@@ -1422,42 +1423,11 @@ export default function AssetManager() {
                   <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Upload panoramas and visually place interactive hotspots.</p>
                 </div>
                 <div>
-                  <input type="file" id="upload-pano" style={{ display: 'none' }} accept="image/jpeg,image/png,image/webp" onChange={async (e) => {
+                  <input type="file" id="upload-pano" style={{ display: 'none' }} accept="image/jpeg,image/png,image/webp" onChange={(e) => {
                     const file = e.target.files[0];
                     if (!file) return;
-                    setIsUploading(true);
-                    try {
-                      const fileExt = file.name.split('.').pop();
-                      const fileName = `${Date.now()}.${fileExt}`;
-                      const filePath = `panoramas/${fileName}`;
-                      if (supabase) {
-                        const { error } = await supabase.storage.from('archviz_models').upload(filePath, file);
-                        if (error) throw error;
-                        const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
-                        const newNodeName = prompt('Enter a name for this Panorama (e.g. Living Room):', 'New Panorama') || 'New Panorama';
-                        
-                        const isFirst = Object.keys(useViewerStore.getState().customTourNodes).length === 0;
-                        
-                        const newRow = {
-                          project_id: 'demo_project',
-                          node_name: newNodeName,
-                          image_url: publicUrl,
-                          hotspots: [],
-                          is_starting_node: isFirst
-                        };
-                        const { data } = await supabase.from('project_tours').insert(newRow).select().single();
-                        if (data) {
-                           useViewerStore.getState().addTourNode(null, {
-                             id: data.id, url: data.image_url, title: data.node_name, hotspots: data.hotspots, is_starting_node: data.is_starting_node, initial_camera: data.initial_camera
-                           });
-                           useViewerStore.getState().setActiveTourNodeId(data.id);
-                        }
-                      }
-                    } catch(err) {
-                      setAlertModal({ isOpen: true, message: 'Upload failed: ' + err.message });
-                    } finally {
-                      setIsUploading(false);
-                    }
+                    setUploadPanoPrompt({ isOpen: true, file, name: 'New Panorama' });
+                    e.target.value = ''; // Reset input to allow re-uploading the same file if needed
                   }} />
                   <label htmlFor="upload-pano" className="hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
                     {isUploading ? 'Uploading...' : <><Plus size={18} /> Upload New Panorama</>}
@@ -1508,19 +1478,7 @@ export default function AssetManager() {
                       style={{ padding: '8px 16px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
                       🎥 Set Current View as Default
                     </button>
-                    <button 
-                      onClick={() => {
-                         const state = useViewerStore.getState();
-                         const currentId = state.activeTourNodeId;
-                         if (confirm('Are you sure you want to delete this panorama and all its hotspots?')) {
-                            state.deleteTourNode(supabase, currentId);
-                         }
-                      }}
-                      style={{ padding: '8px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', marginLeft: 'auto' }}>
-                      🗑️ Delete Panorama
-                    </button>
-                    
-                    <div style={{ flex: 1 }} />
+
                     <button 
                       onClick={() => {
                          setConfirmModal({
