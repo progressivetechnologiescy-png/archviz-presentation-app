@@ -684,7 +684,8 @@ export const useViewerStore = create(
         } else {
           set({ activeTourNodeId: toursData[0].id });
         }
-      } else if (!toursError && toursData && toursData.length === 0) {
+      } else {
+        if (toursError) console.error("Failed to fetch tours:", toursError);
         set({ customTourNodes: {}, activeTourNodeId: null });
       }
 

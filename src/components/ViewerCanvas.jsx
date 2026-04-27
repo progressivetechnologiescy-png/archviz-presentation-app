@@ -4,6 +4,7 @@ import { Environment, PointerLockControls, ContactShadows, Html, useProgress, us
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import QRModal from './QRModal';
 
 function WalkEngine() {
@@ -131,6 +132,37 @@ function GLTFModel({ url }) {
   );
 }
 
+
+
+// Load OBJ Model
+function OBJModel({ url }) {
+  const obj = useLoader(OBJLoader, url);
+  const groupRef = React.useRef();
+
+  React.useEffect(() => {
+    if (obj) {
+      obj.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    }
+  }, [obj]);
+
+  useFrame(() => {
+    if (useViewerStore.getState().isTouring && groupRef.current) {
+      groupRef.current.rotation.y += 0.005;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <primitive object={obj} scale={0.01} position={[0,0,0]} />
+    </group>
+  );
+}
+
 // Parent Router
 function LoadedArchModel() {
   const { customFBX, customGLB, primaryModel } = useViewerStore();
@@ -138,11 +170,14 @@ function LoadedArchModel() {
   // Prioritize newest uploaded model, fallback to GLB, then FBX, then default
   const modelUrl = primaryModel || customGLB || customFBX || '/3D_FINAL.fbx';
   const isGLTF = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf');
+  const isOBJ = modelUrl.toLowerCase().endsWith('.obj');
 
   return (
     <group key={modelUrl}>
       {isGLTF ? (
         <GLTFModel url={modelUrl} />
+      ) : isOBJ ? (
+        <OBJModel url={modelUrl} />
       ) : (
         <FBXModel url={modelUrl} />
       )}

@@ -3,10 +3,10 @@ import { UploadCloud, FileType, CheckCircle, MapPin, X, Plus } from 'lucide-reac
 import { useViewerStore } from '../store/viewerStore';
 import PanoramaViewer from './PanoramaViewer';
 
-function FileInput({ label, accept, onDrop, isUploaded, multiple = false, onClear }) {
+function FileInput({ label, accept, onDrop, isUploaded, multiple = false, directory = false, onClear }) {
   const handleChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      if (multiple) {
+      if (multiple || directory) {
         onDrop(Array.from(e.target.files));
       } else {
         onDrop(e.target.files[0]);
@@ -24,6 +24,7 @@ function FileInput({ label, accept, onDrop, isUploaded, multiple = false, onClea
     }}>
       <input 
         type="file" accept={accept} multiple={multiple}
+        {...(directory ? { webkitdirectory: "true", directory: "true" } : {})}
         onChange={handleChange}
         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
       />
@@ -361,6 +362,65 @@ export default function AssetManager() {
   const handleUploadUSDZ = (file) => uploadSingleFile(file, '3d_model_usdz', setCustomUSDZ);
   const handleUploadPanorama = (file) => uploadSingleFile(file, 'panorama', setCustomPanorama);
 
+  const handleUploadFolder = async (files) => {
+    if (!supabase) {
+      setAlertModal({ isOpen: true, message: "Database offline. Cannot upload folder." });
+      return;
+    }
+    
+    // Find the main file
+    const mainFile = files.find(f => f.name.match(/\.(obj|fbx|gltf|glb)$/i));
+    if (!mainFile) {
+      setAlertModal({ isOpen: true, message: "Could not find any .obj, .fbx, .gltf, or .glb file in the uploaded folder." });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const folderId = uuidv4();
+      const folderPath = `demo_project/model_folder_${folderId}`;
+      let mainFileUrl = null;
+      let assetType = null;
+
+      const fileExt = mainFile.name.toLowerCase().split('.').pop();
+      if (fileExt === 'fbx' || fileExt === 'obj') assetType = '3d_model_fbx';
+      else if (fileExt === 'gltf' || fileExt === 'glb') assetType = '3d_model_glb';
+      else assetType = `3d_model_${fileExt}`;
+
+      for (const file of files) {
+        const pathSuffix = file.webkitRelativePath || file.name;
+        const filePath = `${folderPath}/${pathSuffix}`;
+        
+        const { error } = await supabase.storage.from('archviz_models').upload(filePath, file);
+        if (error) console.error("Upload error for", file.name, error);
+
+        if (file === mainFile) {
+          const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+          mainFileUrl = publicUrl;
+        }
+      }
+
+      if (mainFileUrl && assetType) {
+        await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: assetType });
+        
+        await supabase.from('presentation_assets').insert({
+          project_id: 'demo_project', asset_type: assetType, asset_url: mainFileUrl
+        });
+
+        if (assetType === '3d_model_fbx') setCustomFBX(mainFileUrl);
+        else if (assetType === '3d_model_glb') setCustomGLB(mainFileUrl);
+        
+        setAlertModal({ isOpen: true, message: `Successfully uploaded folder containing ${files.length} files!` });
+      }
+
+    } catch (err) {
+      console.error(err);
+      setAlertModal({ isOpen: true, message: `Upload Failed: ${err.message}` });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSaveGPS = async () => {
     let inputStr = gpsInput.trim();
     
@@ -613,6 +673,13 @@ export default function AssetManager() {
           {/* TAB: 3D MODELS */}
           {activeTab === 'models' && (
             <>
+              <FileInput 
+                label="Folder (Model + Textures)" 
+                accept="*" 
+                onDrop={handleUploadFolder} 
+                isUploaded={false} 
+                directory={true}
+              />
               <FileInput 
                 label="Original 3D Model (FBX)" 
                 accept=".fbx" 
