@@ -39,6 +39,19 @@ const FadeIn = ({ children, delay = 0, direction = 'up' }) => {
 };
 
 export default function DemoLandingPage() {
+  const [heroPhase, setHeroPhase] = useState('title');
+
+  useEffect(() => {
+    const timer1 = setTimeout(() => {
+      setHeroPhase('zoom-out');
+      const timer2 = setTimeout(() => {
+        setHeroPhase('features');
+      }, 1000); 
+      return () => clearTimeout(timer2);
+    }, 2000);
+    return () => clearTimeout(timer1);
+  }, []);
+
   return (
     <div style={{ 
       fontFamily: '"Inter", "Outfit", sans-serif', 
@@ -83,8 +96,22 @@ export default function DemoLandingPage() {
           0% { opacity: 0; transform: translateY(40px); }
           100% { opacity: 1; transform: translateY(0); }
         }
+        @keyframes hero-zoom-out {
+          0% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(1.5); filter: blur(10px); }
+        }
+        @keyframes hero-fade-in {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
         .hero-title {
           animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, text-float 6s ease-in-out infinite alternate 1s;
+        }
+        .hero-title-zoom {
+          animation: hero-zoom-out 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .hero-features {
+          animation: hero-fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .hero-subtitle {
           animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards, text-float 6s ease-in-out infinite alternate 1.2s;
@@ -122,15 +149,43 @@ export default function DemoLandingPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(5,5,5,0.8) 100%)', zIndex: 1 }} />
 
         <div style={{ position: 'relative', zIndex: 3, maxWidth: '1000px', padding: '0 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div className="hero-title">
-            <h1 style={{ fontSize: '84px', fontWeight: '900', lineHeight: '1.05', marginBottom: '32px', letterSpacing: '-2px', textShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
-              Experience <span style={{ color: '#3b82f6' }}>Unbuilt</span> <br/>
-              <span style={{ color: '#fff', WebkitTextStroke: '1px rgba(255,255,255,0.5)', textShadow: '0 0 40px rgba(255,255,255,0.2)' }}>Architecture.</span>
-            </h1>
-          </div>
-          <p className="hero-subtitle" style={{ fontSize: '24px', color: '#e4e4e7', maxWidth: '800px', marginBottom: '48px', lineHeight: '1.6', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
-            The ultimate 3D presentation platform. Interactive web-based models, high-fidelity renders, and integrated CRM—all in one seamless experience.
-          </p>
+          
+          {heroPhase !== 'features' && (
+            <div className={heroPhase === 'zoom-out' ? 'hero-title-zoom' : 'hero-title'}>
+              <h1 style={{ fontSize: '84px', fontWeight: '900', lineHeight: '1.05', marginBottom: '32px', letterSpacing: '-2px', textShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
+                Experience <span style={{ color: '#3b82f6' }}>Unbuilt</span> <br/>
+                <span style={{ color: '#fff', WebkitTextStroke: '1px rgba(255,255,255,0.5)', textShadow: '0 0 40px rgba(255,255,255,0.2)' }}>Architecture.</span>
+              </h1>
+              <p className={heroPhase === 'zoom-out' ? '' : 'hero-subtitle'} style={{ fontSize: '24px', color: '#e4e4e7', maxWidth: '800px', margin: '0 auto', lineHeight: '1.6', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
+                The ultimate 3D presentation platform. Interactive web-based models, high-fidelity renders, and integrated CRM—all in one seamless experience.
+              </p>
+            </div>
+          )}
+
+          {heroPhase === 'features' && (
+            <div className="hero-features" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', maxWidth: '900px', textAlign: 'left', width: '100%' }}>
+              <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', padding: '32px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                <Box size={32} color="#3b82f6" style={{ marginBottom: '16px' }} />
+                <h3 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Interactive 3D WebGL</h3>
+                <p style={{ color: '#a1a1aa', fontSize: '16px', lineHeight: '1.6', margin: 0 }}>Explore architecture in real-time right in the browser with no plugins required.</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', padding: '32px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                <Image size={32} color="#10b981" style={{ marginBottom: '16px' }} />
+                <h3 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>High-Res Render Gallery</h3>
+                <p style={{ color: '#a1a1aa', fontSize: '16px', lineHeight: '1.6', margin: 0 }}>Showcase stunning photorealistic assets in a distraction-free cinematic lightbox.</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', padding: '32px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                <Layers size={32} color="#8b5cf6" style={{ marginBottom: '16px' }} />
+                <h3 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Multi-Level Floorplans</h3>
+                <p style={{ color: '#a1a1aa', fontSize: '16px', lineHeight: '1.6', margin: 0 }}>Interactive, high-resolution scalable floorplans with dynamic unit selection.</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', padding: '32px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                <MessageSquare size={32} color="#06b6d4" style={{ marginBottom: '16px' }} />
+                <h3 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Emma: AI Concierge</h3>
+                <p style={{ color: '#a1a1aa', fontSize: '16px', lineHeight: '1.6', margin: 0 }}>A fully integrated, context-aware AI assistant built natively into the interface.</p>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
