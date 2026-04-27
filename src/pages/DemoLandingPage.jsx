@@ -93,9 +93,7 @@ export default function DemoLandingPage() {
           "Dynamic time-of-day lighting (Morning, Noon, Night)",
           "Cross-platform WebXR support for VR headsets"
         ]}
-        mockupColor="rgba(59,130,246,0.1)"
-        mockupIcon={<Box size={80} color="#3b82f6" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: 3D Model orbiting with material swap UI on the right ]"
+        imageUrl="/mockups/3d_viewer.png"
       />
 
       {/* FEATURE 2: RENDERS */}
@@ -110,9 +108,7 @@ export default function DemoLandingPage() {
           "Automated background image slideshow mode",
           "Favorites system to star the best shots"
         ]}
-        mockupColor="rgba(16,185,129,0.1)"
-        mockupIcon={<Image size={80} color="#10b981" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: Masonry grid of beautiful architectural renders ]"
+        imageUrl="/mockups/render_gallery.png"
       />
 
       {/* FEATURE 3: FLOORPLANS */}
@@ -127,9 +123,7 @@ export default function DemoLandingPage() {
           "Interactive panning and zooming",
           "Seamless transition into 360 tours"
         ]}
-        mockupColor="rgba(139,92,246,0.1)"
-        mockupIcon={<Layers size={80} color="#8b5cf6" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: Floorplan viewer with zoom controls and level selectors ]"
+        imageUrl="/mockups/floorplan.png"
       />
 
       {/* FEATURE 4: 360 TOURS */}
@@ -144,9 +138,7 @@ export default function DemoLandingPage() {
           "Gyroscope support for mobile devices",
           "High-performance equirectangular rendering"
         ]}
-        mockupColor="rgba(245,158,11,0.1)"
-        mockupIcon={<Map size={80} color="#f59e0b" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: Panoramic room view with floating 'Living Room' hotspots ]"
+        imageUrl="/mockups/spatial_tour.png"
       />
 
       {/* FEATURE 5: AVAILABILITY GRID */}
@@ -161,9 +153,7 @@ export default function DemoLandingPage() {
           "Detailed unit specifications and metrics",
           "Direct lead capture forms for specific units"
         ]}
-        mockupColor="rgba(236,72,153,0.1)"
-        mockupIcon={<LayoutGrid size={80} color="#ec4899" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: Clean data table showing unit pricing and 'Sold' badges ]"
+        imageUrl="/mockups/availability_grid.png"
       />
 
       {/* FEATURE 6: CINEMATIC VIDEO */}
@@ -178,9 +168,7 @@ export default function DemoLandingPage() {
           "Distraction-free theater mode",
           "Use videos as ambient app backgrounds"
         ]}
-        mockupColor="rgba(20,184,166,0.1)"
-        mockupIcon={<Video size={80} color="#14b8a6" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: Video player playing an architectural fly-through ]"
+        imageUrl="/mockups/video_hub.png"
       />
 
       {/* FEATURE 7: AI CONCIERGE */}
@@ -195,9 +183,7 @@ export default function DemoLandingPage() {
           "Understands the current 3D view context",
           "Books viewings and captures lead data 24/7"
         ]}
-        mockupColor="rgba(6,182,212,0.1)"
-        mockupIcon={<MessageSquare size={80} color="#06b6d4" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: Chat interface floating over the 3D model ]"
+        imageUrl="/mockups/ai_concierge.png"
       />
 
       {/* FEATURE 8: ASSET MANAGER */}
@@ -212,9 +198,7 @@ export default function DemoLandingPage() {
           "Global theme customization (Colors, Light/Dark mode)",
           "Database synchronization"
         ]}
-        mockupColor="rgba(249,115,22,0.1)"
-        mockupIcon={<Settings size={80} color="#f97316" style={{ opacity: 0.5 }}/>}
-        mockupLabel="[ Screenshot: The Asset Manager dashboard showing folder uploads ]"
+        imageUrl="/mockups/asset_manager.png"
       />
 
       {/* FINAL CTA */}
@@ -239,7 +223,7 @@ export default function DemoLandingPage() {
 }
 
 // Reusable Section Component
-function FeatureSection({ reversed, icon, title, description, features, mockupColor, mockupIcon, mockupLabel }) {
+function FeatureSection({ reversed, icon, title, description, features, imageUrl, mockupColor, mockupIcon, mockupLabel }) {
   return (
     <section style={{ padding: '100px 40px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
       <div style={{ 
@@ -266,23 +250,32 @@ function FeatureSection({ reversed, icon, title, description, features, mockupCo
           </FadeIn>
         </div>
 
-        {/* MOCKUP PLACEHOLDER */}
+        {/* MOCKUP IMAGE OR PLACEHOLDER */}
         <div style={{ flex: '1 1 500px' }}>
           <FadeIn direction={reversed ? 'left' : 'right'} delay={0.2}>
-            <div style={{ 
-              width: '100%', aspectRatio: '16/10', borderRadius: '24px', 
-              background: mockupColor, border: '1px solid rgba(255,255,255,0.1)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', position: 'relative', overflow: 'hidden'
-            }}>
-              {/* Subtle glass reflection */}
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%)', pointerEvents: 'none' }} />
-              
-              {mockupIcon}
-              <div style={{ marginTop: '24px', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', fontSize: '14px', textAlign: 'center', padding: '0 20px' }}>
-                {mockupLabel}
+            {imageUrl ? (
+              <div style={{ 
+                width: '100%', borderRadius: '24px', overflow: 'hidden',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)'
+              }}>
+                <img src={imageUrl} alt={title} style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
               </div>
-            </div>
+            ) : (
+              <div style={{ 
+                width: '100%', aspectRatio: '16/10', borderRadius: '24px', 
+                background: mockupColor, border: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', position: 'relative', overflow: 'hidden'
+              }}>
+                {/* Subtle glass reflection */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%)', pointerEvents: 'none' }} />
+                
+                {mockupIcon}
+                <div style={{ marginTop: '24px', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', fontSize: '14px', textAlign: 'center', padding: '0 20px' }}>
+                  {mockupLabel}
+                </div>
+              </div>
+            )}
           </FadeIn>
         </div>
 
