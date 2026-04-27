@@ -1457,21 +1457,31 @@ export default function AssetManager() {
                           }
                           if (!activeNode) return;
                           
-                          const newHotspot = {
-                            id: 'hs_' + Date.now(),
-                            type: 'text-box',
-                            position: [hotspotPrompt.coords.x, hotspotPrompt.coords.y, hotspotPrompt.coords.z],
-                            label: hotspotPrompt.label || 'New Hotspot',
-                            targetNodeId: hotspotPrompt.targetNodeId,
-                            panelData: null
-                          };
+                          let updatedHotspots = [...(activeNode.hotspots || [])];
+                          if (hotspotPrompt.id) {
+                            updatedHotspots = updatedHotspots.map(hs => 
+                              hs.id === hotspotPrompt.id 
+                                ? { ...hs, label: hotspotPrompt.label, targetNodeId: hotspotPrompt.targetNodeId }
+                                : hs
+                            );
+                          } else {
+                            const newHotspot = {
+                              id: 'hs_' + Date.now(),
+                              type: 'text-box',
+                              position: [hotspotPrompt.coords.x, hotspotPrompt.coords.y, hotspotPrompt.coords.z],
+                              label: hotspotPrompt.label || 'New Hotspot',
+                              targetNodeId: hotspotPrompt.targetNodeId,
+                              panelData: null
+                            };
+                            updatedHotspots.push(newHotspot);
+                          }
                           
-                          state.updateTourNode(supabase, state.activeTourNodeId, { hotspots: [...(activeNode.hotspots || []), newHotspot] });
-                          setHotspotPrompt({ isOpen: false, coords: null, label: '', targetNodeId: '' });
+                          state.updateTourNode(supabase, state.activeTourNodeId, { hotspots: updatedHotspots });
+                          setHotspotPrompt({ isOpen: false, id: null, coords: null, label: '', targetNodeId: '' });
                         }}
                         style={{ flex: 1, padding: '12px', background: hotspotPrompt.targetNodeId ? 'var(--accent-color)' : 'var(--border-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: hotspotPrompt.targetNodeId ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
                       >
-                        Save Hotspot
+                        {hotspotPrompt.id ? 'Update Hotspot' : 'Save Hotspot'}
                       </button>
                     </div>
                   </div>
@@ -1569,7 +1579,7 @@ export default function AssetManager() {
                     <PanoramaViewer 
                       isEditing={true} 
                       onCanvasClick={(point) => {
-                        setHotspotPrompt({ isOpen: true, coords: point, label: '', targetNodeId: '' });
+                        setHotspotPrompt({ isOpen: true, id: null, coords: point, label: '', targetNodeId: '' });
                       }}
                     />
                   </div>
@@ -1591,6 +1601,20 @@ export default function AssetManager() {
                             Target: {useViewerStore.getState().customTourNodes[hs.targetNodeId]?.title || 'Unknown'}
                           </div>
                           <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                            <button 
+                              onClick={() => {
+                                setHotspotPrompt({ 
+                                  isOpen: true, 
+                                  id: hs.id, 
+                                  coords: { x: hs.position[0], y: hs.position[1], z: hs.position[2] }, 
+                                  label: hs.label, 
+                                  targetNodeId: hs.targetNodeId 
+                                });
+                              }}
+                              style={{ width: '100%', padding: '6px 12px', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.4)', color: '#3b82f6', borderRadius: '4px', cursor: 'pointer' }}
+                            >
+                              Edit
+                            </button>
                             <button 
                               onClick={() => {
                                 const state = useViewerStore.getState();
