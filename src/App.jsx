@@ -5,8 +5,6 @@ import EmbedView from './pages/EmbedView';
 import MobileARView from './views/MobileARView';
 import DemoLandingPage from './pages/DemoLandingPage';
 
-import DemoLandingPage2 from './pages/DemoLandingPage2';
-
 function App() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('mode') === 'ar') {
@@ -18,7 +16,6 @@ function App() {
       <Routes>
         <Route path="/" element={<PresentationApp />} />
         <Route path="/demo" element={<DemoLandingPage />} />
-        <Route path="/demo2" element={<DemoLandingPage2 />} />
         <Route path="/admin" element={<PresentationApp forceAdmin={true} />} />
         <Route path="/embed" element={<EmbedView />} />
       </Routes>

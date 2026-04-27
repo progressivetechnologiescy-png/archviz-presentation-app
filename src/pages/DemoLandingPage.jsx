@@ -1,334 +1,271 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Image, Map, Layers, LayoutGrid, MessageSquare, Video, Settings, Play, ArrowRight, CheckCircle, Smartphone, Calendar, ChevronUp } from 'lucide-react';
-
-function useOnScreen(ref, rootMargin = '0px') {
-  const [isIntersecting, setIntersecting] = useState(false);
-  useEffect(() => {
-    // Scroll the container to top, not window
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setIntersecting(true);
-    }, { rootMargin, threshold: 0.1 });
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [ref, rootMargin]);
-  return isIntersecting;
-}
-
-const FadeIn = ({ children, delay = 0, direction = 'up' }) => {
-  const ref = useRef();
-  const isVisible = useOnScreen(ref);
-  
-  let transform = 'translateY(40px)';
-  if (direction === 'left') transform = 'translateX(-40px)';
-  if (direction === 'right') transform = 'translateX(40px)';
-
-  return (
-    <div ref={ref} style={{
-      opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translate(0)' : transform,
-      transition: `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
-      width: '100%'
-    }}>
-      {children}
-    </div>
-  );
-};
+import { Box, Image, Layers, LayoutGrid, MessageSquare, Smartphone, ArrowRight, Map, Video, Settings, ChevronUp, Check } from 'lucide-react';
 
 export default function DemoLandingPage() {
-  const [heroPhase, setHeroPhase] = useState('title');
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const scrollContainerRef = useRef(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop > 600) {
-      setShowScrollTop(true);
-    } else {
-      setShowScrollTop(false);
-    }
+    setShowScrollTop(e.target.scrollTop > 600);
   };
 
   const scrollToTop = () => {
-    scrollContainerRef.current?.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  useEffect(() => {
-    const timer1 = setTimeout(() => {
-      setHeroPhase('zoom-out');
-      const timer2 = setTimeout(() => {
-        setHeroPhase('features');
-      }, 1000); 
-      return () => clearTimeout(timer2);
-    }, 2000);
-    return () => clearTimeout(timer1);
-  }, []);
 
   return (
     <div 
       ref={scrollContainerRef}
       onScroll={handleScroll}
-      style={{ 
-      fontFamily: '"Inter", "Outfit", sans-serif', 
-      background: '#050505', 
-      color: '#ffffff', 
-      overflowX: 'hidden',
-      overflowY: 'auto',
-      height: '100vh',
-      width: '100vw'
-    }}>
-      
-      {/* Dynamic Nav */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%)', pointerEvents: 'none' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
-          <Box color="#3b82f6" size={28} />
-          <span style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '1px' }}>PROTECH APP</span>
+      style={{
+        fontFamily: '"Outfit", "Inter", sans-serif',
+        background: '#020617', // Very dark slate
+        color: '#f8fafc',
+        height: '100vh',
+        width: '100vw',
+        overflowX: 'hidden',
+        overflowY: 'auto'
+      }}
+    >
+      {/* NAVBAR */}
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 48px', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Box color="#38bdf8" size={32} />
+          <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '2px', background: 'linear-gradient(90deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PROTECH</span>
         </div>
-        <div style={{ pointerEvents: 'auto' }}>
-          <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '12px 28px', borderRadius: '50px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s' }}>
-            Launch App Demo <Play fill="white" size={16} />
+        <div>
+          <Link to="/" style={{ background: '#f8fafc', color: '#0f172a', textDecoration: 'none', padding: '12px 32px', borderRadius: '8px', fontWeight: 'bold', fontSize: '15px', transition: 'all 0.3s', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            View Live App <ArrowRight size={18} />
           </Link>
         </div>
       </nav>
 
-      <style>{`
-        @keyframes float {
-          0% { transform: translate(-50%, 0px); }
-          50% { transform: translate(-50%, -20px); }
-          100% { transform: translate(-50%, 0px); }
-        }
-        @keyframes text-float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
-          100% { transform: translateY(0px); }
-        }
-        @keyframes pulse-glow {
-          0% { opacity: 0.15; }
-          50% { opacity: 0.3; }
-          100% { opacity: 0.15; }
-        }
-        @keyframes slide-up {
-          0% { opacity: 0; transform: translateY(40px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes hero-zoom-out {
-          0% { opacity: 1; transform: scale(1); }
-          100% { opacity: 0; transform: scale(1.5); filter: blur(10px); }
-        }
-        @keyframes hero-fade-in {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .hero-title {
-          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, text-float 6s ease-in-out infinite alternate 1s;
-        }
-        .hero-title-zoom {
-          animation: hero-zoom-out 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        .hero-features {
-          animation: hero-fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .hero-subtitle {
-          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards, text-float 6s ease-in-out infinite alternate 1.2s;
-          opacity: 0;
-        }
-      `}</style>
-
-      {/* HERO REDESIGNED */}
-      <section style={{ 
-        position: 'relative', 
-        height: '100vh', 
-        minHeight: '800px', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        textAlign: 'center',
-        overflow: 'hidden'
-      }}>
-        {/* Fullscreen Video Background */}
-        <video
-          src="/hero-video.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-            width: '100%', height: '100%', objectFit: 'cover',
-            zIndex: 0
-          }}
-        />
-
-        {/* Cinematic Gradient Overlays */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, rgba(5,5,5,0.2) 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.6) 100%)', zIndex: 1 }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(5,5,5,0.8) 100%)', zIndex: 1 }} />
-
-        <div style={{ position: 'relative', zIndex: 3, maxWidth: '1000px', padding: '0 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          
-          {heroPhase !== 'features' && (
-            <div className={heroPhase === 'zoom-out' ? 'hero-title-zoom' : 'hero-title'}>
-              <h1 style={{ fontSize: '84px', fontWeight: '900', lineHeight: '1.05', marginBottom: '32px', letterSpacing: '-2px', textShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>
-                Experience <span style={{ color: '#3b82f6' }}>Unbuilt</span> <br/>
-                <span style={{ color: '#fff', WebkitTextStroke: '1px rgba(255,255,255,0.5)', textShadow: '0 0 40px rgba(255,255,255,0.2)' }}>Architecture.</span>
-              </h1>
-              <p className={heroPhase === 'zoom-out' ? '' : 'hero-subtitle'} style={{ fontSize: '24px', color: '#e4e4e7', maxWidth: '800px', margin: '0 auto', lineHeight: '1.6', textShadow: '0 4px 12px rgba(0,0,0,0.8)' }}>
-                The ultimate 3D presentation platform. Interactive web-based models, high-fidelity renders, and integrated CRM—all in one seamless experience.
-              </p>
-            </div>
-          )}
-
-          {heroPhase === 'features' && (
-            <div className="hero-features" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '1100px' }}>
-              <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '32px', color: '#fff', textShadow: '0 4px 12px rgba(0,0,0,0.8)', letterSpacing: '1px' }}>Key Features</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', textAlign: 'left', width: '100%' }}>
-                {[
-                  { icon: <Smartphone size={24} color="#eab308" />, title: 'AR Technology', desc: 'Project architecture into the real world natively.' },
-                  { icon: <Box size={24} color="#3b82f6" />, title: 'Interactive 3D WebGL', desc: 'Real-time architectural exploration in the browser.' },
-                  { icon: <Image size={24} color="#10b981" />, title: 'High-Res Renders', desc: 'Cinematic gallery for your finest visual assets.' },
-                  { icon: <Layers size={24} color="#8b5cf6" />, title: 'Multi-Level Floorplans', desc: 'High-resolution SVG floorplans with dynamic navigation.' },
-                  { icon: <Map size={24} color="#f59e0b" />, title: '360° Spatial Tours', desc: 'Photorealistic virtual walkthroughs with hotspots.' },
-                  { icon: <LayoutGrid size={24} color="#ec4899" />, title: 'Live Inventory', desc: 'Real-time unit availability connected to CRM.' },
-                  { icon: <Video size={24} color="#14b8a6" />, title: 'Cinematic Video Hub', desc: 'Distraction-free theater mode for fly-throughs.' },
-                  { icon: <MessageSquare size={24} color="#06b6d4" />, title: 'Emma: AI Concierge', desc: 'Context-aware AI assistant built natively.' },
-                  { icon: <Settings size={24} color="#f97316" />, title: 'CMS Asset Manager', desc: 'Full control over application content via admin panel.' }
-                ].map((f, i) => (
-                  <div key={i} style={{ background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(20px)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                    <div style={{ marginBottom: '12px' }}>{f.icon}</div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: '#fff' }}>{f.title}</h3>
-                    <p style={{ color: '#a1a1aa', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>{f.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+      {/* HERO SECTION */}
+      <section style={{ position: 'relative', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 20px', textAlign: 'center' }}>
+        <video src="/hero-video.mp4" autoPlay loop muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4, zIndex: 0 }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at center, transparent 0%, #020617 100%)', zIndex: 1 }} />
+        
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: '1000px', animation: 'fade-in-up 1s ease-out forwards' }}>
+          <div style={{ display: 'inline-block', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '50px', padding: '8px 24px', color: '#38bdf8', fontWeight: 'bold', fontSize: '14px', marginBottom: '24px', background: 'rgba(56, 189, 248, 0.05)' }}>
+            THE FUTURE OF REAL ESTATE
+          </div>
+          <h1 style={{ fontSize: '96px', fontWeight: '900', lineHeight: 1, letterSpacing: '-3px', marginBottom: '32px' }}>
+            Immersive <br />
+            <span style={{ color: '#38bdf8' }}>Architecture.</span>
+          </h1>
+          <p style={{ fontSize: '24px', color: '#94a3b8', maxWidth: '700px', margin: '0 auto 32px' }}>
+            Ditch the static PDFs. Deliver interactive, full-scale 3D experiences right in your client's browser.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px', maxWidth: '800px', margin: '0 auto' }}>
+            {['AR Technology', '3D WebGL Viewer', 'Cinematic Gallery', 'Smart Floorplans', '360° Tours', 'Live Inventory', 'Video Hub', 'AI Concierge', 'CMS Manager'].map(feat => (
+              <span key={feat} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 20px', borderRadius: '50px', fontSize: '15px', color: '#e2e8f0', backdropFilter: 'blur(10px)' }}>
+                <Check size={16} color="#38bdf8" /> {feat}
+              </span>
+            ))}
+          </div>
         </div>
+
+        {/* CSS KEYFRAMES */}
+        <style>{`
+          @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .bento-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 32px;
+            padding: 40px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+          }
+          .bento-card:hover {
+            border-color: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.04);
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+          }
+          .bento-img {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.5;
+            transition: opacity 0.5s ease;
+          }
+          .bento-card:hover .bento-img {
+            opacity: 0.9;
+          }
+          .bento-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(0deg, rgba(2,6,23,1) 0%, rgba(2,6,23,0.3) 100%);
+            z-index: 1;
+            transition: background 0.5s ease;
+          }
+          .bento-card:hover .bento-overlay {
+            background: linear-gradient(0deg, rgba(2,6,23,0.9) 0%, rgba(2,6,23,0.1) 100%);
+          }
+          .bento-content {
+            position: relative;
+            z-index: 2;
+          }
+          @media (max-width: 1000px) {
+            .bento-card {
+               grid-column: span 12 !important;
+            }
+          }
+        `}</style>
       </section>
 
-      {/* FEATURE 1: AR TECHNOLOGY */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<Smartphone size={40} color="#eab308" />}
-        title="Augmented Reality (AR)"
-        description="Bring your architecture into the real world. Let clients project full 3D models onto their desks or living room floors using our native AR integration."
-        features={["Project scale 1:1 architectural models natively", "Walk through actual dimensions using device cameras", "Instantly toggle between digital and AR views", "Compatible with LiDAR-enabled iOS devices"]}
-        imageUrl="/mockups/ar_technology.png"
-      />
+      {/* BENTO GRID */}
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '100px 40px' }}>
+        <h2 style={{ fontSize: '56px', fontWeight: '900', marginBottom: '80px', textAlign: 'center', letterSpacing: '-2px' }}>Everything you need.</h2>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '24px', gridAutoRows: 'minmax(400px, auto)' }}>
+          
+          {/* Main AR Card (Span 8) */}
+          <div className="bento-card" style={{ gridColumn: 'span 8' }}>
+            <img src="/mockups/ar_technology.png" className="bento-img" alt="AR" style={{ objectPosition: 'center 30%' }} />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Smartphone size={32} color="#eab308" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '16px' }}>Augmented Reality Natively</h3>
+              <p style={{ color: '#94a3b8', fontSize: '20px', maxWidth: '500px', lineHeight: '1.6' }}>Project massive 3D models at true scale straight onto your client's desk using native device capabilities.</p>
+            </div>
+          </div>
 
-      {/* FEATURE 2: 3D VIEWER */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<Box size={40} color="#3b82f6" />}
-        title="Interactive 3D WebGL Viewer"
-        description="Allow clients to freely orbit, walk through, and explore the architecture in real-time. Our optimized WebGL engine runs massive FBX and GLB files directly in the browser at 60FPS."
-        features={["First-person game-like movement controls", "Real-time material swapping (e.g., Marble vs Wood)", "Dynamic time-of-day lighting (Morning, Noon, Night)", "Cross-platform WebXR support for VR headsets"]}
-        imageUrl="/mockups/3d_viewer.png"
-      />
+          {/* Render Gallery (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/render_gallery.png" className="bento-img" alt="Renders" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Image size={32} color="#10b981" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>Cinematic Gallery</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Curated high-fidelity assets organized perfectly.</p>
+            </div>
+          </div>
 
-      {/* FEATURE 3: RENDERS */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<Image size={40} color="#10b981" />}
-        title="High-Res Render Gallery"
-        description="A beautiful, distraction-free gallery to showcase your highest quality static assets. Organized logically so you can tell the perfect visual story."
-        features={["Categorized folders (e.g., Interiors, Exteriors, Amenities)", "Fullscreen immersive lightbox viewing", "Automated background image slideshow mode", "Favorites system to star the best shots"]}
-        imageUrl="/mockups/render_gallery.png"
-      />
+          {/* 3D Viewer (Span 12) */}
+          <div className="bento-card" style={{ gridColumn: 'span 12', height: '600px' }}>
+             <img src="/mockups/3d_viewer.png" className="bento-img" alt="3D Viewer" style={{ objectPosition: 'center 40%' }} />
+             <div className="bento-overlay" style={{ background: 'linear-gradient(90deg, rgba(2,6,23,1) 0%, rgba(2,6,23,0) 100%)' }} />
+             <div className="bento-content" style={{ maxWidth: '600px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <Box size={48} color="#3b82f6" style={{ marginBottom: '32px' }} />
+                <h3 style={{ fontSize: '64px', fontWeight: '900', lineHeight: '1.1', marginBottom: '24px', letterSpacing: '-2px' }}>Unmatched <br/> WebGL Power.</h3>
+                <p style={{ color: '#94a3b8', fontSize: '22px', lineHeight: '1.6' }}>Allow clients to freely orbit, walk through, and explore the architecture in real-time at a buttery smooth 60 FPS.</p>
+             </div>
+          </div>
 
-      {/* FEATURE 4: FLOORPLANS */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<Layers size={40} color="#8b5cf6" />}
-        title="Multi-Level Floorplans"
-        description="Say goodbye to confusing PDFs. Interactive floorplans allow clients to switch between building levels and explore individual units with clarity."
-        features={["Level selector (Ground Floor, Level 1, Penthouse)", "High-resolution SVG and PNG support", "Interactive panning and zooming", "Seamless transition into 360 tours"]}
-        imageUrl="/mockups/floorplan.png"
-      />
+          {/* AI Concierge (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4', padding: 0, display: 'flex', flexDirection: 'column' }}>
+            {/* Header */}
+            <div style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(255,255,255,0.02)' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#06b6d4', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(6,182,212,0.4)' }}>
+                <MessageSquare size={24} color="white" />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#f8fafc' }}>AI Sales Agent</h3>
+                <span style={{ fontSize: '13px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} /> Online 24/7
+                </span>
+              </div>
+            </div>
+            
+            {/* Chat Body */}
+            <div style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', background: 'linear-gradient(180deg, rgba(2,6,23,0) 0%, rgba(6,182,212,0.05) 100%)', overflow: 'hidden' }}>
+              <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', padding: '14px 18px', borderRadius: '16px 16px 16px 4px', maxWidth: '85%', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)' }}>
+                <p style={{ margin: 0, fontSize: '15px', color: '#e2e8f0', lineHeight: '1.5' }}>Hi! I'm Emma. Would you like to see the penthouse floorplan?</p>
+              </div>
 
-      {/* FEATURE 5: 360 TOURS */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<Map size={40} color="#f59e0b" />}
-        title="360° Spatial Tours"
-        description="Transport buyers directly inside the property. Link multiple panoramic renders together to create a photorealistic virtual walkthrough."
-        features={["Interactive teleportation hotspots", "Information tags pinned to specific objects", "Gyroscope support for mobile devices", "High-performance equirectangular rendering"]}
-        imageUrl="/mockups/spatial_tour.png"
-      />
+              <div style={{ alignSelf: 'flex-end', background: 'linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)', padding: '14px 18px', borderRadius: '16px 16px 4px 16px', maxWidth: '85%', boxShadow: '0 4px 12px rgba(6,182,212,0.3)' }}>
+                <p style={{ margin: 0, fontSize: '15px', color: 'white', lineHeight: '1.5' }}>Yes, what is the price?</p>
+              </div>
 
-      {/* FEATURE 6: AVAILABILITY GRID */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<LayoutGrid size={40} color="#ec4899" />}
-        title="Live Availability & Inventory"
-        description="Never sell the same unit twice. The application connects directly to a live Supabase database to show real-time unit statuses."
-        features={["Color-coded statuses (Available, Reserved, Sold)", "Instant filtering by Beds, Baths, or Price", "Detailed unit specifications and metrics", "Direct lead capture forms for specific units"]}
-        imageUrl="/mockups/availability_grid.png"
-      />
+              <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', padding: '14px 18px', borderRadius: '16px 16px 16px 4px', maxWidth: '85%', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)' }}>
+                <p style={{ margin: 0, fontSize: '15px', color: '#e2e8f0', lineHeight: '1.5' }}>The penthouse is $2.4M. I can book a virtual tour for you.</p>
+              </div>
+            </div>
 
-      {/* FEATURE 7: CINEMATIC VIDEO */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<Video size={40} color="#14b8a6" />}
-        title="Cinematic Video Hub"
-        description="Keep all your high-budget architectural fly-throughs in one place without leaving the app experience."
-        features={["Embedded YouTube loop support", "Direct MP4 playback", "Distraction-free theater mode", "Use videos as ambient app backgrounds"]}
-        imageUrl="/mockups/video_hub.png"
-      />
+            {/* Chat Input */}
+            <div style={{ padding: '20px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(2,6,23,0.8)' }}>
+              <div style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b', fontSize: '15px' }}>Type a message...</span>
+                <div style={{ background: '#06b6d4', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ArrowRight size={16} color="white" />
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* FEATURE 8: AI CONCIERGE */}
-      <FeatureSection 
-        bgVariant="light"
-        reversed={true}
-        icon={<MessageSquare size={40} color="#06b6d4" />}
-        title="Emma: The AI Agent"
-        description="A floating, context-aware AI assistant built right into the interface. Emma is trained specifically on your property's data."
-        features={["Answers complex questions about amenities and pricing", "Multi-lingual support out of the box", "Understands the current 3D view context", "Books viewings and captures lead data 24/7"]}
-        imageUrl="/mockups/ai_concierge.png"
-      />
+          {/* Live Inventory (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/availability_grid.png" className="bento-img" alt="Inventory" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <LayoutGrid size={32} color="#ec4899" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>Live Inventory</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Real-time synchronization with CRM database.</p>
+            </div>
+          </div>
 
-      {/* FEATURE 9: ASSET MANAGER */}
-      <FeatureSection 
-        bgVariant="dark"
-        reversed={false}
-        icon={<Settings size={40} color="#f97316" />}
-        title="Full CMS Asset Manager"
-        description="You have complete control over the application. Our built-in admin panel lets you update assets without writing a single line of code."
-        features={["Bulk folder upload for 3D Models (FBX, GLB, OBJ)", "Drag-and-drop render and floorplan management", "Global theme customization (Colors, Light/Dark mode)", "Database synchronization"]}
-        imageUrl="/mockups/asset_manager.png"
-      />
+          {/* Floorplans (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/floorplan.png" className="bento-img" alt="Floorplan" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Layers size={32} color="#8b5cf6" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>Smart Floorplans</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Multi-level interactive vector navigation.</p>
+            </div>
+          </div>
 
-      {/* FINAL CTA */}
-      <section style={{ padding: '120px 20px', textAlign: 'center', background: 'linear-gradient(180deg, #050505 0%, #1e3a8a 100%)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '48px', fontWeight: '900', marginBottom: '24px' }}>See all features in action.</h2>
-          <p style={{ fontSize: '20px', color: '#a1a1aa', marginBottom: '40px' }}>
-            Click below to launch the live 3D Viewer application.
-          </p>
-          <Link to="/" style={{
-            background: '#ffffff', color: '#000000', textDecoration: 'none',
-            padding: '20px 48px', borderRadius: '50px', fontSize: '20px', fontWeight: 'bold',
-            display: 'inline-flex', alignItems: 'center', gap: '12px'
-          }}>
-            Launch the App <ArrowRight size={20} />
-          </Link>
+          {/* 360 Tours (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/spatial_tour.png" className="bento-img" alt="360 Tours" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Map size={32} color="#f59e0b" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>360° Tours</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Photorealistic virtual walkthroughs.</p>
+            </div>
+          </div>
+
+          {/* Cinematic Video (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/video_hub.png" className="bento-img" alt="Video Hub" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Video size={32} color="#14b8a6" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>Video Hub</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Distraction-free theater mode.</p>
+            </div>
+          </div>
+
+          {/* Asset Manager (Span 4) */}
+          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
+            <img src="/mockups/asset_manager.png" className="bento-img" alt="Asset Manager" />
+            <div className="bento-overlay" />
+            <div className="bento-content">
+              <Settings size={32} color="#f97316" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>CMS Manager</h3>
+              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Full content control via admin panel.</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding: '40px 20px', textAlign: 'center', background: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
-          Designed and developed by <a href="https://progressivetechnologies.com.cy" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>Progressive Technologies</a>
+      <footer style={{ padding: '40px 20px', textAlign: 'center', background: '#020617', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>
+          Designed and developed by <a href="https://progressivetechnologies.com.cy" target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 'bold' }}>Progressive Technologies</a>
         </p>
       </footer>
 
@@ -339,11 +276,11 @@ export default function DemoLandingPage() {
           position: 'fixed',
           bottom: '40px',
           right: '40px',
-          width: '50px',
-          height: '50px',
+          width: '56px',
+          height: '56px',
           borderRadius: '50%',
-          background: '#3b82f6',
-          color: 'white',
+          background: '#38bdf8',
+          color: '#020617',
           border: 'none',
           display: 'flex',
           alignItems: 'center',
@@ -352,77 +289,15 @@ export default function DemoLandingPage() {
           opacity: showScrollTop ? 1 : 0,
           transform: showScrollTop ? 'translateY(0)' : 'translateY(20px)',
           pointerEvents: showScrollTop ? 'auto' : 'none',
-          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-          boxShadow: '0 10px 20px rgba(59,130,246,0.4)',
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: '0 10px 25px rgba(56,189,248,0.4)',
           zIndex: 1000
         }}
         aria-label="Scroll to top"
       >
-        <ChevronUp size={24} />
+        <ChevronUp size={28} />
       </button>
 
     </div>
-  );
-}
-
-// Reusable Section Component
-function FeatureSection({ bgVariant, reversed, icon, title, description, features, imageUrl, mockupColor, mockupIcon, mockupLabel }) {
-  return (
-    <section style={{ background: bgVariant === 'light' ? 'rgba(30,58,138, 0.12)' : '#050505', padding: '100px 40px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ 
-        maxWidth: '1200px', margin: '0 auto', display: 'flex', 
-        flexDirection: reversed ? 'row-reverse' : 'row', 
-        flexWrap: 'wrap', gap: '80px', alignItems: 'center' 
-      }}>
-        
-        {/* TEXT CONTENT */}
-        <div style={{ flex: '1 1 400px' }}>
-          <FadeIn direction={reversed ? 'right' : 'left'}>
-            <div style={{ marginBottom: '24px' }}>{icon}</div>
-            <h2 style={{ fontSize: '40px', fontWeight: 'bold', marginBottom: '24px', lineHeight: '1.2' }}>{title}</h2>
-            <p style={{ fontSize: '18px', color: '#a1a1aa', marginBottom: '32px', lineHeight: '1.6' }}>{description}</p>
-            
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {features.map((feat, idx) => (
-                <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '16px', color: '#e4e4e7' }}>
-                  <CheckCircle size={20} color="#3b82f6" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  {feat}
-                </li>
-              ))}
-            </ul>
-          </FadeIn>
-        </div>
-
-        {/* MOCKUP IMAGE OR PLACEHOLDER */}
-        <div style={{ flex: '1 1 500px' }}>
-          <FadeIn direction={reversed ? 'left' : 'right'} delay={0.2}>
-            {imageUrl ? (
-              <div style={{ 
-                width: '100%', borderRadius: '24px', overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)'
-              }}>
-                <img src={imageUrl} alt={title} style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
-              </div>
-            ) : (
-              <div style={{ 
-                width: '100%', aspectRatio: '16/10', borderRadius: '24px', 
-                background: mockupColor, border: '1px solid rgba(255,255,255,0.1)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', position: 'relative', overflow: 'hidden'
-              }}>
-                {/* Subtle glass reflection */}
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%)', pointerEvents: 'none' }} />
-                
-                {mockupIcon}
-                <div style={{ marginTop: '24px', color: 'rgba(255,255,255,0.8)', fontFamily: 'monospace', fontSize: '16px', textAlign: 'center', padding: '0 20px', fontWeight: 'bold' }}>
-                  {mockupLabel}
-                </div>
-              </div>
-            )}
-          </FadeIn>
-        </div>
-
-      </div>
-    </section>
   );
 }
