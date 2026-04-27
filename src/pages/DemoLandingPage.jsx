@@ -61,12 +61,40 @@ export default function DemoLandingPage() {
         </Link>
       </nav>
 
+      <style>{`
+        @keyframes float {
+          0% { transform: translate(-50%, 0px); }
+          50% { transform: translate(-50%, -20px); }
+          100% { transform: translate(-50%, 0px); }
+        }
+        @keyframes pulse-glow {
+          0% { opacity: 0.15; }
+          50% { opacity: 0.3; }
+          100% { opacity: 0.15; }
+        }
+        @keyframes slide-up {
+          0% { opacity: 0; transform: translateY(40px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .hero-title {
+          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .hero-subtitle {
+          animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+          opacity: 0;
+        }
+        .agent-image {
+          animation: slide-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+          opacity: 0;
+        }
+      `}</style>
+
       {/* HERO */}
       <section style={{ paddingTop: '180px', paddingBottom: '120px', textAlign: 'center', position: 'relative' }}>
         <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 60%)', zIndex: 0 }} />
         
         {/* Cinematic Transparent House SVG Background */}
-        <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', opacity: 0.15, zIndex: 0, width: '100%', maxWidth: '1200px', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', opacity: 0.15, zIndex: 0, width: '100%', maxWidth: '1200px', pointerEvents: 'none', animation: 'float 8s ease-in-out infinite, pulse-glow 4s ease-in-out infinite' }}>
           <svg viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M100 350 L100 150 L400 150 L400 50 L900 50 L900 200 L1100 200 L1100 350 Z" stroke="#3b82f6" strokeWidth="2" fill="url(#houseGrad)" />
             <path d="M150 350 L150 200 L350 200 L350 350" stroke="#3b82f6" strokeWidth="1" />
@@ -82,19 +110,24 @@ export default function DemoLandingPage() {
           </svg>
         </div>
 
+        {/* Real Estate Agent Overlay */}
+        <div className="agent-image" style={{ position: 'absolute', bottom: '-40px', right: '5%', zIndex: 2, height: '700px', pointerEvents: 'none' }}>
+          <img src="/agent.png" alt="Real Estate Agent" style={{ height: '100%', objectFit: 'contain', mixBlendMode: 'screen', filter: 'drop-shadow(0 0 20px rgba(59,130,246,0.2))' }} />
+        </div>
+
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '1000px', margin: '0 auto', padding: '0 20px' }}>
-          <FadeIn>
+          <div className="hero-title">
             <div style={{ display: 'inline-block', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa', padding: '8px 20px', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', marginBottom: '24px', letterSpacing: '1px' }}>
               THE COMPLETE VISUALIZATION SUITE
             </div>
-            <h1 style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1.1', marginBottom: '32px', letterSpacing: '-2px' }}>
+            <h1 style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1.1', marginBottom: '32px', letterSpacing: '-2px', position: 'relative', zIndex: 3 }}>
               Everything you need to <br/>
               <span style={{ color: '#3b82f6' }}>showcase and sell.</span>
             </h1>
-            <p style={{ fontSize: '22px', color: '#a1a1aa', maxWidth: '800px', margin: '0 auto 48px', lineHeight: '1.6' }}>
-              A full-stack, interactive presentation application. Combining real-time 3D models, stunning renders, 360° tours, and live CRM data into one seamless browser experience.
-            </p>
-          </FadeIn>
+          </div>
+          <p className="hero-subtitle" style={{ fontSize: '22px', color: '#a1a1aa', maxWidth: '800px', margin: '0 auto 48px', lineHeight: '1.6', position: 'relative', zIndex: 3 }}>
+            A full-stack, interactive presentation application. Combining real-time 3D models, stunning renders, 360° tours, and live CRM data into one seamless browser experience.
+          </p>
         </div>
       </section>
 
