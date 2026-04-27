@@ -147,13 +147,43 @@ export default function DemoLandingPage2() {
           </div>
 
           {/* AI Concierge (Span 4) */}
-          <div className="bento-card" style={{ gridColumn: 'span 4' }}>
-            <img src="/mockups/ai_concierge.png" className="bento-img" alt="AI" />
-            <div className="bento-overlay" />
-            <div className="bento-content">
-              <MessageSquare size={32} color="#06b6d4" style={{ marginBottom: '20px' }} />
-              <h3 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>AI Sales Agent</h3>
-              <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6' }}>Emma answers context-aware questions 24/7.</p>
+          <div className="bento-card" style={{ gridColumn: 'span 4', padding: 0, display: 'flex', flexDirection: 'column' }}>
+            {/* Header */}
+            <div style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(255,255,255,0.02)' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#06b6d4', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(6,182,212,0.4)' }}>
+                <MessageSquare size={24} color="white" />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#f8fafc' }}>AI Sales Agent</h3>
+                <span style={{ fontSize: '13px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} /> Online 24/7
+                </span>
+              </div>
+            </div>
+            
+            {/* Chat Body */}
+            <div style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', background: 'linear-gradient(180deg, rgba(2,6,23,0) 0%, rgba(6,182,212,0.05) 100%)', overflow: 'hidden' }}>
+              <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', padding: '14px 18px', borderRadius: '16px 16px 16px 4px', maxWidth: '85%', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)' }}>
+                <p style={{ margin: 0, fontSize: '15px', color: '#e2e8f0', lineHeight: '1.5' }}>Hi! I'm Emma. Would you like to see the penthouse floorplan?</p>
+              </div>
+
+              <div style={{ alignSelf: 'flex-end', background: 'linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)', padding: '14px 18px', borderRadius: '16px 16px 4px 16px', maxWidth: '85%', boxShadow: '0 4px 12px rgba(6,182,212,0.3)' }}>
+                <p style={{ margin: 0, fontSize: '15px', color: 'white', lineHeight: '1.5' }}>Yes, what is the price?</p>
+              </div>
+
+              <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', padding: '14px 18px', borderRadius: '16px 16px 16px 4px', maxWidth: '85%', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)' }}>
+                <p style={{ margin: 0, fontSize: '15px', color: '#e2e8f0', lineHeight: '1.5' }}>The penthouse is $2.4M. I can book a virtual tour for you.</p>
+              </div>
+            </div>
+
+            {/* Chat Input */}
+            <div style={{ padding: '20px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(2,6,23,0.8)' }}>
+              <div style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b', fontSize: '15px' }}>Type a message...</span>
+                <div style={{ background: '#06b6d4', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ArrowRight size={16} color="white" />
+                </div>
+              </div>
             </div>
           </div>
 
