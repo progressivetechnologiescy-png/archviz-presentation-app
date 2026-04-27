@@ -5,6 +5,10 @@ import { Box, Image, Map, Layers, LayoutGrid, MessageSquare, Video, Settings, Pl
 function useOnScreen(ref, rootMargin = '0px') {
   const [isIntersecting, setIntersecting] = useState(false);
   useEffect(() => {
+    // Scroll the container to top, not window
+  }, []);
+
+  useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) setIntersecting(true);
     }, { rootMargin, threshold: 0.1 });
@@ -35,10 +39,6 @@ const FadeIn = ({ children, delay = 0, direction = 'up' }) => {
 };
 
 export default function DemoLandingPage() {
-  useEffect(() => {
-    // Scroll the container to top, not window
-  }, []);
-
   return (
     <div style={{ 
       fontFamily: '"Inter", "Outfit", sans-serif', 
@@ -53,8 +53,7 @@ export default function DemoLandingPage() {
       {/* Dynamic Nav */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', background: 'rgba(5, 5, 5, 0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Box color="#3b82f6" size={28} />
-          <span style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '1px' }}>3DS PLATFORM</span>
+          <img src="https://progressivetechnologies.com.cy/wp-content/uploads/2024/03/progressivelogo-4.png" alt="Progressive Technologies" style={{ height: '36px', objectFit: 'contain' }} />
         </div>
         <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '12px 28px', borderRadius: '50px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s' }}>
           Launch App Demo <Play fill="white" size={16} />
@@ -65,6 +64,23 @@ export default function DemoLandingPage() {
       <section style={{ paddingTop: '180px', paddingBottom: '120px', textAlign: 'center', position: 'relative' }}>
         <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 60%)', zIndex: 0 }} />
         
+        {/* Cinematic Transparent House SVG Background */}
+        <div style={{ position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)', opacity: 0.15, zIndex: 0, width: '100%', maxWidth: '1200px', pointerEvents: 'none' }}>
+          <svg viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 350 L100 150 L400 150 L400 50 L900 50 L900 200 L1100 200 L1100 350 Z" stroke="#3b82f6" strokeWidth="2" fill="url(#houseGrad)" />
+            <path d="M150 350 L150 200 L350 200 L350 350" stroke="#3b82f6" strokeWidth="1" />
+            <path d="M450 350 L450 100 L850 100 L850 350" stroke="#3b82f6" strokeWidth="1" />
+            <path d="M500 350 L500 150 L800 150 L800 350" stroke="#3b82f6" strokeWidth="2" />
+            <path d="M950 350 L950 250 L1050 250 L1050 350" stroke="#3b82f6" strokeWidth="1" />
+            <defs>
+              <linearGradient id="houseGrad" x1="600" y1="50" x2="600" y2="350" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#3b82f6" stopOpacity="0.3"/>
+                <stop offset="1" stopColor="#3b82f6" stopOpacity="0"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '1000px', margin: '0 auto', padding: '0 20px' }}>
           <FadeIn>
             <div style={{ display: 'inline-block', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa', padding: '8px 20px', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', marginBottom: '24px', letterSpacing: '1px' }}>
@@ -93,7 +109,10 @@ export default function DemoLandingPage() {
           "Dynamic time-of-day lighting (Morning, Noon, Night)",
           "Cross-platform WebXR support for VR headsets"
         ]}
-        imageUrl="/mockups/3d_viewer.png"
+        imageUrl={null}
+        mockupColor="rgba(59,130,246,0.1)"
+        mockupIcon={<Box size={80} color="#3b82f6" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/3d_viewer.png)"
       />
 
       {/* FEATURE 2: RENDERS */}
@@ -108,7 +127,10 @@ export default function DemoLandingPage() {
           "Automated background image slideshow mode",
           "Favorites system to star the best shots"
         ]}
-        imageUrl="/mockups/render_gallery.png"
+        imageUrl={null}
+        mockupColor="rgba(16,185,129,0.1)"
+        mockupIcon={<Image size={80} color="#10b981" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/render_gallery.png)"
       />
 
       {/* FEATURE 3: FLOORPLANS */}
@@ -123,7 +145,10 @@ export default function DemoLandingPage() {
           "Interactive panning and zooming",
           "Seamless transition into 360 tours"
         ]}
-        imageUrl="/mockups/floorplan.png"
+        imageUrl={null}
+        mockupColor="rgba(139,92,246,0.1)"
+        mockupIcon={<Layers size={80} color="#8b5cf6" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/floorplan.png)"
       />
 
       {/* FEATURE 4: 360 TOURS */}
@@ -138,7 +163,10 @@ export default function DemoLandingPage() {
           "Gyroscope support for mobile devices",
           "High-performance equirectangular rendering"
         ]}
-        imageUrl="/mockups/spatial_tour.png"
+        imageUrl={null}
+        mockupColor="rgba(245,158,11,0.1)"
+        mockupIcon={<Map size={80} color="#f59e0b" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/spatial_tour.png)"
       />
 
       {/* FEATURE 5: AVAILABILITY GRID */}
@@ -153,7 +181,10 @@ export default function DemoLandingPage() {
           "Detailed unit specifications and metrics",
           "Direct lead capture forms for specific units"
         ]}
-        imageUrl="/mockups/availability_grid.png"
+        imageUrl={null}
+        mockupColor="rgba(236,72,153,0.1)"
+        mockupIcon={<LayoutGrid size={80} color="#ec4899" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/availability_grid.png)"
       />
 
       {/* FEATURE 6: CINEMATIC VIDEO */}
@@ -168,7 +199,10 @@ export default function DemoLandingPage() {
           "Distraction-free theater mode",
           "Use videos as ambient app backgrounds"
         ]}
-        imageUrl="/mockups/video_hub.png"
+        imageUrl={null}
+        mockupColor="rgba(20,184,166,0.1)"
+        mockupIcon={<Video size={80} color="#14b8a6" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/video_hub.png)"
       />
 
       {/* FEATURE 7: AI CONCIERGE */}
@@ -183,7 +217,10 @@ export default function DemoLandingPage() {
           "Understands the current 3D view context",
           "Books viewings and captures lead data 24/7"
         ]}
-        imageUrl="/mockups/ai_concierge.png"
+        imageUrl={null}
+        mockupColor="rgba(6,182,212,0.1)"
+        mockupIcon={<MessageSquare size={80} color="#06b6d4" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/ai_concierge.png)"
       />
 
       {/* FEATURE 8: ASSET MANAGER */}
@@ -198,7 +235,10 @@ export default function DemoLandingPage() {
           "Global theme customization (Colors, Light/Dark mode)",
           "Database synchronization"
         ]}
-        imageUrl="/mockups/asset_manager.png"
+        imageUrl={null}
+        mockupColor="rgba(249,115,22,0.1)"
+        mockupIcon={<Settings size={80} color="#f97316" style={{ opacity: 0.5 }}/>}
+        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/asset_manager.png)"
       />
 
       {/* FINAL CTA */}
@@ -217,6 +257,13 @@ export default function DemoLandingPage() {
           </Link>
         </div>
       </section>
+
+      {/* FOOTER */}
+      <footer style={{ padding: '40px 20px', textAlign: 'center', background: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
+          Designed by <a href="https://progressivetechnologies.com.cy" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>Progressive Technologies</a>
+        </p>
+      </footer>
 
     </div>
   );
@@ -271,7 +318,7 @@ function FeatureSection({ reversed, icon, title, description, features, imageUrl
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%)', pointerEvents: 'none' }} />
                 
                 {mockupIcon}
-                <div style={{ marginTop: '24px', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', fontSize: '14px', textAlign: 'center', padding: '0 20px' }}>
+                <div style={{ marginTop: '24px', color: 'rgba(255,255,255,0.8)', fontFamily: 'monospace', fontSize: '16px', textAlign: 'center', padding: '0 20px', fontWeight: 'bold' }}>
                   {mockupLabel}
                 </div>
               </div>
