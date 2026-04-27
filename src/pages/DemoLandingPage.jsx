@@ -104,15 +104,19 @@ export default function DemoLandingPage() {
         textAlign: 'center',
         overflow: 'hidden'
       }}>
-        {/* Fullscreen Property Background */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundImage: 'url(/hero-bg.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: 0,
-          animation: 'float 20s ease-in-out infinite alternate'
-        }} />
+        {/* Fullscreen Video Background */}
+        <video
+          src="/hero-video.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            width: '100%', height: '100%', objectFit: 'cover',
+            zIndex: 0
+          }}
+        />
 
         {/* Cinematic Gradient Overlays */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, #050505 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.4) 60%, #050505 100%)', zIndex: 1 }} />
