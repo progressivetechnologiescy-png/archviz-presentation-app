@@ -36,11 +36,19 @@ const FadeIn = ({ children, delay = 0, direction = 'up' }) => {
 
 export default function DemoLandingPage() {
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Scroll the container to top, not window
   }, []);
 
   return (
-    <div style={{ fontFamily: '"Inter", "Outfit", sans-serif', background: '#050505', color: '#ffffff', overflowX: 'hidden' }}>
+    <div style={{ 
+      fontFamily: '"Inter", "Outfit", sans-serif', 
+      background: '#050505', 
+      color: '#ffffff', 
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      height: '100vh',
+      width: '100vw'
+    }}>
       
       {/* Dynamic Nav */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', background: 'rgba(5, 5, 5, 0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
