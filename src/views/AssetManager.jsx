@@ -1394,7 +1394,11 @@ export default function AssetManager() {
                         onClick={() => {
                           const state = useViewerStore.getState();
                           const activeNode = state.customTourNodes[state.activeTourNodeId];
-                          if (!activeNode || !hotspotPrompt.targetNodeId) return;
+                          if (!hotspotPrompt.targetNodeId) {
+                            alert('Please select a target panorama node to link to!');
+                            return;
+                          }
+                          if (!activeNode) return;
                           
                           const newHotspot = {
                             id: 'hs_' + Date.now(),
@@ -1408,7 +1412,7 @@ export default function AssetManager() {
                           state.updateTourNode(supabase, state.activeTourNodeId, { hotspots: [...(activeNode.hotspots || []), newHotspot] });
                           setHotspotPrompt({ isOpen: false, coords: null, label: '', targetNodeId: '' });
                         }}
-                        style={{ flex: 1, padding: '12px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                        style={{ flex: 1, padding: '12px', background: hotspotPrompt.targetNodeId ? 'var(--accent-color)' : 'var(--border-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: hotspotPrompt.targetNodeId ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
                       >
                         Save Hotspot
                       </button>
