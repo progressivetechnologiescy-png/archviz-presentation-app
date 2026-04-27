@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Image, Map, Layers, LayoutGrid, MessageSquare, Video, Settings, Play, ArrowRight, CheckCircle, Smartphone } from 'lucide-react';
+import { Box, Image, Map, Layers, LayoutGrid, MessageSquare, Video, Settings, Play, ArrowRight, CheckCircle, Smartphone, Calendar, ChevronUp } from 'lucide-react';
 
 function useOnScreen(ref, rootMargin = '0px') {
   const [isIntersecting, setIntersecting] = useState(false);
@@ -40,6 +40,23 @@ const FadeIn = ({ children, delay = 0, direction = 'up' }) => {
 
 export default function DemoLandingPage() {
   const [heroPhase, setHeroPhase] = useState('title');
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const scrollContainerRef = useRef(null);
+
+  const handleScroll = (e) => {
+    if (e.target.scrollTop > 600) {
+      setShowScrollTop(true);
+    } else {
+      setShowScrollTop(false);
+    }
+  };
+
+  const scrollToTop = () => {
+    scrollContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   useEffect(() => {
     const timer1 = setTimeout(() => {
@@ -53,7 +70,10 @@ export default function DemoLandingPage() {
   }, []);
 
   return (
-    <div style={{ 
+    <div 
+      ref={scrollContainerRef}
+      onScroll={handleScroll}
+      style={{ 
       fontFamily: '"Inter", "Outfit", sans-serif', 
       background: '#050505', 
       color: '#ffffff', 
@@ -306,11 +326,52 @@ export default function DemoLandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding: '40px 20px', textAlign: 'center', background: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <footer style={{ padding: '60px 20px 40px', textAlign: 'center', background: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <a href="mailto:progressivetechnologiescy@gmail.com?subject=Book%20a%20Meeting" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            background: 'rgba(59,130,246,0.1)', color: '#3b82f6',
+            border: '1px solid rgba(59,130,246,0.3)',
+            padding: '12px 24px', borderRadius: '50px',
+            textDecoration: 'none', fontWeight: 'bold', fontSize: '16px',
+            transition: 'all 0.2s'
+          }}>
+            <Calendar size={18} /> Book a Meeting with Us
+          </a>
+        </div>
         <p style={{ color: '#a1a1aa', fontSize: '14px' }}>
-          Designed by <a href="https://progressivetechnologies.com.cy" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>Progressive Technologies</a>
+          Designed and developed by <a href="https://progressivetechnologies.com.cy" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>Progressive Technologies</a>
         </p>
       </footer>
+
+      {/* BACK TO TOP BUTTON */}
+      <button 
+        onClick={scrollToTop}
+        style={{
+          position: 'fixed',
+          bottom: '40px',
+          right: '40px',
+          width: '50px',
+          height: '50px',
+          borderRadius: '50%',
+          background: '#3b82f6',
+          color: 'white',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          opacity: showScrollTop ? 1 : 0,
+          transform: showScrollTop ? 'translateY(0)' : 'translateY(20px)',
+          pointerEvents: showScrollTop ? 'auto' : 'none',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: '0 10px 20px rgba(59,130,246,0.4)',
+          zIndex: 1000
+        }}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp size={24} />
+      </button>
 
     </div>
   );
