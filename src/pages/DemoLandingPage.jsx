@@ -109,10 +109,7 @@ export default function DemoLandingPage() {
           "Dynamic time-of-day lighting (Morning, Noon, Night)",
           "Cross-platform WebXR support for VR headsets"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(59,130,246,0.1)"
-        mockupIcon={<Box size={80} color="#3b82f6" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/3d_viewer.png)"
+        imageUrl="/mockups/3d_viewer.png"
       />
 
       {/* FEATURE 2: RENDERS */}
@@ -127,10 +124,7 @@ export default function DemoLandingPage() {
           "Automated background image slideshow mode",
           "Favorites system to star the best shots"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(16,185,129,0.1)"
-        mockupIcon={<Image size={80} color="#10b981" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/render_gallery.png)"
+        imageUrl="/mockups/render_gallery.png"
       />
 
       {/* FEATURE 3: FLOORPLANS */}
@@ -145,10 +139,7 @@ export default function DemoLandingPage() {
           "Interactive panning and zooming",
           "Seamless transition into 360 tours"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(139,92,246,0.1)"
-        mockupIcon={<Layers size={80} color="#8b5cf6" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/floorplan.png)"
+        imageUrl="/mockups/floorplan.png"
       />
 
       {/* FEATURE 4: 360 TOURS */}
@@ -163,10 +154,7 @@ export default function DemoLandingPage() {
           "Gyroscope support for mobile devices",
           "High-performance equirectangular rendering"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(245,158,11,0.1)"
-        mockupIcon={<Map size={80} color="#f59e0b" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/spatial_tour.png)"
+        imageUrl="/mockups/spatial_tour.png"
       />
 
       {/* FEATURE 5: AVAILABILITY GRID */}
@@ -181,10 +169,7 @@ export default function DemoLandingPage() {
           "Detailed unit specifications and metrics",
           "Direct lead capture forms for specific units"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(236,72,153,0.1)"
-        mockupIcon={<LayoutGrid size={80} color="#ec4899" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/availability_grid.png)"
+        imageUrl="/mockups/availability_grid.png"
       />
 
       {/* FEATURE 6: CINEMATIC VIDEO */}
@@ -199,10 +184,7 @@ export default function DemoLandingPage() {
           "Distraction-free theater mode",
           "Use videos as ambient app backgrounds"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(20,184,166,0.1)"
-        mockupIcon={<Video size={80} color="#14b8a6" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/video_hub.png)"
+        imageUrl="/mockups/video_hub.png"
       />
 
       {/* FEATURE 7: AI CONCIERGE */}
@@ -217,10 +199,7 @@ export default function DemoLandingPage() {
           "Understands the current 3D view context",
           "Books viewings and captures lead data 24/7"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(6,182,212,0.1)"
-        mockupIcon={<MessageSquare size={80} color="#06b6d4" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/ai_concierge.png)"
+        imageUrl="/mockups/ai_concierge.png"
       />
 
       {/* FEATURE 8: ASSET MANAGER */}
@@ -235,10 +214,7 @@ export default function DemoLandingPage() {
           "Global theme customization (Colors, Light/Dark mode)",
           "Database synchronization"
         ]}
-        imageUrl={null}
-        mockupColor="rgba(249,115,22,0.1)"
-        mockupIcon={<Settings size={80} color="#f97316" style={{ opacity: 0.5 }}/>}
-        mockupLabel="UPLOAD ACTUAL APP SCREENSHOT HERE (Replace public/mockups/asset_manager.png)"
+        imageUrl="/mockups/asset_manager.png"
       />
 
       {/* FINAL CTA */}
