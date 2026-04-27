@@ -58,6 +58,8 @@ function TourHotspot({ spot, onClick }) {
   return (
     <div 
       onClick={(e) => { e.stopPropagation(); onClick(spot); }}
+      onPointerDown={(e) => { e.stopPropagation(); onClick(spot); }}
+      onTouchStart={(e) => { e.stopPropagation(); onClick(spot); }}
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer',
         transform: 'translate(-50%, -100%)', // Anchor at bottom center
