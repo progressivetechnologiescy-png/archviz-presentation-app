@@ -53,7 +53,8 @@ export default function DemoLandingPage() {
       {/* Dynamic Nav */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', background: 'rgba(5, 5, 5, 0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img src="https://progressivetechnologies.com.cy/wp-content/uploads/2024/03/progressivelogo-4.png" alt="Progressive Technologies" style={{ height: '36px', objectFit: 'contain' }} />
+          <Box color="#3b82f6" size={28} />
+          <span style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '1px' }}>3DS PLATFORM</span>
         </div>
         <Link to="/" style={{ background: '#3b82f6', color: 'white', textDecoration: 'none', padding: '12px 28px', borderRadius: '50px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s' }}>
           Launch App Demo <Play fill="white" size={16} />
