@@ -1360,9 +1360,66 @@ export default function AssetManager() {
           })()}
 
           {/* TAB: TOURS */}
-          {/* TAB: TOURS */}
           {activeTab === 'tours' && (
             <>
+              {uploadPanoPrompt.isOpen && (
+                <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="glass-panel" style={{ width: '400px', padding: '24px', borderRadius: '16px', background: 'var(--bg-panel)' }}>
+                    <h3 style={{ marginTop: 0 }}>Name Panorama</h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Enter a descriptive name for this node.</p>
+                    <input 
+                      type="text" 
+                      value={uploadPanoPrompt.name} 
+                      onChange={e => setUploadPanoPrompt(p => ({ ...p, name: e.target.value }))}
+                      style={{ width: '100%', padding: '12px', marginBottom: '24px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}
+                    />
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button onClick={() => setUploadPanoPrompt({ isOpen: false, file: null, name: '' })} style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                      <button 
+                        onClick={async () => {
+                          const { file, name } = uploadPanoPrompt;
+                          setUploadPanoPrompt({ isOpen: false, file: null, name: '' });
+                          setIsUploading(true);
+                          try {
+                            const fileExt = file.name.split('.').pop();
+                            const fileName = `${Date.now()}.${fileExt}`;
+                            const filePath = `panoramas/${fileName}`;
+                            if (supabase) {
+                              const { error } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                              if (error) throw error;
+                              const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+                              
+                              const isFirst = Object.keys(useViewerStore.getState().customTourNodes).length === 0;
+                              
+                              const newRow = {
+                                project_id: 'demo_project',
+                                node_name: name || 'New Panorama',
+                                image_url: publicUrl,
+                                hotspots: [],
+                                is_starting_node: isFirst
+                              };
+                              const { data } = await supabase.from('project_tours').insert(newRow).select().single();
+                              if (data) {
+                                 useViewerStore.getState().addTourNode(null, {
+                                   id: data.id, url: data.image_url, title: data.node_name, hotspots: data.hotspots, is_starting_node: data.is_starting_node, initial_camera: data.initial_camera
+                                 });
+                                 useViewerStore.getState().setActiveTourNodeId(data.id);
+                              }
+                            }
+                          } catch(err) {
+                            setAlertModal({ isOpen: true, message: 'Upload failed: ' + err.message });
+                          } finally {
+                            setIsUploading(false);
+                          }
+                        }}
+                        style={{ flex: 1, padding: '12px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                      >
+                        Upload Node
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               {hotspotPrompt.isOpen && (
                 <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <div className="glass-panel" style={{ width: '400px', padding: '24px', borderRadius: '16px', background: 'var(--bg-panel)' }}>
