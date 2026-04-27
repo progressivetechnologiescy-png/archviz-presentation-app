@@ -1,13 +1,23 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Image, Layers, LayoutGrid, MessageSquare, Smartphone, ArrowRight, Map, Video, Settings } from 'lucide-react';
+import { Box, Image, Layers, LayoutGrid, MessageSquare, Smartphone, ArrowRight, Map, Video, Settings, ChevronUp, Check } from 'lucide-react';
 
 export default function DemoLandingPage2() {
   const scrollContainerRef = useRef(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const handleScroll = (e) => {
+    setShowScrollTop(e.target.scrollTop > 600);
+  };
+
+  const scrollToTop = () => {
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div 
       ref={scrollContainerRef}
+      onScroll={handleScroll}
       style={{
         fontFamily: '"Outfit", "Inter", sans-serif',
         background: '#020617', // Very dark slate
@@ -44,9 +54,16 @@ export default function DemoLandingPage2() {
             Immersive <br />
             <span style={{ color: '#38bdf8' }}>Architecture.</span>
           </h1>
-          <p style={{ fontSize: '24px', color: '#94a3b8', maxWidth: '700px', margin: '0 auto 48px' }}>
+          <p style={{ fontSize: '24px', color: '#94a3b8', maxWidth: '700px', margin: '0 auto 32px' }}>
             Ditch the static PDFs. Deliver interactive, full-scale 3D experiences right in your client's browser.
           </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px', maxWidth: '800px', margin: '0 auto' }}>
+            {['AR Technology', '3D WebGL Viewer', 'Cinematic Gallery', 'Smart Floorplans', '360° Tours', 'Live Inventory', 'Video Hub', 'AI Concierge', 'CMS Manager'].map(feat => (
+              <span key={feat} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 20px', borderRadius: '50px', fontSize: '15px', color: '#e2e8f0', backdropFilter: 'blur(10px)' }}>
+                <Check size={16} color="#38bdf8" /> {feat}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* CSS KEYFRAMES */}
@@ -251,6 +268,36 @@ export default function DemoLandingPage2() {
           Designed and developed by <a href="https://progressivetechnologies.com.cy" target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 'bold' }}>Progressive Technologies</a>
         </p>
       </footer>
+
+      {/* BACK TO TOP BUTTON */}
+      <button 
+        onClick={scrollToTop}
+        style={{
+          position: 'fixed',
+          bottom: '40px',
+          right: '40px',
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          background: '#38bdf8',
+          color: '#020617',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          opacity: showScrollTop ? 1 : 0,
+          transform: showScrollTop ? 'translateY(0)' : 'translateY(20px)',
+          pointerEvents: showScrollTop ? 'auto' : 'none',
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: '0 10px 25px rgba(56,189,248,0.4)',
+          zIndex: 1000
+        }}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp size={28} />
+      </button>
+
     </div>
   );
 }
