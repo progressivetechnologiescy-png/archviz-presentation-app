@@ -142,9 +142,9 @@ function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick, 
 
 // An inverted sphere holding a 360 latlong image
 function SphericalPanorama({ showHotspots, onHotspotClick, onSphereClick }) {
-  const { customPanorama, customTourNodes, activeTourNodeId } = useViewerStore();
+  const { customTourNodes, activeTourNodeId } = useViewerStore();
   const activeNode = customTourNodes ? customTourNodes[activeTourNodeId] : null;
-  const textureUrl = customPanorama || (activeNode ? activeNode.url : null);
+  const textureUrl = activeNode ? activeNode.url : null;
 
   if (!textureUrl) {
     return (
