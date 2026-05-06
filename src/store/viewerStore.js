@@ -594,17 +594,6 @@ export const useViewerStore = create(
         
       if (error) {
         console.error("Cloud DB Error assets:", error);
-        // --- EMERGENCY OFFLINE FALLBACK ---
-        console.warn("Supabase restricted. Falling back to local exhibition mode.");
-        set({
-          primaryModel: '/3D_FINAL.fbx',
-          customFBX: '/3D_FINAL.fbx',
-          projectTitle: 'Exhibition Showcase',
-          companyName: 'Progressive Technologies',
-          projectDescription: 'Offline fallback mode activated. Viewing local exhibition assets.',
-          overviewVideoUrl: '/hero-video.mp4',
-          customPanorama: '/hero-bg.jpg'
-        });
       } else if (data) {
         data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
@@ -642,18 +631,10 @@ export const useViewerStore = create(
 
       if (!renderError && renderData) {
         set({ customRenders: renderData });
-      } else if (data && !error) {
+      } else if (data) {
         // Fallback: If the new table fails, load the legacy renders
         const legacyRenders = data.filter(d => d.asset_type === 'render').map(d => ({ id: d.id, folder_name: 'Uncategorized', image_url: d.asset_url }));
         if (legacyRenders.length > 0) set({ customRenders: legacyRenders });
-      } else if (renderError || error) {
-        // --- EMERGENCY OFFLINE FALLBACK ---
-        set({
-          customRenders: [
-            { id: 'mock1', folder_name: 'Exhibition', image_url: '/mockups/render_gallery.png', is_overview: true },
-            { id: 'mock2', folder_name: 'Exhibition', image_url: '/mockups/spatial_tour.png', is_overview: true }
-          ]
-        });
       }
 
       // Fetch Multi-Layer Floorplans
@@ -668,20 +649,12 @@ export const useViewerStore = create(
         if (floorplanData.length > 0) {
             set({ activeFloorplanId: floorplanData[0].id });
         }
-      } else if (data && !error) {
+      } else if (data) {
         // Fallback to legacy single floorplan
         const singleFloorplan = data.find(d => d.asset_type === 'floorplan');
         if (singleFloorplan) {
             set({ customFloorplan: singleFloorplan.asset_url });
         }
-      } else if (floorplanError || error) {
-         // --- EMERGENCY OFFLINE FALLBACK ---
-         set({
-           customFloorplans: [
-             { id: 'mock_fp_1', level_name: 'Main Level', property_type: 'Showcase', order_index: 0, image_url: '/mockups/floorplan.png' }
-           ],
-           activeFloorplanId: 'mock_fp_1'
-         });
       }
 
       // Fetch Spatial Tours
@@ -713,19 +686,7 @@ export const useViewerStore = create(
         }
       } else {
         if (toursError) console.error("Failed to fetch tours:", toursError);
-        // --- EMERGENCY OFFLINE FALLBACK ---
-        set({ 
-          customTourNodes: {
-            'mock_tour_1': {
-              id: 'mock_tour_1',
-              url: '/hero-bg.jpg',
-              title: 'Exhibition View',
-              hotspots: [],
-              is_starting_node: true
-            }
-          }, 
-          activeTourNodeId: 'mock_tour_1' 
-        });
+        set({ customTourNodes: {}, activeTourNodeId: null });
       }
 
       // Fetch Cinematic Videos

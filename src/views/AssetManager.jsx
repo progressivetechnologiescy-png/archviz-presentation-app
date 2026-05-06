@@ -3,45 +3,13 @@ import { UploadCloud, FileType, CheckCircle, MapPin, X, Plus } from 'lucide-reac
 import { useViewerStore } from '../store/viewerStore';
 import PanoramaViewer from './PanoramaViewer';
 
-const compressImage = (file, maxWidth = 4096, quality = 0.8) => {
-  return new Promise((resolve) => {
-    if (!file.type.startsWith('image/')) return resolve(file);
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      let { width, height } = img;
-      if (width > maxWidth) {
-        height = Math.round(height * (maxWidth / width));
-        width = maxWidth;
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob((blob) => {
-        if (!blob) return resolve(file);
-        const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".webp"), { type: 'image/webp' });
-        resolve(newFile);
-      }, 'image/webp', quality);
-    };
-    img.onerror = () => resolve(file);
-    img.src = url;
-  });
-};
-
-function FileInput({ label, accept, onDrop, isUploaded, multiple = false, directory = false, onClear, maxWidth = 2500 }) {
-  const handleChange = async (e) => {
+function FileInput({ label, accept, onDrop, isUploaded, multiple = false, directory = false, onClear }) {
+  const handleChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      let files = Array.from(e.target.files);
-      if (!directory) {
-        files = await Promise.all(files.map(file => compressImage(file, maxWidth)));
-      }
       if (multiple || directory) {
-        onDrop(files);
+        onDrop(Array.from(e.target.files));
       } else {
-        onDrop(files[0]);
+        onDrop(e.target.files[0]);
       }
     }
   };
@@ -1593,11 +1561,10 @@ export default function AssetManager() {
                   <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Upload panoramas and visually place interactive hotspots.</p>
                 </div>
                 <div>
-                  <input type="file" id="upload-pano" style={{ display: 'none' }} accept="image/jpeg,image/png,image/webp" onChange={async (e) => {
+                  <input type="file" id="upload-pano" style={{ display: 'none' }} accept="image/jpeg,image/png,image/webp" onChange={(e) => {
                     const file = e.target.files[0];
                     if (!file) return;
-                    const compressedFile = await compressImage(file, 4096);
-                    setUploadPanoPrompt({ isOpen: true, file: compressedFile, name: 'New Panorama' });
+                    setUploadPanoPrompt({ isOpen: true, file, name: 'New Panorama' });
                     e.target.value = ''; // Reset input to allow re-uploading the same file if needed
                   }} />
                   <label htmlFor="upload-pano" className="hover-lift" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px var(--accent-glow)' }}>
