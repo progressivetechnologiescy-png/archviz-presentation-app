@@ -1706,10 +1706,10 @@ export default function AssetManager() {
           {/* TAB: AVAILABILITY */}
           {activeTab === 'availability' && (
             <div style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '32px', background: 'var(--bg-panel)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ flex: '1 1 300px' }}>
                   <h3 style={{ fontSize: '24px', margin: '0 0 8px 0' }}>Availability Data Grid</h3>
-                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage inventory, pricing, and live statuses. Syncs automatically with the front-end.</p>
+                  <p style={{ color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>Manage inventory, pricing, and live statuses. Syncs automatically with the front-end.</p>
                 </div>
                 <button 
                   onClick={() => {
