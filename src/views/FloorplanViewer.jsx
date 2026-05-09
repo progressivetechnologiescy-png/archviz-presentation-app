@@ -17,19 +17,19 @@ export default function FloorplanViewer() {
       }
     });
     
-    const uniqueBlocks = [...new Set(customFloorplans.map(f => f.property_type || 'Default Property'))];
+    const uniqueBlocks = [...new Set(customFloorplans.map(f => f.property_type || 'Uncategorized'))];
     return uniqueBlocks.sort((a, b) => (orderMap[a] || 0) - (orderMap[b] || 0));
   }, [customFloorplans]);
 
   const [activePropertyType, setActivePropertyType] = React.useState(
-    activePlan ? (activePlan.property_type || 'Default Property') : (propertyTypes[0] || 'Default Property')
+    activePlan ? (activePlan.property_type || 'Uncategorized') : (propertyTypes[0] || 'Uncategorized')
   );
 
   // Filter floorplans by the selected property type, and sort them by order_index
   const filteredFloorplans = React.useMemo(() => {
     return customFloorplans
       ? [...customFloorplans]
-          .filter(f => (f.property_type || 'Default Property') === activePropertyType)
+          .filter(f => (f.property_type || 'Uncategorized') === activePropertyType)
           .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
       : [];
   }, [customFloorplans, activePropertyType]);
