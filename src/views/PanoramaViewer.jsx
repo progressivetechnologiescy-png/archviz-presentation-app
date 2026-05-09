@@ -210,7 +210,7 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
       {isTouchDevice && !isEditing && (
         <button 
           onClick={() => useGyro ? setUseGyro(false) : requestGyro()}
-          style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10, width: '48px', height: '48px', borderRadius: '50%', background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: useGyro ? '0 0 15px var(--accent-glow)' : 'none' }}
+          style={{ position: 'absolute', top: '50%', right: '24px', transform: 'translateY(-50%)', zIndex: 10, width: '48px', height: '48px', borderRadius: '50%', background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: useGyro ? '0 0 15px var(--accent-glow)' : 'none' }}
         >
           <Smartphone size={20} />
         </button>
