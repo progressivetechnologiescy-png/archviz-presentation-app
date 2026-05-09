@@ -190,7 +190,7 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
         if (permissionState === 'granted') {
           setUseGyro(true);
         } else {
-          alert('Gyroscope access denied by user.');
+          alert('Gyroscope access denied. To fix this on iOS, go to Settings > Safari > clear history, or ensure "Motion & Orientation Access" is enabled, then refresh.');
         }
       } catch (error) {
         console.error('Error requesting gyroscope permission:', error);
@@ -210,7 +210,7 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
       {isTouchDevice && !isEditing && (
         <button 
           onClick={() => useGyro ? setUseGyro(false) : requestGyro()}
-          style={{ position: 'absolute', bottom: '24px', left: '24px', zIndex: 10, width: '48px', height: '48px', borderRadius: '50%', background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: useGyro ? '0 0 15px var(--accent-glow)' : 'none' }}
+          style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10, width: '48px', height: '48px', borderRadius: '50%', background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: useGyro ? '0 0 15px var(--accent-glow)' : 'none' }}
         >
           <Smartphone size={20} />
         </button>
