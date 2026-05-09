@@ -173,7 +173,12 @@ export default function AssetManager() {
     setFolderList(prev => {
       const localExtras = prev.filter(f => !uniqueFolders.includes(f));
       const merged = [...new Set([...uniqueFolders, ...localExtras])].sort((a, b) => {
-        return (orderMap[a] || 0) - (orderMap[b] || 0);
+        const orderA = orderMap[a] || 0;
+        const orderB = orderMap[b] || 0;
+        if (orderA === orderB) {
+          return a.localeCompare(b);
+        }
+        return orderA - orderB;
       });
       if (JSON.stringify(merged) !== JSON.stringify(prev)) {
         return merged;
@@ -232,7 +237,12 @@ export default function AssetManager() {
     setPropertyBlockList(prev => {
       const localExtras = prev.filter(b => !uniqueBlocks.includes(b));
       const merged = [...new Set([...uniqueBlocks, ...localExtras])].sort((a, b) => {
-        return (orderMap[a] || 0) - (orderMap[b] || 0);
+        const orderA = orderMap[a] || 0;
+        const orderB = orderMap[b] || 0;
+        if (orderA === orderB) {
+          return a.localeCompare(b);
+        }
+        return orderA - orderB;
       });
       if (JSON.stringify(merged) !== JSON.stringify(prev)) {
         return merged;
@@ -1202,10 +1212,10 @@ export default function AssetManager() {
                   <button 
                     onClick={() => {
                       const input = document.getElementById('newPropertyBlock');
-                      if (input.value.trim()) {
-                        // Adding a dummy floorplan just to create the group, or just relying on user uploading one.
-                        // Actually, we can just use selectedFolder state!
-                        setSelectedFolder(input.value.trim());
+                      const newBlock = input.value.trim();
+                      if (newBlock) {
+                        setPropertyBlockList(prev => [...prev.filter(p => p !== newBlock), newBlock]);
+                        setSelectedFolder(newBlock);
                         input.value = '';
                       }
                     }}
@@ -1706,11 +1716,7 @@ export default function AssetManager() {
           {/* TAB: AVAILABILITY */}
           {activeTab === 'availability' && (
             <div style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '32px', background: 'var(--bg-panel)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ flex: '1 1 300px' }}>
-                  <h3 style={{ fontSize: '24px', margin: '0 0 8px 0' }}>Availability Data Grid</h3>
-                  <p style={{ color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>Manage inventory, pricing, and live statuses. Syncs automatically with the front-end.</p>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px', marginBottom: '24px' }}>
                 <button 
                   onClick={() => {
                     useViewerStore.getState().addInventoryUnit(supabase, {

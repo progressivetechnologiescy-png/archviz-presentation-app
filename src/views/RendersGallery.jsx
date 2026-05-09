@@ -20,7 +20,14 @@ export default function RendersGallery() {
   });
 
   const uniqueFolders = [...new Set((customRenders || []).map(r => r.folder_name).filter(Boolean))];
-  const sortedFolders = uniqueFolders.sort((a, b) => (folderOrderMap[a] || 0) - (folderOrderMap[b] || 0));
+  const sortedFolders = uniqueFolders.sort((a, b) => {
+    const orderA = folderOrderMap[a] || 0;
+    const orderB = folderOrderMap[b] || 0;
+    if (orderA === orderB) {
+      return a.localeCompare(b);
+    }
+    return orderA - orderB;
+  });
   const folders = ['All', ...sortedFolders];
 
   const displayImages = (customRenders || []).map(r => 
