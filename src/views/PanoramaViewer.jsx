@@ -183,10 +183,37 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
 
   const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
+  const requestGyro = async () => {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const permissionState = await DeviceOrientationEvent.requestPermission();
+        if (permissionState === 'granted') {
+          setUseGyro(true);
+        } else {
+          alert('Gyroscope access denied by user.');
+        }
+      } catch (error) {
+        console.error('Error requesting gyroscope permission:', error);
+        setUseGyro(true);
+      }
+    } else {
+      setUseGyro(true);
+    }
+  };
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#0a0c10' }}>
       
-      {/* Removed Top Controls per user request */}
+      {/* Top Controls removed per user request */}
+      
+      {isTouchDevice && !isEditing && (
+        <button 
+          onClick={() => useGyro ? setUseGyro(false) : requestGyro()}
+          style={{ position: 'absolute', bottom: '24px', right: '24px', zIndex: 10, width: '48px', height: '48px', borderRadius: '50%', background: useGyro ? 'var(--accent-color)' : 'rgba(10, 12, 16, 0.8)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: useGyro ? '0 0 15px var(--accent-glow)' : 'none' }}
+        >
+          <Smartphone size={20} />
+        </button>
+      )}
 
       {/* Slide-out Side Panel Removed per user request */}
 
@@ -195,22 +222,27 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
           <CameraTracker />
           <CameraPatcher activeNode={customTourNodes ? customTourNodes[activeTourNodeId] : null} />
           <SphericalPanorama showHotspots={true} onHotspotClick={handleHotspotClick} onSphereClick={isEditing ? onCanvasClick : null} />
-          <OrbitControls 
-            enableZoom={true} 
-            enablePan={false} 
-            rotateSpeed={-0.5} 
-            makeDefault 
-            onChange={(e) => {
-               // The CameraTracker handles the update on camera.parent change, 
-               // but we can also forcefully update here if needed.
-               const cam = e.target.object;
-               window.__currentPanoCamera = {
-                 position: [cam.position.x, cam.position.y, cam.position.z],
-                 rotation: [cam.rotation.x, cam.rotation.y, cam.rotation.z],
-                 target: [e.target.target.x, e.target.target.y, e.target.target.z]
-               };
-            }}
-          />
+          
+          {useGyro ? (
+            <DeviceOrientationControls />
+          ) : (
+            <OrbitControls 
+              enableZoom={true} 
+              enablePan={false} 
+              rotateSpeed={-0.5} 
+              makeDefault 
+              onChange={(e) => {
+                 // The CameraTracker handles the update on camera.parent change, 
+                 // but we can also forcefully update here if needed.
+                 const cam = e.target.object;
+                 window.__currentPanoCamera = {
+                   position: [cam.position.x, cam.position.y, cam.position.z],
+                   rotation: [cam.rotation.x, cam.rotation.y, cam.rotation.z],
+                   target: [e.target.target.x, e.target.target.y, e.target.target.z]
+                 };
+              }}
+            />
+          )}
         </Suspense>
       </Canvas>
     </div>

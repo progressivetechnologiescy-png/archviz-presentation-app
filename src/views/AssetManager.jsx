@@ -1185,8 +1185,8 @@ export default function AssetManager() {
           {/* TAB: FLOORPLANS */}
           {activeTab === 'floorplans' && (() => {
             const floorplans = useViewerStore.getState().customFloorplans || [];
-            const propertyTypes = [...new Set(floorplans.map(f => f.property_type || 'Default Property'))];
-            if (propertyTypes.length === 0) propertyTypes.push('Default Property');
+            const propertyTypes = [...new Set(floorplans.map(f => f.property_type || 'Uncategorized'))];
+            if (propertyTypes.length === 0) propertyTypes.push('Uncategorized');
             
             // We use activeFolder state to represent active Property Block for simplicity, since it's only active in this tab.
             // Or we just map through propertyTypes and show them all as distinct blocks.
@@ -1322,10 +1322,10 @@ export default function AssetManager() {
                   </div>
 
                   {/* Floorplan List for Selected Property */}
-                  {floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Default Property' : selectedFolder)).length > 0 && (
+                  {floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Uncategorized' : selectedFolder)).length > 0 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Manage Levels for {selectedFolder === 'All' ? 'Default Property' : selectedFolder}</h3>
-                      {[...floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Default Property' : selectedFolder))]
+                      <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Manage Levels for {selectedFolder === 'All' ? 'Uncategorized' : selectedFolder}</h3>
+                      {[...floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Uncategorized' : selectedFolder))]
                         .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
                         .map(plan => (
                         <div 
@@ -1347,7 +1347,7 @@ export default function AssetManager() {
                             const draggedId = payload.replace('floorplan:', '');
                             if (draggedId === plan.id) return;
                             
-                            const plans = [...floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Default Property' : selectedFolder))].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+                            const plans = [...floorplans.filter(f => f.property_type === (selectedFolder === 'All' ? 'Uncategorized' : selectedFolder))].sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
                             const draggedIndex = plans.findIndex(f => f.id === draggedId);
                             const targetIndex = plans.findIndex(f => f.id === plan.id);
                             
@@ -1384,13 +1384,13 @@ export default function AssetManager() {
                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Move to Block</label>
                                 <select 
-                                  value={plan.property_type || 'Default Property'}
+                                  value={plan.property_type || 'Uncategorized'}
                                   onChange={(e) => {
                                     useViewerStore.getState().updateFloorplanPropertyType(supabase, plan.id, e.target.value);
                                   }}
                                   style={{ background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '6px', borderRadius: '6px' }}
                                 >
-                                  {Array.from(new Set([...propertyTypes, selectedFolder === 'All' ? 'Default Property' : selectedFolder])).map(t => (
+                                  {Array.from(new Set([...propertyTypes, selectedFolder === 'All' ? 'Uncategorized' : selectedFolder])).map(t => (
                                     <option key={t} value={t}>{t}</option>
                                   ))}
                                 </select>
