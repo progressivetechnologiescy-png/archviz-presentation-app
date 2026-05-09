@@ -924,8 +924,17 @@ export default function AssetManager() {
                     accept="image/*" 
                     multiple={true}
                     onDrop={async (files) => {
+                      const inputVal = document.getElementById('newFolderName')?.value?.trim();
+                      let targetFolder = selectedFolder;
+                      if (inputVal) {
+                        targetFolder = inputVal;
+                        setFolderList(prev => [...prev.filter(p => p !== inputVal), inputVal]);
+                        setSelectedFolder(inputVal);
+                        document.getElementById('newFolderName').value = '';
+                      }
+
                       if (!supabase) {
-                        files.forEach(f => addCustomRender({ id: uuidv4(), folder_name: selectedFolder, image_url: URL.createObjectURL(f), is_overview: false }));
+                        files.forEach(f => addCustomRender({ id: uuidv4(), folder_name: targetFolder, image_url: URL.createObjectURL(f), is_overview: false }));
                         return;
                       }
                       setIsUploading(true);
@@ -941,13 +950,13 @@ export default function AssetManager() {
                           
                           const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
                           
-                          const newRow = { project_id: 'demo_project', folder_name: selectedFolder, image_url: publicUrl, is_overview: false };
+                          const newRow = { project_id: 'demo_project', folder_name: targetFolder, image_url: publicUrl, is_overview: false };
                           const { data: dbData, error: dbError } = await supabase.from('project_renders').insert(newRow).select().single();
                           if (dbError) throw dbError;
                           
                           addCustomRender(dbData);
                         }
-                        setAlertModal({ isOpen: true, message: `Successfully uploaded ${files.length} renders to '${selectedFolder}'!` });
+                        setAlertModal({ isOpen: true, message: `Successfully uploaded ${files.length} renders to '${targetFolder}'!` });
                       } catch (error) {
                         console.error("Upload error:", error);
                         setAlertModal({ isOpen: true, message: `Render Upload Failed: ${error.message}` });
@@ -1343,7 +1352,15 @@ export default function AssetManager() {
                       accept="image/*,.pdf" 
                       multiple={true}
                       onDrop={async (files) => {
-                        const targetProperty = selectedFolder === 'All' ? 'Uncategorized' : selectedFolder;
+                        const inputVal = document.getElementById('newPropertyBlock')?.value?.trim();
+                        let targetProperty = selectedFolder === 'All' ? 'Uncategorized' : selectedFolder;
+                        if (inputVal) {
+                          targetProperty = inputVal;
+                          setPropertyBlockList(prev => [...prev.filter(p => p !== inputVal), inputVal]);
+                          setSelectedFolder(inputVal);
+                          document.getElementById('newPropertyBlock').value = '';
+                        }
+                        
                         if (!supabase) {
                           files.forEach((f, i) => useViewerStore.getState().addCustomFloorplan({ id: uuidv4(), property_type: targetProperty, level_name: `Level ${i+1}`, image_url: URL.createObjectURL(f), order_index: 0 }));
                           return;
