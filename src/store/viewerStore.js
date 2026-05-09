@@ -732,6 +732,16 @@ export const useViewerStore = create(
 }),
   {
     name: 'archviz-renders-cache',
-    partialize: (state) => ({ customRenders: state.customRenders })
+    partialize: (state) => ({ 
+      customRenders: state.customRenders,
+      accentColor: state.accentColor,
+      themeMode: state.themeMode,
+      logoUrl: state.logoUrl,
+      companyName: state.companyName,
+      projectTitle: state.projectTitle,
+      projectDescription: state.projectDescription,
+      overviewMediaType: state.overviewMediaType,
+      overviewVideoUrl: state.overviewVideoUrl
+    })
   }
 ));
