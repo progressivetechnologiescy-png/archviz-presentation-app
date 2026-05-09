@@ -194,6 +194,7 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
         }
       } catch (error) {
         console.error('Error requesting gyroscope permission:', error);
+        alert(`Gyro error: ${error.message || error}`);
         setUseGyro(true);
       }
     } else {

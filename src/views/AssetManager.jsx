@@ -3,6 +3,52 @@ import { UploadCloud, FileType, CheckCircle, MapPin, X, Plus } from 'lucide-reac
 import { useViewerStore } from '../store/viewerStore';
 import PanoramaViewer from './PanoramaViewer';
 
+const compressImage = async (file, maxWidth = 1920, quality = 0.8) => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/') || file.type.includes('gif')) {
+      resolve(file); // Don't compress non-images or GIFs
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round(height * maxWidth / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const mimeType = 'image/webp';
+        
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            resolve(file);
+            return;
+          }
+          const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".webp"), {
+            type: mimeType,
+            lastModified: Date.now(),
+          });
+          resolve(newFile);
+        }, mimeType, quality);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 function FileInput({ label, accept, onDrop, isUploaded, multiple = false, directory = false, onClear }) {
   const handleChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -115,11 +161,12 @@ export default function AssetManager() {
   const handleUploadVideoThumb = async (file) => {
     setIsUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      const optimizedFile = await compressImage(file, 800, 0.7);
+      const fileExt = optimizedFile.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
       const filePath = `video_thumbs/${fileName}`;
       
-      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, optimizedFile);
       if (!uploadError) {
         const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
         setPendingVideoThumb(publicUrl);
@@ -309,11 +356,12 @@ export default function AssetManager() {
         .match({ project_id: 'demo_project', asset_type: assetType });
 
       // 2. Upload using pure unique UUID to bypass strict UPSERT security policies
-      const fileExt = file.name.split('.').pop();
+      const optimizedFile = await compressImage(file, 1920, 0.85);
+      const fileExt = optimizedFile.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
       const filePath = `demo_project/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, optimizedFile);
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
@@ -468,16 +516,7 @@ export default function AssetManager() {
 
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Auto-select the first folder dynamically rather than hardcoding 'Interiors'
-  useEffect(() => {
-    if (activeTab === 'floorplans') {
-      setSelectedFolder('All');
-    } else if (!selectedFolder && folderList && folderList.length > 0 && activeTab === 'renders') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedFolder(folderList[0]);
-    }
-  }, [folderList, selectedFolder, activeTab]);
-
+  // The previous buggy useEffect was removed. We now handle folder resets on tab click.
   return (
     <div style={{ padding: '80px 32px 32px', height: '100%', overflowY: 'auto' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '64px' }}>
@@ -506,7 +545,14 @@ export default function AssetManager() {
             {['overview', 'models', 'renders', 'cinematics', 'floorplans', 'availability', 'tours', 'ai_settings'].map(tab => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  if (tab === 'floorplans') {
+                    setSelectedFolder('All');
+                  } else if (tab === 'renders' && folderList.length > 0) {
+                    setSelectedFolder(folderList[0]);
+                  }
+                }}
                 className="hover-lift"
                 style={{
                   padding: '14px 20px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left',
@@ -885,11 +931,12 @@ export default function AssetManager() {
                       setIsUploading(true);
                       try {
                         for (const file of files) {
-                          const fileExt = file.name.split('.').pop();
+                          const optimizedFile = await compressImage(file, 2560, 0.85); // Renders benefit from slightly higher res
+                          const fileExt = optimizedFile.name.split('.').pop();
                           const fileName = `${uuidv4()}.${fileExt}`;
                           const filePath = `renders/${fileName}`;
                           
-                          const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                          const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, optimizedFile);
                           if (uploadError) throw uploadError;
                           
                           const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
@@ -1304,11 +1351,12 @@ export default function AssetManager() {
                         setIsUploading(true);
                         try {
                           for (const file of files) {
-                            const fileExt = file.name.split('.').pop();
+                            const optimizedFile = await compressImage(file, 2048, 0.85); // Floorplans need to be legible
+                            const fileExt = optimizedFile.name.split('.').pop();
                             const fileName = `${uuidv4()}.${fileExt}`;
                             const filePath = `floorplans/${fileName}`;
                             
-                            const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                            const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, optimizedFile);
                             if (uploadError) throw uploadError;
                             
                             const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
@@ -1458,11 +1506,12 @@ export default function AssetManager() {
                           setUploadPanoPrompt({ isOpen: false, file: null, name: '' });
                           setIsUploading(true);
                           try {
-                            const fileExt = file.name.split('.').pop();
+                            const optimizedFile = await compressImage(file, 4096, 0.9);
+                            const fileExt = optimizedFile.name.split('.').pop();
                             const fileName = `${Date.now()}.${fileExt}`;
                             const filePath = `panoramas/${fileName}`;
                             if (supabase) {
-                              const { error } = await supabase.storage.from('archviz_models').upload(filePath, file);
+                              const { error } = await supabase.storage.from('archviz_models').upload(filePath, optimizedFile);
                               if (error) throw error;
                               const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
                               
