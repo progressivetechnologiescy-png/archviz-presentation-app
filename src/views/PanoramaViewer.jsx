@@ -107,20 +107,105 @@ function TourHotspot({ spot, onClick }) {
   );
 }
 
-// Subcomponent to handle the actual texture loading and applying hotspots safely
-function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick, onSphereClick }) {
-  const texture = useTexture(textureUrl);
-  
-  const clonedTexture = useMemo(() => {
-    const clone = texture.clone();
+// Subcomponent to handle the dual-sphere blending and camera warping transition
+function MorphingPanorama({ activeNode, showHotspots, onHotspotClick, onSphereClick }) {
+  const { camera } = useThree();
+  const [transition, setTransition] = useState({
+    prevUrl: null,
+    currentUrl: activeNode?.url,
+    progress: 1.0
+  });
+
+  const prevActiveNodeUrlRef = React.useRef(activeNode?.url);
+
+  useEffect(() => {
+    const currentUrl = activeNode?.url;
+    const prevUrl = prevActiveNodeUrlRef.current;
+    
+    if (currentUrl && currentUrl !== prevUrl) {
+      setTransition({
+        prevUrl: prevUrl || currentUrl,
+        currentUrl: currentUrl,
+        progress: 0.0
+      });
+      prevActiveNodeUrlRef.current = currentUrl;
+    }
+  }, [activeNode]);
+
+  // Load both current and previous panorama textures safely
+  const currentTex = useTexture(transition.currentUrl || activeNode?.url || '');
+  const prevTex = useTexture(transition.prevUrl || transition.currentUrl || activeNode?.url || '');
+
+  // Clone textures to invert X repeating for clean interior rendering
+  const currentCloned = useMemo(() => {
+    if (!currentTex) return null;
+    const clone = currentTex.clone();
     clone.wrapS = THREE.RepeatWrapping;
-    clone.repeat.x = -1; 
+    clone.repeat.x = -1;
     clone.needsUpdate = true;
     return clone;
-  }, [texture]);
+  }, [currentTex]);
+
+  const prevCloned = useMemo(() => {
+    if (!prevTex) return null;
+    const clone = prevTex.clone();
+    clone.wrapS = THREE.RepeatWrapping;
+    clone.repeat.x = -1;
+    clone.needsUpdate = true;
+    return clone;
+  }, [prevTex]);
+
+  const baseFov = 75;
+
+  useFrame((state, delta) => {
+    if (transition.progress < 1.0) {
+      // Complete transition over 0.75 seconds
+      const nextProgress = Math.min(transition.progress + delta * 1.4, 1.0);
+      setTransition(prev => ({ ...prev, progress: nextProgress }));
+
+      // Camera FOV Warp Effect:
+      // Smoothly zoom in to FOV 40 (waist of transition) then zoom out to FOV 75
+      let targetFov = baseFov;
+      if (nextProgress < 0.5) {
+        const t = nextProgress / 0.5;
+        targetFov = THREE.MathUtils.lerp(baseFov, 42, t * t);
+      } else {
+        const t = (nextProgress - 0.5) / 0.5;
+        targetFov = THREE.MathUtils.lerp(42, baseFov, t * (2 - t));
+      }
+      
+      camera.fov = targetFov;
+      camera.updateProjectionMatrix();
+    }
+  });
+
+  const showPrev = transition.progress < 1.0 && transition.prevUrl !== transition.currentUrl && prevCloned;
+
+  if (!currentCloned) {
+    return (
+      <mesh>
+        <sphereGeometry args={[500, 60, 40]} />
+        <meshBasicMaterial color="#1f2937" side={THREE.BackSide} wireframe />
+      </mesh>
+    );
+  }
 
   return (
     <group>
+      {/* Previous Panorama fading out */}
+      {showPrev && (
+        <mesh>
+          <sphereGeometry args={[500, 60, 40]} />
+          <meshBasicMaterial 
+            map={prevCloned} 
+            side={THREE.BackSide} 
+            transparent 
+            opacity={1.0 - transition.progress} 
+          />
+        </mesh>
+      )}
+
+      {/* Current/Target Panorama fading in */}
       <mesh 
         onClick={(e) => {
           if (onSphereClick) {
@@ -130,10 +215,16 @@ function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick, 
         }}
       >
         <sphereGeometry args={[500, 60, 40]} />
-        <meshBasicMaterial map={clonedTexture} side={THREE.BackSide} />
+        <meshBasicMaterial 
+          map={currentCloned} 
+          side={THREE.BackSide} 
+          transparent={!!showPrev}
+          opacity={showPrev ? transition.progress : 1.0} 
+        />
       </mesh>
 
-      {showHotspots && activeNode?.hotspots?.map((spot) => (
+      {/* Render Hotspots only when the transition is near completion for clutter-free views */}
+      {showHotspots && transition.progress > 0.4 && activeNode?.hotspots?.map((spot) => (
         <Html key={spot.id} position={spot.position} center zIndexRange={[100, 0]}>
           <TourHotspot spot={spot} onClick={onHotspotClick} />
         </Html>
@@ -146,20 +237,9 @@ function PanoramaSphere({ textureUrl, activeNode, showHotspots, onHotspotClick, 
 function SphericalPanorama({ showHotspots, onHotspotClick, onSphereClick }) {
   const { customTourNodes, activeTourNodeId } = useViewerStore();
   const activeNode = customTourNodes ? customTourNodes[activeTourNodeId] : null;
-  const textureUrl = activeNode ? activeNode.url : null;
-
-  if (!textureUrl) {
-    return (
-      <mesh>
-        <sphereGeometry args={[500, 60, 40]} />
-        <meshBasicMaterial color="#1f2937" side={THREE.BackSide} wireframe />
-      </mesh>
-    );
-  }
 
   return (
-    <PanoramaSphere 
-      textureUrl={textureUrl} 
+    <MorphingPanorama 
       activeNode={activeNode} 
       showHotspots={showHotspots}
       onHotspotClick={onHotspotClick}

@@ -88,7 +88,11 @@ export const useViewerStore = create(
   activeTourNodeId: null,
   activeHotspotData: null,
   setActiveHotspotData: (data) => set({ activeHotspotData: data }),
-  setActiveTourNodeId: (id) => set({ activeTourNodeId: id }),
+  setActiveTourNodeId: (id) => set((state) => {
+    const node = state.customTourNodes[id];
+    const name = node ? (node.title || node.node_name || '360° Node') : '360° Node';
+    return { activeTourNodeId: id, active3DLocationName: `360° Room: ${name}` };
+  }),
   customTourNodes: {},
   addTourNode: async (supabaseClient, nodeData) => {
     set((state) => ({ customTourNodes: { ...state.customTourNodes, [nodeData.id]: nodeData } }));
@@ -327,7 +331,13 @@ export const useViewerStore = create(
   setCustomGPS: (addressOrCoords) => set({ customGPS: addressOrCoords }),
   setGeminiApiKey: (key) => set({ geminiApiKey: key }),
   setAiContext: (context) => set({ aiContext: context }),
-  setActiveTourNodeId: (id) => set({ activeTourNodeId: id }),
+  active3DLocationName: 'Exterior Plaza',
+  setActive3DLocationName: (name) => set({ active3DLocationName: name }),
+  setActiveTourNodeId: (id) => set((state) => {
+    const node = state.customTourNodes[id];
+    const name = node ? (node.title || node.node_name || '360° Node') : '360° Node';
+    return { activeTourNodeId: id, active3DLocationName: `360° Room: ${name}` };
+  }),
   isGlobalScrolled: false,
   setGlobalScrolled: (val) => set({ isGlobalScrolled: val }),
   

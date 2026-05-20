@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video, Menu, X, Maximize, Eye } from 'lucide-react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video, Menu, X, Maximize, Eye, Volume2, VolumeX, Play, Pause, Music } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 import { supabase } from '../lib/supabase';
 import ProjectOverview from '../views/ProjectOverview';
@@ -20,17 +20,21 @@ const TabButton = (props) => {
   const IconToRender = props.icon;
   return (
     <button 
+      ref={props.btnRef}
       className="nav-tab-btn"
       onClick={props.onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
         display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '12px',
-        background: props.active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'),
+        // Transparent in desktop mode so the absolute sliding capsule shows through.
+        background: props.isMobile 
+          ? (props.active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'))
+          : (props.active ? 'transparent' : (isHovered ? 'rgba(255,255,255,0.06)' : 'transparent')),
         border: 'none',
         color: 'white',
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600',
-        boxShadow: props.active ? '0 4px 12px var(--accent-glow)' : 'none',
+        boxShadow: (props.isMobile && props.active) ? '0 4px 12px var(--accent-glow)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
         opacity: props.active ? 1 : (isHovered ? 1 : 0.85),
@@ -38,7 +42,9 @@ const TabButton = (props) => {
         width: props.isMobile ? '100%' : 'auto',
         justifyContent: props.isMobile ? 'flex-start' : 'center',
         fontSize: props.isMobile ? '18px' : undefined,
-        gap: props.isMobile ? '16px' : undefined
+        gap: props.isMobile ? '16px' : undefined,
+        zIndex: props.isMobile ? undefined : 2,
+        position: props.isMobile ? undefined : 'relative'
       }}
     >
       <IconToRender className="nav-tab-icon" style={props.isMobile ? { width: '24px', height: '24px', display: 'block' } : undefined} /> 
@@ -46,6 +52,185 @@ const TabButton = (props) => {
     </button>
   );
 };
+
+function AmbientSoundPlayer() {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.25);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showVolume, setShowVolume] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Lazy create the Audio object on client to prevent server-side render issues
+    audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = volume;
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
+  // Update volume
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(err => {
+        console.warn("Autoplay blocked by browser:", err);
+      });
+    }
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  return (
+    <div 
+      onMouseEnter={() => setShowVolume(true)}
+      onMouseLeave={() => setShowVolume(false)}
+      style={{
+        position: 'absolute',
+        bottom: '68px', // Sits cleanly above the Progressive watermark
+        left: '32px',
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '10px 18px',
+        borderRadius: '20px',
+        background: 'rgba(10, 12, 16, 0.75)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        color: 'white',
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        fontFamily: 'Outfit, sans-serif'
+      }}
+    >
+      <style>{`
+        @keyframes floatBar1 { 0%, 100% { height: 4px; } 50% { height: 16px; } }
+        @keyframes floatBar2 { 0%, 100% { height: 6px; } 50% { height: 22px; } }
+        @keyframes floatBar3 { 0%, 100% { height: 8px; } 50% { height: 18px; } }
+        @keyframes floatBar4 { 0%, 100% { height: 5px; } 50% { height: 12px; } }
+        .visualizer-bar {
+          width: 3px;
+          background: var(--accent-color);
+          border-radius: 2px;
+          transition: height 0.3s ease;
+        }
+      `}</style>
+
+      {/* Visualizer / Music Icon */}
+      <button 
+        onClick={togglePlay}
+        style={{
+          background: isPlaying ? 'rgba(255,255,255,0.08)' : 'var(--accent-color)',
+          border: 'none',
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          cursor: 'pointer',
+          boxShadow: isPlaying ? 'none' : '0 4px 12px var(--accent-glow)',
+          transition: 'all 0.2s ease',
+          flexShrink: 0
+        }}
+      >
+        {isPlaying ? <Pause size={14} fill="white" /> : <Play size={14} fill="white" style={{ marginLeft: '2px' }} />}
+      </button>
+
+      {/* Track info & Visualizer */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', pointerEvents: 'none' }}>
+        <span style={{ fontSize: '11px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
+          Mediterranean Loop
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '12px', fontWeight: '800', color: 'white' }}>
+            {isPlaying ? 'Lounge Music On' : 'Ambient Music Off'}
+          </span>
+          
+          {/* visualizer bars */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '22px', width: '20px' }}>
+            <div className="visualizer-bar" style={{
+              height: isPlaying ? undefined : '3px',
+              animation: isPlaying ? 'floatBar1 1.2s infinite ease-in-out' : 'none'
+            }} />
+            <div className="visualizer-bar" style={{
+              height: isPlaying ? undefined : '5px',
+              animation: isPlaying ? 'floatBar2 0.8s infinite ease-in-out' : 'none'
+            }} />
+            <div className="visualizer-bar" style={{
+              height: isPlaying ? undefined : '6px',
+              animation: isPlaying ? 'floatBar3 1.0s infinite ease-in-out' : 'none'
+            }} />
+            <div className="visualizer-bar" style={{
+              height: isPlaying ? undefined : '3px',
+              animation: isPlaying ? 'floatBar4 0.7s infinite ease-in-out' : 'none'
+            }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Volume Controls (revealed on hover) */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        width: showVolume ? '100px' : '0px',
+        opacity: showVolume ? 1 : 0,
+        overflow: 'hidden',
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        paddingLeft: showVolume ? '8px' : '0px',
+        borderLeft: showVolume ? '1px solid rgba(255,255,255,0.1)' : 'none'
+      }}>
+        <button 
+          onClick={toggleMute}
+          style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+        >
+          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </button>
+        <input 
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value={volume}
+          onChange={(e) => {
+            setVolume(parseFloat(e.target.value));
+            setIsMuted(false);
+          }}
+          style={{
+            width: '60px',
+            height: '4px',
+            WebkitAppearance: 'none',
+            background: 'rgba(255,255,255,0.2)',
+            borderRadius: '2px',
+            outline: 'none',
+            cursor: 'pointer'
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function PresentationApp({ forceAdmin = false }) {
   const fetchCloudAssets = useViewerStore(state => state.fetchCloudAssets);
@@ -70,6 +255,31 @@ export default function PresentationApp({ forceAdmin = false }) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth <= 1100);
+
+  const [activeRect, setActiveRect] = useState({ left: 0, width: 0 });
+  const buttonRefs = useRef({});
+
+  // Sync active tab background slide position on tab change and window resize
+  useEffect(() => {
+    const updateActiveRect = () => {
+      const activeBtn = buttonRefs.current[activeTab];
+      if (activeBtn) {
+        setActiveRect({
+          left: activeBtn.offsetLeft,
+          width: activeBtn.offsetWidth
+        });
+      }
+    };
+    
+    // Tiny delay to ensure styles/fonts are calculated
+    const timer = setTimeout(updateActiveRect, 50);
+    window.addEventListener('resize', updateActiveRect);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateActiveRect);
+    };
+  }, [activeTab]);
 
   useEffect(() => {
     const handleResize = () => setIsMobileDevice(window.innerWidth <= 1100);
@@ -160,23 +370,44 @@ export default function PresentationApp({ forceAdmin = false }) {
             <p style={{ margin: '2px 0 0', color: !isDarkBackgroundTab ? 'var(--text-secondary)' : 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textShadow: !isDarkBackgroundTab ? 'none' : '0 1px 8px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>{companyName}</p>
           </div>
         </div>
-
+ 
         {/* Desktop Navigation Pill */}
         {activeTab !== 'manage' ? (
           <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
             <div className="glass-panel" style={{ 
+              position: 'relative',
               display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
               background: 'rgba(10, 12, 16, 0.8)',
               boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
             }}>
-              <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" onClick={() => setActiveTab('overview')} />
-              <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" onClick={() => setActiveTab('renders')} />
-              <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" onClick={() => setActiveTab('cinematics')} />
-              <TabButton active={activeTab === 'floorplans'} icon={Layers} label="Floorplans" onClick={() => setActiveTab('floorplans')} />
-              <TabButton active={activeTab === 'availability'} icon={ListChecks} label="Availability" onClick={() => setActiveTab('availability')} />
-              <TabButton active={activeTab === 'map'} icon={Map} label="Location" onClick={() => setActiveTab('map')} />
-              <TabButton active={activeTab === 'panorama'} icon={Hexagon} label="360° Tours" onClick={() => setActiveTab('panorama')} />
-              <TabButton active={activeTab === '3d'} icon={Component} label="3D Interactive" onClick={() => setActiveTab('3d')} />
+              {/* Liquid Sliding Background Capsule */}
+              {activeRect.width > 0 && (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    top: '6px',
+                    bottom: '6px',
+                    left: 0,
+                    width: `${activeRect.width}px`,
+                    transform: `translateX(${activeRect.left}px)`,
+                    background: 'var(--accent-color)',
+                    borderRadius: '12px',
+                    transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+                    boxShadow: '0 4px 14px var(--accent-glow)',
+                    zIndex: 1,
+                    pointerEvents: 'none'
+                  }}
+                />
+              )}
+              
+              <TabButton btnRef={el => buttonRefs.current['overview'] = el} active={activeTab === 'overview'} icon={Info} label="Overview" onClick={() => setActiveTab('overview')} />
+              <TabButton btnRef={el => buttonRefs.current['renders'] = el} active={activeTab === 'renders'} icon={ImageIcon} label="Renders" onClick={() => setActiveTab('renders')} />
+              <TabButton btnRef={el => buttonRefs.current['cinematics'] = el} active={activeTab === 'cinematics'} icon={Video} label="Videos" onClick={() => setActiveTab('cinematics')} />
+              <TabButton btnRef={el => buttonRefs.current['floorplans'] = el} active={activeTab === 'floorplans'} icon={Layers} label="Floorplans" onClick={() => setActiveTab('floorplans')} />
+              <TabButton btnRef={el => buttonRefs.current['availability'] = el} active={activeTab === 'availability'} icon={ListChecks} label="Availability" onClick={() => setActiveTab('availability')} />
+              <TabButton btnRef={el => buttonRefs.current['map'] = el} active={activeTab === 'map'} icon={Map} label="Location" onClick={() => setActiveTab('map')} />
+              <TabButton btnRef={el => buttonRefs.current['panorama'] = el} active={activeTab === 'panorama'} icon={Hexagon} label="360° Tours" onClick={() => setActiveTab('panorama')} />
+              <TabButton btnRef={el => buttonRefs.current['3d'] = el} active={activeTab === '3d'} icon={Component} label="3D Interactive" onClick={() => setActiveTab('3d')} />
             </div>
           </div>
         ) : (
@@ -322,6 +553,9 @@ export default function PresentationApp({ forceAdmin = false }) {
         )}
       </div>
 
+      {/* Premium ambient soundtrack player loop */}
+      {activeTab !== 'manage' && <AmbientSoundPlayer />}
+
       {/* Global Footer Watermark */}
       <div style={{
         position: 'absolute', bottom: '32px', left: '32px', zIndex: 100,
@@ -350,3 +584,4 @@ export default function PresentationApp({ forceAdmin = false }) {
 }
 
 // Vercel webhook trigger
+

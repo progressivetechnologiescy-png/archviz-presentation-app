@@ -29,7 +29,7 @@ function extractCoordinates(str) {
 }
 
 export default function FloatingConcierge() {
-  const { customGPS } = useViewerStore();
+  const { customGPS, active3DLocationName } = useViewerStore();
   
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -237,6 +237,10 @@ export default function FloatingConcierge() {
       try {
         const systemInstruction = `You are Emma, an elegant, professional, and highly knowledgeable luxury real estate concierge for the property located at ${humanReadableLocation}. 
 You answer client questions concisely and politely. Keep answers relatively short (1-3 sentences) unless they ask for a list. 
+
+The user is currently physically standing in / exploring this specific area: **${active3DLocationName || 'Exterior Plaza'}**. 
+If they ask questions like "where am I?", "what is this room?", "describe this space", "what am I looking at?", or ask you about the features of their current location, focus your details conversationally on **${active3DLocationName || 'the exterior grounds'}** and its amenities.
+
 If the user asks about distances or what amenities (like schools, beaches, restaurants, medical facilities) are nearby, use the real-world [System Info] context provided in their latest message.
 If the name of a school or amenity is in Greek (e.g. 'Γυμνάσιο Λινόπετρας' or 'Λύκειο Αγίου Νικολάου'), translate it to English (e.g. 'Linopetra High School' or 'Ayios Nikolaos Lyceum') for the client's convenience, or display both. If they ask about "schools" (plural), mention the closest one and list the other top nearby options from the [System Info] context to give them a complete, premium overview of the location.
 If the user asks about pricing, materials, or details, use ONLY the following specifications provided by the real estate agent:
@@ -333,6 +337,11 @@ ${aiContext || 'No specific details provided yet.'}
           background: rgba(37, 211, 102, 0.16) !important;
           color: #4ade80 !important;
         }
+        @keyframes pulse {
+          0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
+          70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(56, 189, 248, 0); }
+          100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+        }
       `}</style>
 
       {/* Expanded Chat Interface */}
@@ -365,6 +374,34 @@ ${aiContext || 'No specific details provided yet.'}
               <X size={20} />
             </button>
           </div>
+
+          {/* Spatial Location Indicator */}
+          {active3DLocationName && (
+            <div style={{
+              background: 'rgba(0,0,0,0.3)',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              padding: '10px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '11px',
+              fontWeight: '800',
+              color: '#38bdf8',
+              letterSpacing: '0.8px',
+              flexShrink: 0
+            }}>
+              <span style={{ 
+                width: '6px', 
+                height: '6px', 
+                borderRadius: '50%', 
+                background: '#38bdf8', 
+                display: 'inline-block',
+                boxShadow: '0 0 8px #38bdf8',
+                animation: 'pulse 2s infinite' 
+              }}></span>
+              <span>LOCATION: {active3DLocationName.toUpperCase()}</span>
+            </div>
+          )}
 
           {/* Quick Action WhatsApp Banner */}
           <a href="https://wa.me/15551234567" target="_blank" rel="noreferrer" style={{
@@ -430,18 +467,51 @@ ${aiContext || 'No specific details provided yet.'}
 
       {/* Floating Toggle Button */}
       {!isOpen && (
-        <button 
-          onClick={() => setIsOpen(true)}
-          className="hover-lift"
-          style={{ 
-            width: '64px', height: '64px', borderRadius: '50%', background: 'var(--accent-color)', 
-            border: '2px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 12px 32px var(--accent-glow)'
-          }}
-        >
-          <MessageSquare size={28} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {active3DLocationName && (
+            <div 
+              style={{
+                background: 'rgba(10, 12, 16, 0.85)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                padding: '8px 16px',
+                borderRadius: '16px',
+                color: '#e2e8f0',
+                fontSize: '11px',
+                fontWeight: '700',
+                letterSpacing: '0.5px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                animation: 'chatEntrance 0.3s ease forwards'
+              }}
+            >
+              <span style={{ 
+                width: '6px', 
+                height: '6px', 
+                borderRadius: '50%', 
+                background: '#38bdf8', 
+                display: 'inline-block',
+                boxShadow: '0 0 6px #38bdf8'
+              }}></span>
+              <span>📍 {active3DLocationName.toUpperCase()}</span>
+            </div>
+          )}
+          <button 
+            onClick={() => setIsOpen(true)}
+            className="hover-lift"
+            style={{ 
+              width: '64px', height: '64px', borderRadius: '50%', background: 'var(--accent-color)', 
+              border: '2px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 12px 32px var(--accent-glow)',
+              flexShrink: 0
+            }}
+          >
+            <MessageSquare size={28} />
+          </button>
+        </div>
       )}
     </div>
   );

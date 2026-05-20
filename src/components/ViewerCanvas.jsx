@@ -7,44 +7,226 @@ import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import QRModal from './QRModal';
 
+// Reusable helper to dynamically upgrade basic materials to premium PBR MeshPhysicalMaterial settings
+function upgradeMaterial(child) {
+  if (!child.isMesh || !child.material) return;
+  
+  const name = (child.name || '').toLowerCase();
+  
+  const mats = Array.isArray(child.material) ? child.material : [child.material];
+  
+  mats.forEach((mat, index) => {
+    const matName = (mat.name || '').toLowerCase();
+    
+    // Categorize surface types based on name descriptors
+    const isGlass = name.includes('glass') || matName.includes('glass') || name.includes('window') || matName.includes('window') || name.includes('transp') || matName.includes('transp') || name.includes('glaz') || matName.includes('glaz');
+    const isMetal = name.includes('metal') || matName.includes('metal') || name.includes('steel') || matName.includes('aluminum') || name.includes('chrome') || name.includes('brass') || name.includes('iron') || matName.includes('steel') || matName.includes('metal');
+    const isFloor = name.includes('floor') || matName.includes('floor') || name.includes('tile') || name.includes('marble') || name.includes('parquet') || name.includes('granite') || name.includes('slabs') || matName.includes('tile') || matName.includes('floor');
+    const isWood = name.includes('wood') || matName.includes('wood') || name.includes('timber') || name.includes('oak') || name.includes('walnut') || name.includes('furniture') || matName.includes('wood') || matName.includes('timber');
+
+    // Upgrade to Physical Material for premium reflections and light interaction
+    let physicalMat = mat;
+    if (!mat.isMeshPhysicalMaterial) {
+      physicalMat = new THREE.MeshPhysicalMaterial({
+        color: mat.color ? mat.color.clone() : new THREE.Color('#ffffff'),
+        map: mat.map,
+        roughness: 0.4,
+        metalness: 0.1,
+        transparent: mat.transparent || false,
+        opacity: mat.opacity !== undefined ? mat.opacity : 1.0,
+        side: mat.side
+      });
+      
+      // Assign back to mesh
+      if (Array.isArray(child.material)) {
+        child.material[index] = physicalMat;
+      } else {
+        child.material = physicalMat;
+      }
+    }
+
+    // Apply photorealistic lighting metrics based on categorized surface
+    if (isGlass) {
+      physicalMat.transparent = true;
+      physicalMat.opacity = 0.25;
+      physicalMat.transmission = 0.95;
+      physicalMat.roughness = 0.02;
+      physicalMat.metalness = 0.05;
+      physicalMat.thickness = 0.4;
+      physicalMat.ior = 1.5;
+    } else if (isFloor) {
+      physicalMat.roughness = 0.12;
+      physicalMat.metalness = 0.02;
+      physicalMat.clearcoat = 1.0;
+      physicalMat.clearcoatRoughness = 0.08;
+    } else if (isMetal) {
+      physicalMat.roughness = 0.2;
+      physicalMat.metalness = 0.95;
+    } else if (isWood) {
+      physicalMat.roughness = 0.45;
+      physicalMat.metalness = 0.0;
+      physicalMat.clearcoat = 0.15;
+      physicalMat.clearcoatRoughness = 0.2;
+    } else {
+      // General architectural surfaces (walls, plaster)
+      physicalMat.roughness = 0.5;
+      physicalMat.metalness = 0.0;
+    }
+    
+    // Boost sky/apartment HDRI environment reflection impact
+    physicalMat.envMapIntensity = 1.8;
+    physicalMat.needsUpdate = true;
+  });
+}
+
 function WalkEngine() {
   const { moveForward, moveBackward, moveLeft, moveRight } = useViewerStore();
   
-  // Reuse vectors to prevent garbage collection stuttering
+  // Reuse vectors & Raycaster to prevent garbage collection stutters
   const direction = new THREE.Vector3();
   const frontVector = new THREE.Vector3();
   const sideVector = new THREE.Vector3();
-  const speed = 15;
+  const speed = 12; // Adjusted slightly for a more stable walking pace
+  
+  const collisionMeshesRef = React.useRef([]);
+  const raycaster = React.useMemo(() => new THREE.Raycaster(), []);
+  const downVector = React.useMemo(() => new THREE.Vector3(0, -1, 0), []);
+  let frameCount = 0;
 
   useFrame((state, delta) => {
     const storeState = useViewerStore.getState();
 
-    // Process Look Direction (Virtual Rotation Pad for Mobile) - MUST be before early return!
+    // Process Look Direction (Virtual Rotation Pad for Mobile)
     if (storeState.lookLeft || storeState.lookRight) {
       const lookSpeed = delta * 1.5;
-      // PointerLockControls uses Euler rotation order YXZ
       if (storeState.lookLeft) state.camera.rotation.y += lookSpeed;
       if (storeState.lookRight) state.camera.rotation.y -= lookSpeed;
     }
 
-    if (!storeState.moveForward && !storeState.moveBackward && !storeState.moveLeft && !storeState.moveRight && !storeState.moveUp && !storeState.moveDown) return;
+    // Cache collision meshes every 60 frames to keep raycast traversal ultra-fast
+    frameCount++;
+    if (frameCount % 60 === 1 || collisionMeshesRef.current.length === 0) {
+      const meshes = [];
+      state.scene.traverse((child) => {
+        // Collect solid architectural elements, ignoring helper and sky objects
+        if (child.isMesh && child.name !== 'Sky' && !child.name.includes('Helper') && child.visible) {
+          meshes.push(child);
+        }
+      });
+      collisionMeshesRef.current = meshes;
+    }
+
+    const hasMovementInput = storeState.moveForward || storeState.moveBackward || storeState.moveLeft || storeState.moveRight || storeState.moveUp || storeState.moveDown;
+
+    // Apply gravity floor snapping if not actively flying up/down
+    const isActivelyFlying = storeState.moveUp || storeState.moveDown;
+    if (!isActivelyFlying && collisionMeshesRef.current.length > 0) {
+      const playerPos = state.camera.position.clone();
+      // Ray origin starts 2 meters above player head to allow snaps onto floors/staircases
+      const rayOrigin = new THREE.Vector3(playerPos.x, playerPos.y + 2, playerPos.z);
+      raycaster.set(rayOrigin, downVector);
+      const intersections = raycaster.intersectObjects(collisionMeshesRef.current, true);
+
+      if (intersections.length > 0) {
+        const firstFloorIntersection = intersections.find(hit => {
+          // Avoid snapping onto glass ceilings/walls or vertical elements
+          const norm = hit.face?.normal.clone().applyQuaternion(hit.object.quaternion);
+          return norm ? norm.y > 0.7 : true; // strictly flat or sloped upward surfaces
+        }) || intersections[0];
+
+        const floorY = firstFloorIntersection.point.y;
+        const targetY = floorY + 1.6; // 1.6m is standard eye level
+        
+        // Smoothly drop or climb steps (gravity feeling)
+        state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, 0.15);
+      }
+    }
+
+    if (!hasMovementInput) return;
 
     // Calculate planar movement intent
     frontVector.set(0, 0, Number(storeState.moveBackward) - Number(storeState.moveForward));
     sideVector.set(Number(storeState.moveLeft) - Number(storeState.moveRight), 0, 0);
 
-    // Orient the X/Z movement direction to match where the camera is looking
+    // Orient motion relative to current camera heading
     direction.subVectors(frontVector, sideVector);
     direction.applyQuaternion(state.camera.quaternion);
 
-    // Add global Up/Down (Y-axis) movement completely independent of camera look angle
+    // Add global Up/Down vertical motion when keys are explicitly pressed
     direction.y += Number(storeState.moveUp) - Number(storeState.moveDown);
 
-    // Normalize and apply speed
+    // Normalize speed
     direction.normalize().multiplyScalar(speed * delta);
 
-    // Translate the camera's physical position
+    // Wall Collision Raycasting (Horizontal sliding physics)
+    if (collisionMeshesRef.current.length > 0 && !isActivelyFlying) {
+      const horizontalDir = direction.clone();
+      horizontalDir.y = 0; // only detect horizontal blockages
+      const moveDistance = horizontalDir.length();
+
+      if (moveDistance > 0.001) {
+        horizontalDir.normalize();
+        // Cast ray at human waist level (approx 0.8 meters below eye level)
+        const rayOrigin = new THREE.Vector3(
+          state.camera.position.x,
+          state.camera.position.y - 0.8,
+          state.camera.position.z
+        );
+        raycaster.set(rayOrigin, horizontalDir);
+        const intersections = raycaster.intersectObjects(collisionMeshesRef.current, true);
+
+        const wallPadding = 0.45; // prevent camera clipping through wall thickness
+        if (intersections.length > 0 && intersections[0].distance < moveDistance + wallPadding) {
+          const hit = intersections[0];
+          const hitNormal = hit.face.normal.clone();
+          // Transform local normal to world coordinates
+          hitNormal.applyQuaternion(hit.object.quaternion);
+          hitNormal.y = 0;
+          hitNormal.normalize();
+
+          // Calculate sliding vector (subtract projection into wall normal)
+          const dotProduct = direction.dot(hitNormal);
+          if (dotProduct < 0) {
+            direction.sub(hitNormal.multiplyScalar(dotProduct));
+          }
+        }
+      }
+    }
+
+    // Apply movement translation
     state.camera.position.add(direction);
+
+    // Update active 3D location name based on spatial boundaries in first-person mode
+    const pos = state.camera.position;
+    let currentArea = 'Exterior Plaza';
+
+    if (pos.y < 3.5) {
+      // Ground floor
+      if (pos.z > 6) {
+        currentArea = 'Swimming Pool & Ground Level Terrace';
+      } else if (pos.x < -2) {
+        currentArea = 'Kitchen & Dining Space';
+      } else if (pos.x > 2) {
+        currentArea = 'Office & Guest Study';
+      } else {
+        currentArea = 'Spacious Living Room';
+      }
+    } else {
+      // Upper floor
+      if (pos.z > 6.5) {
+        currentArea = 'First-Floor Outdoor Solarium';
+      } else if (pos.x < -1) {
+        currentArea = 'Master Bedroom Suite';
+      } else if (pos.x > 1) {
+        currentArea = 'Secondary Bedroom & Bath';
+      } else {
+        currentArea = 'Upper Lobby Corridor';
+      }
+    }
+
+    if (storeState.active3DLocationName !== currentArea) {
+      useViewerStore.setState({ active3DLocationName: currentArea });
+    }
   });
 
   return null;
@@ -62,29 +244,8 @@ function FBXModel({ url }) {
           child.castShadow = true;
           child.receiveShadow = true;
           
-          if (child.material) {
-            const mats = Array.isArray(child.material) ? child.material : [child.material];
-            mats.forEach((mat) => {
-               // 1. DESTROY CORRUPTED TEXTURES
-               // Revit FBX exports often include broken or missing diffuse maps that render as a pitch-black overlay.
-               // By stripping the map, we reveal the TRUE underlying material colors (e.g., white walls, dark balconies).
-               mat.map = null;
-               
-               // 2. Apply photorealistic PBR lighting interaction to the true colors
-               if (mat.isMeshStandardMaterial || mat.isMeshPhysicalMaterial) {
-                   mat.roughness = 0.2; // Clean architectural finish
-                   mat.metalness = 0.1; 
-                   mat.envMapIntensity = 1.0; // Reflect the sky realistically
-               } else {
-                   // Inject basic PBR traits for legacy materials
-                   mat.roughness = 0.2;
-                   mat.metalness = 0.1;
-                   mat.envMapIntensity = 1.0;
-               }
-               
-               mat.needsUpdate = true;
-            });
-          }
+          // Apply dynamic PBR upgrades
+          upgradeMaterial(child);
         }
       });
     }
@@ -114,6 +275,9 @@ function GLTFModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          
+          // Apply dynamic PBR upgrades
+          upgradeMaterial(child);
         }
       });
     }
@@ -132,8 +296,6 @@ function GLTFModel({ url }) {
   );
 }
 
-
-
 // Load OBJ Model
 function OBJModel({ url }) {
   const obj = useLoader(OBJLoader, url);
@@ -145,6 +307,9 @@ function OBJModel({ url }) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          
+          // Apply dynamic PBR upgrades
+          upgradeMaterial(child);
         }
       });
     }
