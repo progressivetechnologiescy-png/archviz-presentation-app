@@ -375,34 +375,6 @@ ${aiContext || 'No specific details provided yet.'}
             </button>
           </div>
 
-          {/* Spatial Location Indicator */}
-          {active3DLocationName && (
-            <div style={{
-              background: 'rgba(0,0,0,0.3)',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
-              padding: '10px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '11px',
-              fontWeight: '800',
-              color: '#38bdf8',
-              letterSpacing: '0.8px',
-              flexShrink: 0
-            }}>
-              <span style={{ 
-                width: '6px', 
-                height: '6px', 
-                borderRadius: '50%', 
-                background: '#38bdf8', 
-                display: 'inline-block',
-                boxShadow: '0 0 8px #38bdf8',
-                animation: 'pulse 2s infinite' 
-              }}></span>
-              <span>LOCATION: {active3DLocationName.toUpperCase()}</span>
-            </div>
-          )}
-
           {/* Quick Action WhatsApp Banner */}
           <a href="https://wa.me/15551234567" target="_blank" rel="noreferrer" style={{
              background: 'rgba(37, 211, 102, 0.08)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
@@ -468,36 +440,6 @@ ${aiContext || 'No specific details provided yet.'}
       {/* Floating Toggle Button */}
       {!isOpen && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {active3DLocationName && (
-            <div 
-              style={{
-                background: 'rgba(10, 12, 16, 0.85)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                padding: '8px 16px',
-                borderRadius: '16px',
-                color: '#e2e8f0',
-                fontSize: '11px',
-                fontWeight: '700',
-                letterSpacing: '0.5px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                animation: 'chatEntrance 0.3s ease forwards'
-              }}
-            >
-              <span style={{ 
-                width: '6px', 
-                height: '6px', 
-                borderRadius: '50%', 
-                background: '#38bdf8', 
-                display: 'inline-block',
-                boxShadow: '0 0 6px #38bdf8'
-              }}></span>
-              <span>📍 {active3DLocationName.toUpperCase()}</span>
-            </div>
-          )}
           <button 
             onClick={() => setIsOpen(true)}
             className="hover-lift"

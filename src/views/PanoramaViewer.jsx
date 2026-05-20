@@ -1,5 +1,5 @@
 import React, { Suspense, useState, useMemo, useEffect } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, DeviceOrientationControls, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useViewerStore } from '../store/viewerStore';
