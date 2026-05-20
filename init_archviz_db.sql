@@ -58,7 +58,12 @@ create table if not exists properties_config (
     overview_video_url text,
     gps_coordinates text,
     lighting_preset text default 'noon',
-    active_material text default 'marble'
+    active_material text default 'marble',
+    inventory_data jsonb default '[]'::jsonb,
+    gemini_api_key text,
+    ai_context text,
+    accent_color text default '#3b82f6',
+    theme_mode text default 'dark'
 );
 
 alter table presentation_assets enable row level security;

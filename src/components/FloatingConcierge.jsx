@@ -237,60 +237,113 @@ If the user asks about distances to amenities, use the [System Info] context pro
   return (
     <div style={{ position: 'fixed', bottom: '32px', right: '32px', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
       
+      <style>{`
+        @keyframes chatEntrance {
+          from { opacity: 0; transform: translateY(24px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .chat-window {
+          animation: chatEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .chat-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .chat-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .chat-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+        }
+        .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+        @keyframes dotBlink {
+          0%, 100% { opacity: 0.3; transform: translateY(0); }
+          50% { opacity: 1; transform: translateY(-4px); }
+        }
+        .dot-blink {
+          animation: dotBlink 1.4s infinite both;
+        }
+        .whatsapp-action-banner {
+          transition: all 0.25s ease !important;
+        }
+        .whatsapp-action-banner:hover {
+          background: rgba(37, 211, 102, 0.16) !important;
+          color: #4ade80 !important;
+        }
+      `}</style>
+
       {/* Expanded Chat Interface */}
       {isOpen && (
-        <div className="glass-panel" style={{ 
-          width: '350px', height: '500px', marginBottom: '16px', borderRadius: '24px',
+        <div className="glass-panel chat-window" style={{ 
+          width: '350px', height: '550px', marginBottom: '16px', borderRadius: '24px',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          backgroundColor: 'rgba(15, 20, 25, 0.95)',
-          boxShadow: '0 24px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)'
+          backgroundColor: 'rgba(20, 25, 35, 0.75)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1)',
+          border: '1px solid rgba(255,255,255,0.08)'
         }}>
           
           {/* Header */}
-          <div style={{ background: 'var(--accent-color)', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ background: 'linear-gradient(135deg, var(--accent-color), #2563eb)', padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'white', display: 'flex', overflow: 'hidden' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'white', display: 'flex', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.2)' }}>
                  <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Agent" />
               </div>
               <div>
-                <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>Emma</h4>
-                <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)', fontSize: '12px' }}>AI Property Concierge</p>
+                <h4 style={{ margin: 0, color: 'white', fontSize: '15px', fontWeight: '700', letterSpacing: '0.3px' }}>Emma</h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}></span>
+                  <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)', fontSize: '11px', fontWeight: '500' }}>AI Property Concierge</p>
+                </div>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer' }}>
+            <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', opacity: 0.8, transition: 'opacity 0.2s' }} onMouseEnter={(e) => e.target.style.opacity = 1} onMouseLeave={(e) => e.target.style.opacity = 0.8}>
               <X size={20} />
             </button>
           </div>
 
           {/* Quick Action WhatsApp Banner */}
           <a href="https://wa.me/15551234567" target="_blank" rel="noreferrer" style={{
-             background: '#25D366', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
+             background: 'rgba(37, 211, 102, 0.08)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
              textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-             color: 'white', fontWeight: 'bold', fontSize: '13px', flexShrink: 0
-          }}>
-             <Phone size={16} /> Connect with Sales on WhatsApp
+             color: '#25D366', fontWeight: '600', fontSize: '13px', flexShrink: 0
+          }} className="whatsapp-action-banner">
+             <Phone size={14} fill="#25D366" stroke="none" /> 
+             <span>Connect with Sales on WhatsApp</span>
           </a>
 
           {/* Chat History */}
-          <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="chat-scrollbar" style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {messages.map((msg, i) => (
               <div key={i} style={{ 
                 alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                background: msg.role === 'user' ? 'var(--accent-color)' : 'rgba(255,255,255,0.15)',
+                background: msg.role === 'user' ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
                 padding: '12px 16px', borderRadius: '16px', maxWidth: '85%',
                 borderBottomRightRadius: msg.role === 'user' ? '4px' : '16px',
                 borderBottomLeftRadius: msg.role === 'agent' ? '4px' : '16px',
                 color: 'white', fontSize: '14px', lineHeight: '1.4',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: msg.role === 'user' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.05)'
               }}>
-                {msg.text}
+                {msg.isTyping ? (
+                  <div style={{ display: 'flex', gap: '5px', padding: '6px 4px', alignItems: 'center' }}>
+                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: 'rgba(255,255,255,0.8)', borderRadius: '50%' }}></span>
+                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: 'rgba(255,255,255,0.8)', borderRadius: '50%', animationDelay: '0.2s' }}></span>
+                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: 'rgba(255,255,255,0.8)', borderRadius: '50%', animationDelay: '0.4s' }}></span>
+                  </div>
+                ) : (
+                  msg.text
+                )}
               </div>
             ))}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Input Area */}
-          <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.2)', flexShrink: 0 }}>
+          <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.25)', flexShrink: 0 }}>
             <input 
               type="text" 
               placeholder={coordinates ? "Ask about nearby schools, restaurants..." : "Ask about the property..."} 
@@ -298,12 +351,14 @@ If the user asks about distances to amenities, use the [System Info] context pro
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
               disabled={isSearching}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '10px 16px', color: 'white', outline: 'none' }}
+              style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '12px 18px', color: 'white', outline: 'none', fontSize: '14px', transition: 'border-color 0.2s' }}
+              onFocus={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.25)'}
+              onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
             />
             <button 
               onClick={handleSend}
               disabled={isSearching}
-              style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: isSearching ? 0.5 : 1 }}
+              style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: isSearching ? 0.5 : 1, boxShadow: '0 4px 12px var(--accent-glow)', transition: 'all 0.2s' }}
             >
               <Send size={16} />
             </button>
