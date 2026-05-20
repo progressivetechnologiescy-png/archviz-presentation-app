@@ -3,7 +3,7 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, DeviceOrientationControls, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useViewerStore } from '../store/viewerStore';
-import { Smartphone, ChevronLeft, Eye, EyeOff, Maximize, MapPin, Plus, X } from 'lucide-react';
+import { Smartphone, ChevronLeft, Eye, EyeOff, Maximize, MapPin, Plus, X, Hexagon } from 'lucide-react';
 
 // Helper to track camera rotation for the CMS "Set Starting View"
 function CameraTracker() {
@@ -132,9 +132,12 @@ function MorphingPanorama({ activeNode, showHotspots, onHotspotClick, onSphereCl
     }
   }, [activeNode]);
 
+  // Safe 1x1 transparent PNG pixel to prevent useTexture from failing or suspending indefinitely when URL is missing
+  const transparentPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
   // Load both current and previous panorama textures safely
-  const currentTex = useTexture(transition.currentUrl || activeNode?.url || '');
-  const prevTex = useTexture(transition.prevUrl || transition.currentUrl || activeNode?.url || '');
+  const currentTex = useTexture(transition.currentUrl || activeNode?.url || transparentPixel);
+  const prevTex = useTexture(transition.prevUrl || transition.currentUrl || activeNode?.url || transparentPixel);
 
   // Clone textures to invert X repeating for clean interior rendering
   const currentCloned = useMemo(() => {
@@ -282,6 +285,76 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
     }
   };
 
+  // Render a gorgeous glassmorphic loading/empty state if no tour nodes exist
+  if (!customTourNodes || Object.keys(customTourNodes).length === 0 || !activeTourNodeId || !customTourNodes[activeTourNodeId]) {
+    return (
+      <div style={{ 
+        width: '100%', 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        background: 'var(--bg-gradient, radial-gradient(circle at top, #1e293b, #0f172a))', 
+        color: 'white',
+        fontFamily: 'Outfit, sans-serif',
+        padding: '24px',
+        textAlign: 'center'
+      }}>
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.96); }
+          }
+        `}</style>
+        <div style={{
+          padding: '48px 32px',
+          borderRadius: '24px',
+          background: 'rgba(10, 12, 16, 0.65)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.4)',
+          maxWidth: '480px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '24px'
+        }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            borderRadius: '50%', 
+            background: 'rgba(255, 255, 255, 0.03)', 
+            border: '1px solid rgba(255, 255, 255, 0.08)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            color: 'var(--accent-color, #60a5fa)',
+            boxShadow: '0 0 20px var(--accent-glow, rgba(96, 165, 250, 0.15))'
+          }}>
+            <Hexagon size={32} style={{ animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />
+          </div>
+          
+          <div>
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px' }}>
+              360° Virtual Tours
+            </h3>
+            <p style={{ margin: 0, fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', lineHeight: '1.6' }}>
+              We are currently preparing immersive 360° virtual walkthroughs for this property. Check back soon or connect with a lead broker!
+            </p>
+          </div>
+          
+          {isEditing && (
+            <div style={{ fontSize: '12px', color: 'var(--accent-color, #60a5fa)', background: 'rgba(96, 165, 250, 0.08)', padding: '10px 18px', borderRadius: '12px', border: '1px solid rgba(96, 165, 250, 0.15)', fontWeight: '600' }}>
+              ℹ️ Admin Tip: Go to the "Manage" tab to upload panorama images and build your hotspots.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#0a0c10' }}>
       
@@ -299,7 +372,44 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
       {/* Slide-out Side Panel Removed per user request */}
 
       <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }} style={{ width: '100%', height: '100%' }}>
-        <Suspense fallback={null}>
+        <Suspense fallback={
+          <Html center>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontFamily: 'Outfit, sans-serif',
+              gap: '16px',
+              whiteSpace: 'nowrap',
+              background: 'rgba(10, 12, 16, 0.75)',
+              padding: '24px 36px',
+              borderRadius: '20px',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '0 20px 48px rgba(0, 0, 0, 0.4)'
+            }}>
+              <style>{`
+                @keyframes spin {
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                border: '3px solid rgba(255,255,255,0.08)',
+                borderTopColor: 'var(--accent-color, #60a5fa)',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }} />
+              <span style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)' }}>
+                Loading Immersive 360°...
+              </span>
+            </div>
+          </Html>
+        }>
           <CameraTracker />
           <CameraPatcher activeNode={customTourNodes ? customTourNodes[activeTourNodeId] : null} />
           <SphericalPanorama showHotspots={true} onHotspotClick={handleHotspotClick} onSphereClick={isEditing ? onCanvasClick : null} />
