@@ -30,8 +30,6 @@ export const useViewerStore = create(
   setThemeMode: (mode) => set({ themeMode: mode }),
   accentColor: '#3b82f6',
   setAccentColor: (color) => set({ accentColor: color }),
-  menuPosition: 'top', // 'top', 'bottom'
-  setMenuPosition: (position) => set({ menuPosition: position }),
 
   // Material Swap state
   activeMaterial: 'marble', // 'marble', 'wood', 'concrete'
