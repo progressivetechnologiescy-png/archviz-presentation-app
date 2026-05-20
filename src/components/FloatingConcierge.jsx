@@ -97,33 +97,57 @@ export default function FloatingConcierge() {
     scrollToBottom();
   }, [messages, isOpen]);
 
-  // Search Overpass API for nearest amenity
+  // Search Overpass API for nearest amenity (polygon-aware, resilient multi-mirror fallback)
   const searchNearby = async (amenity, fallbackTag, typeLabel) => {
     if (!coordinates) return null;
-    try {
-      const radius = 5000; // 5km search radius
-      const query = `
-        [out:json];
-        (
-          node["amenity"="${amenity}"](around:${radius},${coordinates.lat},${coordinates.lon});
-          ${fallbackTag ? `node["${fallbackTag.k}"="${fallbackTag.v}"](around:${radius},${coordinates.lat},${coordinates.lon});` : ''}
-        );
-        out 1;
-      `;
-      const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      
-      if (data && data.elements && data.elements.length > 0) {
-        const place = data.elements[0];
-        const name = place.tags?.name || `A local ${typeLabel}`;
-        const distance = getDistanceInMiles(coordinates.lat, coordinates.lon, place.lat, place.lon);
-        return { name, distance: distance.toFixed(1) };
+    const radius = 5000; // 5km search radius
+    
+    // Search nodes, ways (polygons), and relations, requesting calculated centers
+    const query = `
+      [out:json];
+      (
+        node["amenity"="${amenity}"](around:${radius},${coordinates.lat},${coordinates.lon});
+        way["amenity"="${amenity}"](around:${radius},${coordinates.lat},${coordinates.lon});
+        relation["amenity"="${amenity}"](around:${radius},${coordinates.lat},${coordinates.lon});
+        ${fallbackTag ? `
+          node["${fallbackTag.k}"="${fallbackTag.v}"](around:${radius},${coordinates.lat},${coordinates.lon});
+          way["${fallbackTag.k}"="${fallbackTag.v}"](around:${radius},${coordinates.lat},${coordinates.lon});
+          relation["${fallbackTag.k}"="${fallbackTag.v}"](around:${radius},${coordinates.lat},${coordinates.lon});
+        ` : ''}
+      );
+      out center 1;
+    `;
+
+    // Redundant mirror endpoints for high availability (handles blocks or rate limits)
+    const endpoints = [
+      `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`,
+      `https://overpass.kumi.systems/api/interpreter?data=${encodeURIComponent(query)}`,
+      `https://lz4.overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`
+    ];
+
+    for (const url of endpoints) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        
+        if (data && data.elements && data.elements.length > 0) {
+          const place = data.elements[0];
+          const name = place.tags?.name || `A local ${typeLabel}`;
+          // Get latitude and longitude, falling back to way/relation center coordinates
+          const lat = place.lat || place.center?.lat;
+          const lon = place.lon || place.center?.lon;
+          
+          if (lat && lon) {
+            const distance = getDistanceInMiles(coordinates.lat, coordinates.lon, lat, lon);
+            return { name, distance: distance.toFixed(1) };
+          }
+        }
+      } catch (e) {
+        console.warn(`Overpass mirror failed: ${url}`, e);
       }
-      return null;
-    } catch (e) {
-      console.error(e);
-      return null;
     }
+    return null;
   };
 
   const handleSend = async () => {
