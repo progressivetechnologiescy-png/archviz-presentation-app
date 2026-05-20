@@ -115,7 +115,7 @@ export default function FloatingConcierge() {
           relation["${fallbackTag.k}"="${fallbackTag.v}"](around:${radius},${coordinates.lat},${coordinates.lon});
         ` : ''}
       );
-      out center 1;
+      out center 50;
     `;
 
     // Redundant mirror endpoints for high availability (handles blocks or rate limits)
@@ -132,15 +132,43 @@ export default function FloatingConcierge() {
         const data = await res.json();
         
         if (data && data.elements && data.elements.length > 0) {
-          const place = data.elements[0];
-          const name = place.tags?.name || `A local ${typeLabel}`;
-          // Get latitude and longitude, falling back to way/relation center coordinates
-          const lat = place.lat || place.center?.lat;
-          const lon = place.lon || place.center?.lon;
-          
-          if (lat && lon) {
-            const distance = getDistanceInMiles(coordinates.lat, coordinates.lon, lat, lon);
-            return { name, distance: distance.toFixed(1) };
+          const items = data.elements
+            .map(place => {
+              const name = place.tags?.name || place.tags?.brand || `A local ${typeLabel}`;
+              const lat = place.lat || place.center?.lat;
+              const lon = place.lon || place.center?.lon;
+              if (lat && lon) {
+                const distance = getDistanceInMiles(coordinates.lat, coordinates.lon, lat, lon);
+                return { name, distance };
+              }
+              return null;
+            })
+            .filter(Boolean);
+
+          if (items.length > 0) {
+            // Sort by distance ascending
+            items.sort((a, b) => a.distance - b.distance);
+            
+            // Format nearby list for context (top 5 unique names)
+            const seenNames = new Set();
+            const uniqueItems = [];
+            for (const item of items) {
+              if (!seenNames.has(item.name)) {
+                seenNames.add(item.name);
+                uniqueItems.push(item);
+              }
+              if (uniqueItems.length >= 5) break;
+            }
+
+            const nearbyList = uniqueItems
+              .map(p => `${p.name} (${p.distance.toFixed(1)} miles away)`)
+              .join(', ');
+              
+            return { 
+              name: uniqueItems[0].name, 
+              distance: uniqueItems[0].distance.toFixed(1),
+              nearbyList
+            };
           }
         }
       } catch (e) {
@@ -169,19 +197,27 @@ export default function FloatingConcierge() {
     try {
       if (lowerReq.includes('beach') || lowerReq.includes('ocean') || lowerReq.includes('sea')) {
         const place = await searchNearby('NO_AMENITY', { k: 'natural', v: 'beach' }, 'beach');
-        if (place) dynamicContext += `\n[System Info: The nearest beach is ${place.name}, ${place.distance} miles away.]`;
+        if (place) {
+          dynamicContext += `\n[System Info: The nearest beach is ${place.name}, ${place.distance} miles away. Other nearby beaches: ${place.nearbyList}.]`;
+        }
       } 
-      if (lowerReq.includes('school') || lowerReq.includes('grammar') || lowerReq.includes('education')) {
+      if (lowerReq.includes('school') || lowerReq.includes('grammar') || lowerReq.includes('education') || lowerReq.includes('college') || lowerReq.includes('university') || lowerReq.includes('high school')) {
         const place = await searchNearby('school', null, 'grammar school');
-        if (place) dynamicContext += `\n[System Info: The nearest school is ${place.name}, ${place.distance} miles away.]`;
+        if (place) {
+          dynamicContext += `\n[System Info: The nearest school is ${place.name}, ${place.distance} miles away. Other nearby schools: ${place.nearbyList}.]`;
+        }
       } 
-      if (lowerReq.includes('restaurant') || lowerReq.includes('food') || lowerReq.includes('eat') || lowerReq.includes('cafe')) {
+      if (lowerReq.includes('restaurant') || lowerReq.includes('food') || lowerReq.includes('eat') || lowerReq.includes('cafe') || lowerReq.includes('dining')) {
         const place = await searchNearby('restaurant', { k: 'amenity', v: 'cafe' }, 'dining option');
-        if (place) dynamicContext += `\n[System Info: The nearest restaurant is ${place.name}, ${place.distance} miles away.]`;
+        if (place) {
+          dynamicContext += `\n[System Info: The nearest restaurant is ${place.name}, ${place.distance} miles away. Other nearby dining options: ${place.nearbyList}.]`;
+        }
       } 
-      if (lowerReq.includes('hospital') || lowerReq.includes('doctor') || lowerReq.includes('clinic')) {
+      if (lowerReq.includes('hospital') || lowerReq.includes('doctor') || lowerReq.includes('clinic') || lowerReq.includes('pharmacy') || lowerReq.includes('medical')) {
         const place = await searchNearby('hospital', { k: 'amenity', v: 'clinic' }, 'medical facility');
-        if (place) dynamicContext += `\n[System Info: The nearest medical facility is ${place.name}, ${place.distance} miles away.]`;
+        if (place) {
+          dynamicContext += `\n[System Info: The nearest medical facility is ${place.name}, ${place.distance} miles away. Other nearby medical facilities: ${place.nearbyList}.]`;
+        }
       }
     } catch (e) {
       console.error("Map search failed", e);
@@ -201,11 +237,12 @@ export default function FloatingConcierge() {
       try {
         const systemInstruction = `You are Emma, an elegant, professional, and highly knowledgeable luxury real estate concierge for the property located at ${humanReadableLocation}. 
 You answer client questions concisely and politely. Keep answers relatively short (1-3 sentences) unless they ask for a list. 
+If the user asks about distances or what amenities (like schools, beaches, restaurants, medical facilities) are nearby, use the real-world [System Info] context provided in their latest message.
+If the name of a school or amenity is in Greek (e.g. 'Γυμνάσιο Λινόπετρας' or 'Λύκειο Αγίου Νικολάου'), translate it to English (e.g. 'Linopetra High School' or 'Ayios Nikolaos Lyceum') for the client's convenience, or display both. If they ask about "schools" (plural), mention the closest one and list the other top nearby options from the [System Info] context to give them a complete, premium overview of the location.
 If the user asks about pricing, materials, or details, use ONLY the following specifications provided by the real estate agent:
 ---
 ${aiContext || 'No specific details provided yet.'}
----
-If the user asks about distances to amenities, use the [System Info] context provided in their latest message if available.`;
+---`;
 
         // Format history for Gemini (roles must be "user" or "model")
         // Filter out the initial greeting to save tokens, or keep it if you want.

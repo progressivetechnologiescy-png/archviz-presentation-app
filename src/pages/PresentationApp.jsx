@@ -297,7 +297,12 @@ export default function PresentationApp({ forceAdmin = false }) {
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
         {activeTab === 'overview' && <ProjectOverview onNavigate={setActiveTab} />}
         {activeTab === 'cinematics' && <CinematicsTab />}
-        {activeTab === 'renders' && <RendersGallery />}
+        
+        {/* Keep RendersGallery mounted to prevent reloading images every time the user visits this tab */}
+        <div style={{ display: activeTab === 'renders' ? 'block' : 'none', width: '100%', height: '100%' }}>
+          <RendersGallery />
+        </div>
+        
         {activeTab === 'floorplans' && <FloorplanViewer />}
         {activeTab === 'availability' && <AvailabilityTab onNavigate={setActiveTab} />}
         {activeTab === 'map' && <ProjectMap />}
