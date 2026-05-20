@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video, Menu, X, Maximize, Eye, Volume2, VolumeX, Play, Pause, Music } from 'lucide-react';
+import { Layers, Image as ImageIcon, Map, Hexagon, Component, Settings, Info, ListChecks, Share2, Video, Menu, X, Maximize, Eye, Volume2, VolumeX, Play, Pause, Music, SkipForward, SkipBack, ChevronDown, ChevronUp } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 import { supabase } from '../lib/supabase';
 import ProjectOverview from '../views/ProjectOverview';
@@ -54,31 +54,89 @@ const TabButton = (props) => {
 };
 
 function AmbientSoundPlayer() {
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.25);
   const [isMuted, setIsMuted] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
+  const [showTrackList, setShowTrackList] = useState(false);
   const audioRef = useRef(null);
+  const containerRef = useRef(null);
+
+  const TRACKS = [
+    {
+      name: 'Mediterranean Chill',
+      genre: 'Lounge',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
+    },
+    {
+      name: 'Ocean Breeze',
+      genre: 'Lo-Fi Ambient',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+    },
+    {
+      name: 'Luxury Oasis',
+      genre: 'Deep House',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+    },
+    {
+      name: 'Modern Minimalist',
+      genre: 'Tech Ambient',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
+    },
+    {
+      name: 'Serene Classical',
+      genre: 'Piano Solo',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3'
+    }
+  ];
+
+  const currentTrack = TRACKS[currentTrackIndex];
 
   useEffect(() => {
-    // Lazy create the Audio object on client to prevent server-side render issues
-    audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3');
+    audioRef.current = new Audio(currentTrack.url);
     audioRef.current.loop = true;
     audioRef.current.volume = volume;
+
+    const handleOutsideClick = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setShowTrackList(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
+      document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, []);
 
-  // Update volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
     }
   }, [volume, isMuted]);
+
+  const changeTrack = (index) => {
+    if (!audioRef.current) return;
+    const wasPlaying = isPlaying;
+    audioRef.current.pause();
+    
+    setCurrentTrackIndex(index);
+    audioRef.current.src = TRACKS[index].url;
+    audioRef.current.load();
+    
+    if (wasPlaying) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(err => {
+        console.warn("Playback prevented:", err);
+        setIsPlaying(false);
+      });
+    }
+  };
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -98,13 +156,24 @@ function AmbientSoundPlayer() {
     setIsMuted(!isMuted);
   };
 
+  const nextTrack = () => {
+    const nextIdx = (currentTrackIndex + 1) % TRACKS.length;
+    changeTrack(nextIdx);
+  };
+
+  const prevTrack = () => {
+    const prevIdx = (currentTrackIndex - 1 + TRACKS.length) % TRACKS.length;
+    changeTrack(prevIdx);
+  };
+
   return (
     <div 
+      ref={containerRef}
       onMouseEnter={() => setShowVolume(true)}
       onMouseLeave={() => setShowVolume(false)}
       style={{
         position: 'absolute',
-        bottom: '68px', // Sits cleanly above the Progressive watermark
+        bottom: '68px',
         left: '32px',
         zIndex: 100,
         display: 'flex',
@@ -135,40 +204,149 @@ function AmbientSoundPlayer() {
         }
       `}</style>
 
-      {/* Visualizer / Music Icon */}
-      <button 
-        onClick={togglePlay}
-        style={{
-          background: isPlaying ? 'rgba(255,255,255,0.08)' : 'var(--accent-color)',
-          border: 'none',
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
+      {/* Track List Dropdown Overlay */}
+      {showTrackList && (
+        <div style={{
+          position: 'absolute',
+          bottom: 'calc(100% + 12px)',
+          left: 0,
+          width: '240px',
+          background: 'rgba(10, 12, 16, 0.85)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.5)',
+          padding: '12px',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          cursor: 'pointer',
-          boxShadow: isPlaying ? 'none' : '0 4px 12px var(--accent-glow)',
-          transition: 'all 0.2s ease',
-          flexShrink: 0
-        }}
-      >
-        {isPlaying ? <Pause size={14} fill="white" /> : <Play size={14} fill="white" style={{ marginLeft: '2px' }} />}
-      </button>
+          flexDirection: 'column',
+          gap: '6px',
+          zIndex: 101,
+          animation: 'chatEntrance 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
+        }}>
+          <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', padding: '0 8px 4px 8px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            SELECT SOUND GENRE
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxHeight: '180px', overflowY: 'auto' }} className="chat-scrollbar">
+            {TRACKS.map((track, idx) => {
+              const isCurrent = idx === currentTrackIndex;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    changeTrack(idx);
+                    setShowTrackList(false);
+                  }}
+                  style={{
+                    background: isCurrent ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: isCurrent ? 'var(--accent-color)' : 'white',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isCurrent) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isCurrent) e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '700' }}>{track.name}</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: '500' }}>{track.genre}</span>
+                  </div>
+                  {isCurrent && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-color)', boxShadow: '0 0 8px var(--accent-glow)' }} />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-      {/* Track info & Visualizer */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', pointerEvents: 'none' }}>
-        <span style={{ fontSize: '11px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
-          Mediterranean Loop
+      {/* Audio Action Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button 
+          onClick={prevTrack}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'rgba(255,255,255,0.6)',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'color 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = 'white'}
+          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+        >
+          <SkipBack size={14} />
+        </button>
+
+        <button 
+          onClick={togglePlay}
+          style={{
+            background: isPlaying ? 'rgba(255,255,255,0.08)' : 'var(--accent-color)',
+            border: 'none',
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            cursor: 'pointer',
+            boxShadow: isPlaying ? 'none' : '0 4px 12px var(--accent-glow)',
+            transition: 'all 0.2s ease',
+            flexShrink: 0
+          }}
+        >
+          {isPlaying ? <Pause size={14} fill="white" /> : <Play size={14} fill="white" style={{ marginLeft: '2px' }} />}
+        </button>
+
+        <button 
+          onClick={nextTrack}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'rgba(255,255,255,0.6)',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'color 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = 'white'}
+          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+        >
+          <SkipForward size={14} />
+        </button>
+      </div>
+
+      {/* Track Info & Visualizer */}
+      <div 
+        onClick={() => setShowTrackList(!showTrackList)}
+        style={{ display: 'flex', flexDirection: 'column', gap: '2px', cursor: 'pointer', userSelect: 'none' }}
+      >
+        <span style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {currentTrack.genre} <ChevronDown size={10} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '12px', fontWeight: '800', color: 'white' }}>
-            {isPlaying ? 'Lounge Music On' : 'Ambient Music Off'}
+            {currentTrack.name}
           </span>
           
-          {/* visualizer bars */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '22px', width: '20px' }}>
+          {/* Visualizer bars */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px', width: '20px' }}>
             <div className="visualizer-bar" style={{
               height: isPlaying ? undefined : '3px',
               animation: isPlaying ? 'floatBar1 1.2s infinite ease-in-out' : 'none'
