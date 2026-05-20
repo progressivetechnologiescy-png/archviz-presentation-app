@@ -434,21 +434,24 @@ export default function ViewerCanvas() {
               <Environment preset={preset} background={false} environmentIntensity={intensity} />
             )}
             
-            {/* Failsafe, brilliant lighting setup so no model can ever be black */}
-            <ambientLight intensity={intensity * 1.5} />
-            <hemisphereLight skyColor="#ffffff" groundColor="#666666" intensity={intensity * 1.5} />
+            {/* Photorealistic, highly balanced three-point PBR lighting setup */}
+            <ambientLight intensity={intensity * 0.35} />
+            <hemisphereLight skyColor="#e0f2fe" groundColor="#0f172a" intensity={intensity * 0.4} />
             <directionalLight 
-              position={[20, 50, 20]} 
-              intensity={intensity * 2.5} 
+              position={[15, 45, 15]} 
+              intensity={intensity * 2.0} 
               castShadow 
-              shadow-mapSize={[1024, 1024]}
-              shadow-bias={-0.001}
-            />
+              shadow-mapSize={[2048, 2048]} // Higher shadow map resolution for razor-sharp shadows
+              shadow-bias={-0.0001} // Fine-tuned bias to eliminate shadow acne and staircase patterns
+            >
+              <orthographicCamera attach="shadow-camera" args={[-40, 40, 40, -40, 0.1, 150]} />
+            </directionalLight>
             
             <WalkEngine />
             <LoadedArchModel />
 
-            <ContactShadows resolution={512} scale={20} blur={2} opacity={0.5} far={10} color="#000000" />
+            {/* Gorgeous high-fidelity contact shadows on the floor/ground */}
+            <ContactShadows resolution={1024} scale={30} blur={2.5} opacity={0.65} far={15} color="#0b0f19" />
             
             {/* True First-Person Game Camera */}
             <PointerLockControls makeDefault />
