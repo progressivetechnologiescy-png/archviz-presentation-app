@@ -2,18 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 import { X, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Helper to transform Supabase storage URLs into optimized low-resolution thumbnails
-function getThumbnailUrl(originalUrl, size = 'medium') {
-  if (!originalUrl || typeof originalUrl !== 'string') return originalUrl;
-  
-  // Transform standard Supabase storage public object URLs to use the Image Transformation engine
-  if (originalUrl.includes('/storage/v1/object/public/')) {
-    const width = size === 'small' ? 300 : size === 'medium' ? 600 : 1000;
-    return originalUrl.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + `?width=${width}&quality=75`;
-  }
-  
-  return originalUrl;
-}
 
 export default function RendersGallery() {
   const customRenders = useViewerStore(state => state.customRenders);
@@ -55,12 +43,6 @@ export default function RendersGallery() {
   });
 
   const [thumbnailSize, setThumbnailSize] = useState('medium'); // small, medium, large
-  const [useOriginals, setUseOriginals] = useState(() => localStorage.getItem('gallery-use-originals') === 'true');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  useEffect(() => {
-    localStorage.setItem('gallery-use-originals', useOriginals);
-  }, [useOriginals]);
 
   // Autoplay Slideshow Logic
   useEffect(() => {
@@ -153,67 +135,6 @@ export default function RendersGallery() {
         </div>
         
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* Reset / Refresh button */}
-          <button
-            onClick={async () => {
-              setIsRefreshing(true);
-              try {
-                const { supabase: supabaseClient } = await import('../lib/supabase');
-                await useViewerStore.getState().fetchCloudAssets(supabaseClient);
-              } catch (e) {
-                console.error("Refresh failed", e);
-              } finally {
-                setTimeout(() => setIsRefreshing(false), 800);
-              }
-            }}
-            className="glass-panel hover-lift"
-            title="Reset Cache & Reload Renders"
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: '40px', height: '40px', borderRadius: '50%',
-              background: 'var(--input-bg)', color: 'var(--text-secondary)',
-              border: '1px solid var(--border-color)', cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            <svg 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-              style={{
-                animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none'
-              }}
-            >
-              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-              <path d="M16 16h5v5" />
-            </svg>
-          </button>
-
-          {/* Toggle optimized vs original */}
-          <button
-            onClick={() => setUseOriginals(!useOriginals)}
-            className="glass-panel hover-lift"
-            title={useOriginals ? "Switch to Optimized Thumbnails" : "Switch to Full Resolution Renders"}
-            style={{
-              padding: '8px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', cursor: 'pointer',
-              border: useOriginals ? '1px solid var(--accent-color)' : '1px solid var(--border-color)',
-              background: useOriginals ? 'var(--accent-glow)' : 'var(--input-bg)',
-              color: useOriginals ? 'var(--accent-color)' : 'var(--text-secondary)',
-              transition: 'all 0.2s',
-              display: 'flex', alignItems: 'center', gap: '6px', height: '40px'
-            }}
-          >
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: useOriginals ? '#3b82f6' : '#10b981', display: 'inline-block' }}></span>
-            {useOriginals ? 'Full Res' : 'Optimized'}
-          </button>
-
           {/* Thumbnail Size Toggle */}
           <div className="glass-panel" style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '20px', height: '40px', alignItems: 'center' }}>
             {['small', 'medium', 'large'].map(size => (
@@ -271,7 +192,7 @@ export default function RendersGallery() {
                 {folderImages.map((render, i) => {
                   const src = render.image_url;
                   const isRealImage = typeof src === 'string' && (src.startsWith('blob:') || src.startsWith('http'));
-                  const thumbnailUrl = useOriginals ? src : getThumbnailUrl(src, thumbnailSize);
+                  const thumbnailUrl = render.thumbnail_url || src;
                   return (
                     <div 
                       key={render.id || i} 
@@ -298,7 +219,7 @@ export default function RendersGallery() {
                           alt="Render Thumbnail" 
                           loading="lazy" 
                           onError={(e) => {
-                            // If the optimized thumbnail URL fails (e.g. storage transform disabled), fall back to original raw image
+                            // If the pre-generated static thumbnail URL fails, fall back to original raw image
                             if (e.target.src !== src) {
                               e.target.src = src;
                             }

@@ -18,6 +18,7 @@ create table if not exists project_renders (
     project_id text not null,
     folder_name text not null,
     image_url text not null,
+    thumbnail_url text,
     is_overview boolean default false,
     overview_order integer default 0,
     folder_order integer default 0,
@@ -167,6 +168,7 @@ CREATE TABLE IF NOT EXISTS project_renders (
   project_id text NOT NULL,
   folder_name text NOT NULL DEFAULT 'Uncategorized',
   image_url text NOT NULL,
+  thumbnail_url text,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

@@ -934,23 +934,51 @@ export default function AssetManager() {
                       }
 
                       if (!supabase) {
-                        files.forEach(f => addCustomRender({ id: uuidv4(), folder_name: targetFolder, image_url: URL.createObjectURL(f), is_overview: false }));
+                        files.forEach(f => {
+                          const localUrl = URL.createObjectURL(f);
+                          addCustomRender({ 
+                            id: uuidv4(), 
+                            folder_name: targetFolder, 
+                            image_url: localUrl, 
+                            thumbnail_url: localUrl, 
+                            is_overview: false 
+                          });
+                        });
                         return;
                       }
                       setIsUploading(true);
                       try {
                         for (const file of files) {
-                          const optimizedFile = await compressImage(file, 2560, 0.85); // Renders benefit from slightly higher res
-                          const fileExt = optimizedFile.name.split('.').pop();
-                          const fileName = `${uuidv4()}.${fileExt}`;
-                          const filePath = `renders/${fileName}`;
+                          // 1. High-Res Image Compression & Upload
+                          const highResFile = await compressImage(file, 2560, 0.85); // High-res render
+                          const highResExt = highResFile.name.split('.').pop();
+                          const highResName = `${uuidv4()}.${highResExt}`;
+                          const highResPath = `renders/${highResName}`;
                           
-                          const { error: uploadError } = await supabase.storage.from('archviz_models').upload(filePath, optimizedFile);
-                          if (uploadError) throw uploadError;
+                          const { error: highResUploadError } = await supabase.storage.from('archviz_models').upload(highResPath, highResFile);
+                          if (highResUploadError) throw highResUploadError;
                           
-                          const { data: { publicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(filePath);
+                          const { data: { publicUrl: highResPublicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(highResPath);
                           
-                          const newRow = { project_id: 'demo_project', folder_name: targetFolder, image_url: publicUrl, is_overview: false };
+                          // 2. Low-Res Thumbnail Compression & Upload
+                          const thumbFile = await compressImage(file, 400, 0.70); // Tiny fast-loading thumbnail
+                          const thumbExt = thumbFile.name.split('.').pop();
+                          const thumbName = `thumb_${highResName}`; // Correlated name
+                          const thumbPath = `renders/thumbnails/${thumbName}`;
+                          
+                          const { error: thumbUploadError } = await supabase.storage.from('archviz_models').upload(thumbPath, thumbFile);
+                          if (thumbUploadError) throw thumbUploadError;
+                          
+                          const { data: { publicUrl: thumbPublicUrl } } = supabase.storage.from('archviz_models').getPublicUrl(thumbPath);
+                          
+                          // 3. Database Insertion
+                          const newRow = { 
+                            project_id: 'demo_project', 
+                            folder_name: targetFolder, 
+                            image_url: highResPublicUrl, 
+                            thumbnail_url: thumbPublicUrl, 
+                            is_overview: false 
+                          };
                           const { data: dbData, error: dbError } = await supabase.from('project_renders').insert(newRow).select().single();
                           if (dbError) throw dbError;
                           
@@ -1019,7 +1047,7 @@ export default function AssetManager() {
                             }
                           }}
                         >
-                          <img src={render.image_url} alt="render thumbnail" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }} />
+                          <img src={render.thumbnail_url || render.image_url} alt="render thumbnail" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }} />
                           <button
                             onClick={() => useViewerStore.getState().toggleOverviewRender(supabase, render.id, render.is_overview)}
                             title={render.is_overview ? "Remove from Overview Slideshow" : "Add to Overview Slideshow"}

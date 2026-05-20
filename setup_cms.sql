@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS project_renders (
   project_id text NOT NULL,
   folder_name text NOT NULL DEFAULT 'Uncategorized',
   image_url text NOT NULL,
+  thumbnail_url text,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

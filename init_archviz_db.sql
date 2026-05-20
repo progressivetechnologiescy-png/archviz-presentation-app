@@ -18,6 +18,7 @@ create table if not exists project_renders (
     project_id text not null,
     folder_name text not null,
     image_url text not null,
+    thumbnail_url text,
     is_overview boolean default false,
     overview_order integer default 0,
     folder_order integer default 0,
