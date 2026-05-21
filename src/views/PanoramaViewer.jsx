@@ -253,6 +253,7 @@ function SphericalPanorama({ showHotspots, onHotspotClick, onSphereClick }) {
 
 export default function PanoramaViewer({ isEditing = false, onCanvasClick = null }) {
   const [useGyro, setUseGyro] = useState(false);
+  const [gyroErrorMessage, setGyroErrorMessage] = useState(null);
   const inventoryUnits = useViewerStore(state => state.inventoryUnits);
   
   const { companyName, activeTourNodeId, customTourNodes, setActiveTourNodeId, activeHotspotData, setActiveHotspotData } = useViewerStore();
@@ -267,21 +268,28 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
   const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
   const requestGyro = async () => {
+    // Check if insecure context (HTTP on local IP addresses)
+    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      setGyroErrorMessage('Gyroscope requires a secure HTTPS connection. Drag the screen to look around, or deploy to HTTPS to enable device orientation look.');
+      return;
+    }
+
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
       try {
         const permissionState = await DeviceOrientationEvent.requestPermission();
         if (permissionState === 'granted') {
           setUseGyro(true);
+          setGyroErrorMessage(null);
         } else {
-          alert('Gyroscope access denied. To fix this on iOS, go to Settings > Safari > clear history, or ensure "Motion & Orientation Access" is enabled, then refresh.');
+          setGyroErrorMessage('Gyroscope access denied. Drag the screen to look around, or enable "Motion & Orientation Access" in Safari Website Settings to use orientation look.');
         }
       } catch (error) {
         console.error('Error requesting gyroscope permission:', error);
-        alert(`Gyro error: ${error.message || error}`);
-        setUseGyro(true);
+        setGyroErrorMessage(`Unable to access orientation: ${error.message || error}. Drag the screen to look around.`);
       }
     } else {
       setUseGyro(true);
+      setGyroErrorMessage(null);
     }
   };
 
@@ -436,6 +444,59 @@ export default function PanoramaViewer({ isEditing = false, onCanvasClick = null
           )}
         </Suspense>
       </Canvas>
+
+      {/* Floating Gyroscope Error Banner */}
+      {gyroErrorMessage && (
+        <div style={{
+          position: 'absolute',
+          bottom: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'calc(100% - 48px)',
+          maxWidth: '400px',
+          background: 'rgba(239, 68, 68, 0.15)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '16px',
+          padding: '12px 16px',
+          zIndex: 100,
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+          fontFamily: 'Outfit, sans-serif'
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
+            <span style={{ fontSize: '11px', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', color: '#f87171' }}>
+              Orientation Info
+            </span>
+            <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.9)', lineHeight: '1.4' }}>
+              {gyroErrorMessage}
+            </span>
+          </div>
+          <button 
+            onClick={() => setGyroErrorMessage(null)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'rgba(255,255,255,0.6)',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'color 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = 'white'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
