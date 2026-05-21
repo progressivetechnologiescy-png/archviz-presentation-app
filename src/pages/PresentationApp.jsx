@@ -53,7 +53,7 @@ const TabButton = (props) => {
   );
 };
 
-function AmbientSoundPlayer() {
+function AmbientSoundPlayer({ isMobileDrawer = false }) {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.25);
@@ -62,13 +62,17 @@ function AmbientSoundPlayer() {
   const [showTrackList, setShowTrackList] = useState(false);
   const audioRef = useRef(null);
   const containerRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1100);
+  const [isMobile, setIsMobile] = useState(isMobileDrawer || window.innerWidth <= 1100);
 
   useEffect(() => {
+    if (isMobileDrawer) {
+      setIsMobile(true);
+      return;
+    }
     const handleResize = () => setIsMobile(window.innerWidth <= 1100);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isMobileDrawer]);
 
   const TRACKS = [
     {
@@ -179,11 +183,12 @@ function AmbientSoundPlayer() {
       onMouseEnter={() => !isMobile && setShowVolume(true)}
       onMouseLeave={() => !isMobile && setShowVolume(false)}
       style={{
-        position: 'absolute',
-        bottom: isMobile ? 'auto' : '68px',
-        top: isMobile ? '96px' : 'auto',
-        left: isMobile ? '16px' : '32px',
-        right: isMobile ? '16px' : 'auto',
+        position: isMobileDrawer ? 'relative' : 'absolute',
+        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : '68px'),
+        top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
+        left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
+        right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
+        width: isMobileDrawer ? '100%' : 'auto',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
@@ -701,6 +706,15 @@ export default function PresentationApp({ forceAdmin = false }) {
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
+          {activeTab !== 'manage' && isMobileDevice && (
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'Outfit, sans-serif' }}>
+                Ambient Music
+              </div>
+              <AmbientSoundPlayer isMobileDrawer={true} />
+            </div>
+          )}
+
           <button 
             onClick={() => { setIsShareModalOpen(true); setIsMobileMenuOpen(false); }}
             className="glass-panel" 
@@ -749,7 +763,7 @@ export default function PresentationApp({ forceAdmin = false }) {
       </div>
 
       {/* Premium ambient soundtrack player loop */}
-      {activeTab !== 'manage' && <AmbientSoundPlayer />}
+      {activeTab !== 'manage' && !isMobileDevice && <AmbientSoundPlayer />}
 
       {/* Global Footer Watermark */}
       <div style={{
