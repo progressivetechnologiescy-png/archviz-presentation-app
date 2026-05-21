@@ -189,6 +189,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false }) {
         left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
         right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
         width: isMobileDrawer ? '100%' : 'auto',
+        maxWidth: isMobileDrawer ? '320px' : 'none',
+        margin: isMobileDrawer ? '0 auto' : '0',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
@@ -694,6 +696,32 @@ export default function PresentationApp({ forceAdmin = false }) {
         transition: 'opacity 0.3s ease, transform 0.3s ease',
         transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(-20px)'
       }}>
+        {/* Close Button to Exit Mobile Drawer */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="glass-panel icon-action-btn"
+          title="Close Menu"
+          style={{
+            position: 'absolute',
+            top: '24px',
+            right: '24px',
+            width: '48px',
+            height: '48px',
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            zIndex: 102
+          }}
+        >
+          <X size={24} />
+        </button>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
           <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" isMobile onClick={() => setActiveTab('overview')} />
           <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" isMobile onClick={() => setActiveTab('renders')} />
@@ -707,8 +735,8 @@ export default function PresentationApp({ forceAdmin = false }) {
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
           {activeTab !== 'manage' && isMobileDevice && (
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'Outfit, sans-serif' }}>
+            <div style={{ marginBottom: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+              <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'Outfit, sans-serif', width: '100%', maxWidth: '320px', textAlign: 'left' }}>
                 Ambient Music
               </div>
               <AmbientSoundPlayer isMobileDrawer={true} />
@@ -786,7 +814,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         </a>
       </div>
 
-      {activeTab !== 'standalone' && <FloatingConcierge />}
+      {activeTab !== 'standalone' && (!isMobileDevice || !isMobileMenuOpen) && <FloatingConcierge />}
       {isShareModalOpen && <ShareModal onClose={() => setIsShareModalOpen(false)} />}
     </div>
   );
