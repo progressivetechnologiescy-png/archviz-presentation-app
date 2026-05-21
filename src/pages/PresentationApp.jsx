@@ -62,6 +62,13 @@ function AmbientSoundPlayer() {
   const [showTrackList, setShowTrackList] = useState(false);
   const audioRef = useRef(null);
   const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1100);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 1100);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const TRACKS = [
     {
@@ -169,18 +176,21 @@ function AmbientSoundPlayer() {
   return (
     <div 
       ref={containerRef}
-      onMouseEnter={() => setShowVolume(true)}
-      onMouseLeave={() => setShowVolume(false)}
+      onMouseEnter={() => !isMobile && setShowVolume(true)}
+      onMouseLeave={() => !isMobile && setShowVolume(false)}
       style={{
         position: 'absolute',
-        bottom: '68px',
-        left: '32px',
+        bottom: isMobile ? 'auto' : '68px',
+        top: isMobile ? '96px' : 'auto',
+        left: isMobile ? '16px' : '32px',
+        right: isMobile ? '16px' : 'auto',
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
-        gap: '12px',
-        padding: '10px 18px',
-        borderRadius: '20px',
+        justifyContent: isMobile ? 'space-between' : 'flex-start',
+        gap: isMobile ? '8px' : '12px',
+        padding: isMobile ? '8px 14px' : '10px 18px',
+        borderRadius: isMobile ? '16px' : '20px',
         background: 'rgba(10, 12, 16, 0.75)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
@@ -208,9 +218,11 @@ function AmbientSoundPlayer() {
       {showTrackList && (
         <div style={{
           position: 'absolute',
-          bottom: 'calc(100% + 12px)',
+          bottom: isMobile ? 'auto' : 'calc(100% + 12px)',
+          top: isMobile ? 'calc(100% + 8px)' : 'auto',
           left: 0,
-          width: '240px',
+          right: 0,
+          width: isMobile ? '100%' : '240px',
           background: 'rgba(10, 12, 16, 0.85)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
@@ -335,14 +347,17 @@ function AmbientSoundPlayer() {
       {/* Track Info & Visualizer */}
       <div 
         onClick={() => setShowTrackList(!showTrackList)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '2px', cursor: 'pointer', userSelect: 'none' }}
+        style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'center' : 'flex-start', gap: isMobile ? '8px' : '2px', cursor: 'pointer', userSelect: 'none' }}
       >
-        <span style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {currentTrack.genre} <ChevronDown size={10} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-        </span>
+        {!isMobile ? (
+          <span style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {currentTrack.genre} <ChevronDown size={10} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+          </span>
+        ) : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '12px', fontWeight: '800', color: 'white' }}>
+          <span style={{ fontSize: isMobile ? '13px' : '12px', fontWeight: '800', color: 'white', display: 'flex', alignItems: 'center', gap: '4px' }}>
             {currentTrack.name}
+            {isMobile && <ChevronDown size={12} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.7 }} />}
           </span>
           
           {/* Visualizer bars */}
@@ -368,44 +383,46 @@ function AmbientSoundPlayer() {
       </div>
 
       {/* Volume Controls (revealed on hover) */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        width: showVolume ? '100px' : '0px',
-        opacity: showVolume ? 1 : 0,
-        overflow: 'hidden',
-        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-        paddingLeft: showVolume ? '8px' : '0px',
-        borderLeft: showVolume ? '1px solid rgba(255,255,255,0.1)' : 'none'
-      }}>
-        <button 
-          onClick={toggleMute}
-          style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
-        >
-          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-        </button>
-        <input 
-          type="range"
-          min="0"
-          max="1"
-          step="0.05"
-          value={volume}
-          onChange={(e) => {
-            setVolume(parseFloat(e.target.value));
-            setIsMuted(false);
-          }}
-          style={{
-            width: '60px',
-            height: '4px',
-            WebkitAppearance: 'none',
-            background: 'rgba(255,255,255,0.2)',
-            borderRadius: '2px',
-            outline: 'none',
-            cursor: 'pointer'
-          }}
-        />
-      </div>
+      {!isMobile && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          width: showVolume ? '100px' : '0px',
+          opacity: showVolume ? 1 : 0,
+          overflow: 'hidden',
+          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          paddingLeft: showVolume ? '8px' : '0px',
+          borderLeft: showVolume ? '1px solid rgba(255,255,255,0.1)' : 'none'
+        }}>
+          <button 
+            onClick={toggleMute}
+            style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+          >
+            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+          <input 
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={volume}
+            onChange={(e) => {
+              setVolume(parseFloat(e.target.value));
+              setIsMuted(false);
+            }}
+            style={{
+              width: '60px',
+              height: '4px',
+              WebkitAppearance: 'none',
+              background: 'rgba(255,255,255,0.2)',
+              borderRadius: '2px',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
