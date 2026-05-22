@@ -246,17 +246,17 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
           left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
           right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
-          width: isMinimized ? '54px' : (isMobileDrawer ? '100%' : '380px'),
+          width: isMinimized ? '54px' : (isMobileDrawer ? '100%' : (isMobile ? 'calc(100% - 32px)' : '380px')),
           maxWidth: isMobileDrawer ? '320px' : 'none',
           height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '58px'),
           borderRadius: isMinimized ? '27px' : (isMobileDrawer ? '24px' : '29px'),
-          padding: isMinimized ? '0px' : (isMobileDrawer ? '12px' : '6px 16px'),
+          padding: isMinimized ? '0px 10px' : (isMobileDrawer ? '12px' : '6px 16px'),
           margin: isMobileDrawer ? '0 auto' : '0',
           zIndex: 100,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: isMinimized ? 'center' : 'flex-start',
+          justifyContent: 'flex-start',
           gap: isMinimized ? '0px' : '12px',
           overflow: isMinimized ? 'hidden' : 'visible',
           cursor: isMinimized ? 'pointer' : 'default',
@@ -359,18 +359,20 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
 
       {/* Expanded Controls Panel Wrapper */}
       <div style={{
-        display: isMinimized ? 'none' : 'flex',
+        display: 'flex',
         flexDirection: isMobileDrawer ? 'column' : 'row',
         alignItems: isMobileDrawer ? 'stretch' : 'center',
         flex: 1,
         minWidth: 0,
+        maxWidth: isMinimized ? '0px' : '320px',
         opacity: isMinimized ? 0 : 1,
-        transform: isMinimized ? 'translateX(10px)' : 'translateX(0)',
+        transform: isMinimized ? 'translateX(-16px)' : 'translateX(0)',
         pointerEvents: isMinimized ? 'none' : 'auto',
-        transition: 'opacity 0.2s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        visibility: isMinimized ? 'hidden' : 'visible',
         whiteSpace: 'nowrap',
         gap: isMobileDrawer ? '8px' : '12px',
-        overflow: isMinimized ? 'hidden' : 'visible'
+        overflow: 'hidden',
+        transition: 'max-width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 0.4s ease'
       }}>
         {/* Row for Track info and control buttons */}
         <div style={{

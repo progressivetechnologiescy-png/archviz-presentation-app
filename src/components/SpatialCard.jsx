@@ -9,7 +9,7 @@ const SpatialCard = React.forwardRef(({ children, style = {}, className = '', ma
   const cardRef = useRef(null);
   const [tiltStyle, setTiltStyle] = useState({
     transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
-    transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+    transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
   });
 
   const handleMouseMove = (e) => {
@@ -55,7 +55,7 @@ const SpatialCard = React.forwardRef(({ children, style = {}, className = '', ma
     // Smoothly spring-reset tilt to home position
     setTiltStyle({
       transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
-      transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' // Springy return bounce
+      transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' // Springy return bounce
     });
 
     if (props.onMouseLeave) {
@@ -82,6 +82,9 @@ const SpatialCard = React.forwardRef(({ children, style = {}, className = '', ma
       style={{
         ...style,
         ...tiltStyle,
+        transition: style.transition 
+          ? `${style.transition}, ${tiltStyle.transition}`
+          : tiltStyle.transition,
         cursor: onClick ? 'pointer' : 'default'
       }}
       {...props}
