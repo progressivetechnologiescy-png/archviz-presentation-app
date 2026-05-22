@@ -30,15 +30,15 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '12px',
         // Transparent in desktop mode so the absolute sliding capsule shows through.
         background: isMobile 
-          ? (active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'))
+          ? (active ? 'rgba(255, 255, 255, 0.15)' : (isHovered ? 'rgba(255,255,255,0.08)' : 'transparent'))
           : (active ? 'transparent' : (isHovered ? 'rgba(255,255,255,0.06)' : 'transparent')),
         border: 'none',
-        color: 'white',
+        color: active ? '#ffffff' : (isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'),
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600',
-        boxShadow: (isMobile && active) ? '0 4px 12px var(--accent-glow)' : 'none',
+        boxShadow: (isMobile && active) ? '0 8px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 12px var(--accent-glow)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
-        opacity: active ? 1 : (isHovered ? 1 : 0.85),
+        opacity: 1,
         padding: isMobile ? '16px 24px' : undefined,
         width: isMobile ? '100%' : 'auto',
         justifyContent: isMobile ? 'flex-start' : 'center',
@@ -584,9 +584,12 @@ export default function PresentationApp({ forceAdmin = false }) {
             <SpatialCard className="glass-panel" maxTilt={4} style={{ 
               position: 'relative',
               display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
-              background: 'rgba(10, 12, 16, 0.8)',
-              boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)',
-              overflow: 'visible'
+              background: 'rgba(8, 10, 15, 0.85)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.06)',
+              overflow: 'visible',
+              backdropFilter: 'blur(30px)',
+              WebkitBackdropFilter: 'blur(30px)'
             }}>
               {/* Liquid Sliding Background Capsule */}
               {activeRect.width > 0 && (
@@ -598,10 +601,11 @@ export default function PresentationApp({ forceAdmin = false }) {
                     left: 0,
                     width: `${activeRect.width}px`,
                     transform: `translateX(${activeRect.left}px)`,
-                    background: 'linear-gradient(135deg, var(--accent-color) 0%, #60a5fa 100%)',
+                    background: 'rgba(255, 255, 255, 0.12)',
                     borderRadius: '12px',
                     transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-                    boxShadow: '0 8px 24px var(--accent-glow)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 16px var(--accent-glow)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
                     zIndex: 1,
                     pointerEvents: 'none'
                   }}

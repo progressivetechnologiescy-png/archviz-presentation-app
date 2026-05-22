@@ -108,9 +108,11 @@ export default function StandaloneView() {
           .interactive-controls { 
             display: flex; align-items: center; gap: 24px; padding: 12px 24px; 
             border-radius: 40px; pointer-events: auto;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(10, 12, 16, 0.8);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(8, 10, 15, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
           }
           .tour-btn { 
             padding: 12px 24px; border-radius: 30px; border: none; 
@@ -153,8 +155,8 @@ export default function StandaloneView() {
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     background: controlMode === 'orbit' ? 'rgba(255,255,255,0.12)' : 'transparent',
                     color: controlMode === 'orbit' ? 'white' : 'rgba(255,255,255,0.45)',
-                    border: controlMode === 'orbit' ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
-                    boxShadow: controlMode === 'orbit' ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
+                    border: controlMode === 'orbit' ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+                    boxShadow: controlMode === 'orbit' ? '0 8px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 12px var(--accent-glow)' : 'none'
                   }}
                 >
                   <Compass size={14} style={{ color: controlMode === 'orbit' ? 'var(--accent-color, #3b82f6)' : 'inherit', transition: 'color 0.3s' }} />
@@ -176,8 +178,8 @@ export default function StandaloneView() {
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     background: controlMode === 'walk' ? 'rgba(255,255,255,0.12)' : 'transparent',
                     color: controlMode === 'walk' ? 'white' : 'rgba(255,255,255,0.45)',
-                    border: controlMode === 'walk' ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
-                    boxShadow: controlMode === 'walk' ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
+                    border: controlMode === 'walk' ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+                    boxShadow: controlMode === 'walk' ? '0 8px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12), 0 0 12px var(--accent-glow)' : 'none'
                   }}
                 >
                   <Move size={14} style={{ color: controlMode === 'walk' ? 'var(--accent-color, #3b82f6)' : 'inherit', transition: 'color 0.3s' }} />
