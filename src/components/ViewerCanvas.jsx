@@ -1,6 +1,6 @@
 import React, { Suspense, useState, useMemo } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { Environment, PointerLockControls, ContactShadows, Html, useProgress, useFBX, useGLTF, PerformanceMonitor, SoftShadows, BakeShadows } from '@react-three/drei';
+import { Environment, PointerLockControls, OrbitControls, ContactShadows, Html, useProgress, useFBX, useGLTF, PerformanceMonitor, SoftShadows, BakeShadows } from '@react-three/drei';
 import { XR, createXRStore } from '@react-three/xr';
 import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
@@ -96,6 +96,7 @@ function WalkEngine() {
 
   useFrame((state, delta) => {
     const storeState = useViewerStore.getState();
+    if (storeState.controlMode !== 'walk') return;
 
     // Process Look Direction (Virtual Rotation Pad for Mobile)
     if (storeState.lookLeft || storeState.lookRight) {
@@ -353,6 +354,33 @@ function LoadedArchModel() {
 
 const store = createXRStore();
 
+// Poly Haven premium lightweight CC0 1K HDRIs for hyper-realistic lighting & reflections
+const HDR_MAPS = {
+  morning: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kiara_1_dawn_1k.hdr',
+  noon: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/potsdamer_platz_1k.hdr',
+  night: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/sunset_fairway_1k.hdr'
+};
+
+// Fail-safe boundary: degrades to local Drei presets if network/CDN fails
+class EnvironmentErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error) {
+    console.warn("HDR environment map failed to load, falling back to local built-in preset:", error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <Environment preset={this.props.preset} background={false} environmentIntensity={this.props.intensity} />;
+    }
+    return this.props.children;
+  }
+}
+
 // Wrapper for custom JPEG/PNG panoramas to act as HDRI Environment
 function CustomEnvironment({ url }) {
   const texture = useLoader(THREE.TextureLoader, url);
@@ -389,7 +417,7 @@ function ModelLoader() {
 }
 
 export default function ViewerCanvas() {
-  const { lightingPreset, customPanorama } = useViewerStore();
+  const { lightingPreset, customPanorama, controlMode } = useViewerStore();
   // Dynamic scaling for smoothness
   const [dpr, setDpr] = useState(1.5);
   const [showQR, setShowQR] = useState(false);
@@ -400,6 +428,8 @@ export default function ViewerCanvas() {
   if(lightingPreset === 'morning') { preset = 'dawn'; intensity = 0.8; }
   else if(lightingPreset === 'noon') { preset = 'apartment'; intensity = 1.2; }
   else if(lightingPreset === 'night') { preset = 'sunset'; intensity = 0.5; } // Replaced true 'night' with the stunning Golden Hour 'sunset' preset
+
+  const hdrUrl = HDR_MAPS[lightingPreset] || HDR_MAPS.noon;
 
   return (
     <>
@@ -433,7 +463,9 @@ export default function ViewerCanvas() {
             {customPanorama ? (
               <CustomEnvironment url={customPanorama} />
             ) : (
-              <Environment preset={preset} background={false} environmentIntensity={intensity} />
+              <EnvironmentErrorBoundary key={hdrUrl} preset={preset} intensity={intensity}>
+                <Environment files={hdrUrl} background={false} environmentIntensity={intensity} />
+              </EnvironmentErrorBoundary>
             )}
             
             {/* Photorealistic, highly balanced three-point PBR lighting setup */}
@@ -455,8 +487,20 @@ export default function ViewerCanvas() {
             {/* Gorgeous high-fidelity contact shadows on the floor/ground */}
             <ContactShadows resolution={1024} scale={30} blur={2.5} opacity={0.65} far={15} color="#0b0f19" />
             
-            {/* True First-Person Game Camera */}
-            <PointerLockControls makeDefault />
+            {/* Conditional Camera Controls depending on controlMode */}
+            {controlMode === 'walk' ? (
+              <PointerLockControls makeDefault />
+            ) : (
+              <OrbitControls 
+                makeDefault 
+                enableDamping 
+                dampingFactor={0.05} 
+                maxPolarAngle={Math.PI / 2 - 0.05} // prevent camera dipping below floor
+                minDistance={2} 
+                maxDistance={45} 
+                target={[0, 1.5, 0]} // focus center
+              />
+            )}
           </Suspense>
         </XR>
       </Canvas>

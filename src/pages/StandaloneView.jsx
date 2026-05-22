@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 import VirtualRemote from '../components/VirtualRemote';
-import { Sun, Moon, Sunrise, Play, Square, MousePointer2 } from 'lucide-react';
+import { Sun, Moon, Sunrise, Play, Square, MousePointer2, Compass, Move } from 'lucide-react';
 import ViewerCanvas from '../components/ViewerCanvas';
 
 export default function StandaloneView() {
-  const { isTouring, toggleTouring, setMovement } = useViewerStore();
+  const { isTouring, toggleTouring, setMovement, controlMode, setControlMode } = useViewerStore();
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (useViewerStore.getState().controlMode !== 'walk') return;
       switch (e.code) {
         case 'KeyW': case 'ArrowUp': setMovement('moveForward', true); break;
         case 'KeyA': case 'ArrowLeft': setMovement('moveLeft', true); break;
@@ -20,6 +21,7 @@ export default function StandaloneView() {
     };
 
     const handleKeyUp = (e) => {
+      if (useViewerStore.getState().controlMode !== 'walk') return;
       switch (e.code) {
         case 'KeyW': case 'ArrowUp': setMovement('moveForward', false); break;
         case 'KeyA': case 'ArrowLeft': setMovement('moveLeft', false); break;
@@ -46,18 +48,32 @@ export default function StandaloneView() {
         <ViewerCanvas />
       </div>
 
-      {/* On-Screen Instructions for First-Person Mode */}
-      <div style={{ 
-        position: 'absolute', top: '120px', left: '50%', transform: 'translateX(-50%)',
-        background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '12px 24px', borderRadius: '30px',
-        color: 'white', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 5, pointerEvents: 'none',
-        border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-        animation: 'fadeOutOld 10s ease-in forwards' // Auto-hide after 10 seconds
-      }}>
-        <MousePointer2 size={16} />
-        <span style={{ fontSize: '14px', fontWeight: '500', letterSpacing: '0.5px' }}>
-          Click screen to look around. Use <strong>W A S D</strong> to walk.
-        </span>
+      {/* On-Screen Instructions for active control mode (re-trigger fade animation on mode switch) */}
+      <div 
+        key={controlMode}
+        style={{ 
+          position: 'absolute', top: '120px', left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(10, 12, 16, 0.85)', backdropFilter: 'blur(12px)', padding: '12px 24px', borderRadius: '30px',
+          color: 'white', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 5, pointerEvents: 'none',
+          border: '1px solid rgba(255,255,255,0.15)', boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
+          animation: 'fadeOutOld 10s ease-in forwards' // Auto-hide after 10 seconds
+        }}
+      >
+        {controlMode === 'orbit' ? (
+          <>
+            <Compass size={16} style={{ color: 'var(--accent-color, #3b82f6)' }} />
+            <span style={{ fontSize: '14px', fontWeight: '500', letterSpacing: '0.5px' }}>
+              Drag to orbit. Scroll to zoom. Right-click to pan.
+            </span>
+          </>
+        ) : (
+          <>
+            <MousePointer2 size={16} style={{ color: 'var(--accent-color, #3b82f6)' }} />
+            <span style={{ fontSize: '14px', fontWeight: '500', letterSpacing: '0.5px' }}>
+              Click screen to lock cursor. Use <strong>W A S D</strong> to walk.
+            </span>
+          </>
+        )}
       </div>
 
       <VirtualRemote />
@@ -89,23 +105,82 @@ export default function StandaloneView() {
 
         <div className="interactive-controls-wrapper">
           {/* Main Controls Container */}
-          <div className="glass-panel interactive-controls">
-          
-          {/* Cinematic Tour Button */}
-          <button 
-            onClick={toggleTouring}
-            className="hover-lift tour-btn"
-            style={{ 
-              background: isTouring ? 'rgba(239, 68, 68, 0.2)' : 'white', 
-              color: isTouring ? '#ef4444' : 'black', 
-              boxShadow: isTouring ? 'inset 0 0 0 1px #ef4444' : '0 8px 16px rgba(255,255,255,0.2)'
+          <div className="glass-panel interactive-controls" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            
+            {/* Control Mode Segmented Toggle Switch */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '4px', 
+              background: 'rgba(255,255,255,0.03)', 
+              padding: '4px', 
+              borderRadius: '30px', 
+              border: '1px solid rgba(255,255,255,0.08)' 
             }}>
-            {isTouring ? <Square size={18}/> : <Play size={18} fill="black" />}
-            <span className="tour-btn-text">{isTouring ? 'Stop Tour' : 'Play Cinematic Tour'}</span>
-          </button>
-          
+              <button 
+                onClick={() => setControlMode('orbit')}
+                className="hover-lift"
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: '24px',
+                  cursor: 'pointer',
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: controlMode === 'orbit' ? 'rgba(255,255,255,0.12)' : 'transparent',
+                  color: controlMode === 'orbit' ? 'white' : 'rgba(255,255,255,0.45)',
+                  border: controlMode === 'orbit' ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
+                  boxShadow: controlMode === 'orbit' ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
+                }}
+              >
+                <Compass size={14} style={{ color: controlMode === 'orbit' ? 'var(--accent-color, #3b82f6)' : 'inherit', transition: 'color 0.3s' }} />
+                <span>3D Orbit</span>
+              </button>
+              
+              <button 
+                onClick={() => setControlMode('walk')}
+                className="hover-lift"
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: '24px',
+                  cursor: 'pointer',
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: controlMode === 'walk' ? 'rgba(255,255,255,0.12)' : 'transparent',
+                  color: controlMode === 'walk' ? 'white' : 'rgba(255,255,255,0.45)',
+                  border: controlMode === 'walk' ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
+                  boxShadow: controlMode === 'walk' ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
+                }}
+              >
+                <Move size={14} style={{ color: controlMode === 'walk' ? 'var(--accent-color, #3b82f6)' : 'inherit', transition: 'color 0.3s' }} />
+                <span>Walk Explorer</span>
+              </button>
+            </div>
+
+            {/* Vertical Splitter divider inside the panel */}
+            <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.15)' }} />
+
+            {/* Cinematic Tour Button */}
+            <button 
+              onClick={toggleTouring}
+              className="hover-lift tour-btn"
+              style={{ 
+                background: isTouring ? 'rgba(239, 68, 68, 0.2)' : 'white', 
+                color: isTouring ? '#ef4444' : 'black', 
+                boxShadow: isTouring ? 'inset 0 0 0 1px #ef4444' : '0 8px 16px rgba(255,255,255,0.2)'
+              }}>
+              {isTouring ? <Square size={18}/> : <Play size={18} fill="black" />}
+              <span className="tour-btn-text">{isTouring ? 'Stop Tour' : 'Play Cinematic Tour'}</span>
+            </button>
+            
+          </div>
         </div>
-      </div>
 
     </div>
   );

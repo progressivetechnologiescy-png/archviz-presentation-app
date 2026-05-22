@@ -48,6 +48,8 @@ export const useViewerStore = create(
   setLightboxOpen: (isOpen) => set({ isLightboxOpen: isOpen }),
 
   // Walk Engine state (WASD / D-Pad)
+  controlMode: 'orbit', // 'orbit' or 'walk'
+  setControlMode: (mode) => set({ controlMode: mode }),
   moveForward: false,
   moveBackward: false,
   moveLeft: false,
