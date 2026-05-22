@@ -80,7 +80,7 @@ export default function VirtualRemote() {
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            background: 'rgba(255, 255, 255, 0.45)',
+            background: 'rgba(255, 255, 255, 0.25)',
             backdropFilter: 'blur(30px) saturate(190%)',
             WebkitBackdropFilter: 'blur(30px) saturate(190%)',
             border: '1px solid rgba(59, 130, 246, 0.2)',
@@ -119,7 +119,7 @@ export default function VirtualRemote() {
           position: absolute; bottom: 30px; left: 32px; z-index: 100;
           padding: 16px; border-radius: 24px;
           display: grid; grid-template-columns: repeat(4, 48px); grid-template-rows: auto repeat(2, 48px); gap: 8px;
-          background: rgba(255, 255, 255, 0.45) !important;
+          background: rgba(255, 255, 255, 0.25) !important;
           border: 1px solid rgba(59, 130, 246, 0.2) !important;
           box-shadow: 0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08) !important;
           backdrop-filter: blur(30px) saturate(190%);
@@ -129,7 +129,7 @@ export default function VirtualRemote() {
           position: absolute; bottom: 30px; right: 32px; z-index: 100;
           padding: 12px 16px; border-radius: 24px;
           display: flex; gap: 8px; align-items: center;
-          background: rgba(255, 255, 255, 0.45) !important;
+          background: rgba(255, 255, 255, 0.25) !important;
           border: 1px solid rgba(59, 130, 246, 0.2) !important;
           box-shadow: 0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08) !important;
           backdrop-filter: blur(30px) saturate(190%);

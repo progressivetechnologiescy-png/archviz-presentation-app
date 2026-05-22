@@ -111,7 +111,7 @@ export default function StandaloneView() {
             border-radius: 40px; pointer-events: auto;
             box-shadow: 0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            background: rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(30px) saturate(190%);
             -webkit-backdrop-filter: blur(30px) saturate(190%);
           }

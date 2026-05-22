@@ -40,7 +40,7 @@ export default function ShareModal({ onClose }) {
     }}>
       <div className="glass-panel" style={{ 
         width: '400px', padding: '32px', borderRadius: '24px', position: 'relative',
-        backgroundColor: 'rgba(255, 255, 255, 0.45)',
+        backgroundColor: 'rgba(255, 255, 255, 0.25)',
         backdropFilter: 'blur(30px) saturate(190%)',
         WebkitBackdropFilter: 'blur(30px) saturate(190%)',
         boxShadow: '0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08)',
