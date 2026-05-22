@@ -83,7 +83,6 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.25);
   const [isMuted, setIsMuted] = useState(false);
-  const [showVolume, setShowVolume] = useState(false);
   const [showTrackList, setShowTrackList] = useState(false);
   const audioRef = useRef(null);
   const containerRef = useRef(null);
@@ -211,13 +210,11 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
       onMouseEnter={() => {
         if (!isMobileDrawer) {
           setIsMinimized(false);
-          setShowVolume(true);
         }
       }}
       onMouseLeave={() => {
         if (!isMobileDrawer) {
           setIsMinimized(true);
-          setShowVolume(false);
           setShowTrackList(false);
         }
       }}
@@ -232,18 +229,18 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
         left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
         right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
-        width: isMinimized ? '54px' : (isMobileDrawer ? '100%' : '340px'),
+        width: isMinimized ? '54px' : (isMobileDrawer ? '100%' : '380px'),
         maxWidth: isMobileDrawer ? '320px' : 'none',
         height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '54px'),
-        borderRadius: isMinimized ? '27px' : '20px',
-        padding: isMinimized ? '0' : (isMobileDrawer ? '12px' : '10px 12px'),
+        borderRadius: '27px',
+        padding: isMinimized ? '10px' : (isMobileDrawer ? '12px' : '10px 16px'),
         margin: isMobileDrawer ? '0 auto' : '0',
         zIndex: 100,
         display: 'flex',
-        flexDirection: isMinimized ? 'row' : (isMobileDrawer ? 'column' : 'row'),
-        alignItems: isMinimized ? 'center' : (isMobileDrawer ? 'stretch' : 'center'),
-        justifyContent: isMinimized ? 'center' : 'flex-start',
-        gap: isMinimized ? '0px' : '10px',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        gap: isMinimized ? '0px' : '12px',
         overflow: 'hidden',
         cursor: isMinimized ? 'pointer' : 'default',
         transition: 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
@@ -268,29 +265,26 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         }
       `}</style>
 
-      {/* Minimized Disk Icon (Centered) */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '54px',
-        height: '54px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        opacity: isMinimized ? 1 : 0,
-        pointerEvents: isMinimized ? 'auto' : 'none',
-        transition: 'opacity 0.2s ease',
-        zIndex: 2
-      }}>
-        <Music 
-          size={20} 
-          color={isPlaying ? "var(--accent-color)" : "rgba(255, 255, 255, 0.75)"}
-          style={{
-            animation: isPlaying ? 'spin 6s linear infinite' : 'none',
-            filter: isPlaying ? "drop-shadow(0 0 6px var(--accent-glow))" : "none"
-          }}
-        />
+      {/* Rotating Music Disc Icon (Leftmost Artwork) */}
+      <div 
+        onClick={() => !isMinimized && setShowTrackList(!showTrackList)}
+        style={{ 
+          width: '34px', 
+          height: '34px', 
+          borderRadius: '50%', 
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 100%)', 
+          border: '1px solid rgba(255, 255, 255, 0.1)', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          cursor: 'pointer',
+          flexShrink: 0,
+          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          animation: isPlaying ? 'spin 6s linear infinite' : 'none',
+          boxShadow: isPlaying ? '0 0 12px var(--accent-glow)' : 'none'
+        }}
+      >
+        <Music size={16} color={isPlaying ? "var(--accent-color)" : "rgba(255,255,255,0.75)"} style={{ filter: isPlaying ? "drop-shadow(0 0 4px var(--accent-glow))" : "none" }} />
       </div>
 
       {/* Track List Dropdown Overlay */}
@@ -362,63 +356,43 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         </div>
       )}
 
-      {/* Expanded Layout Panel */}
+      {/* Expanded Controls Panel Wrapper */}
       <div style={{
         display: 'flex',
         flexDirection: isMobileDrawer ? 'column' : 'row',
         alignItems: isMobileDrawer ? 'stretch' : 'center',
-        justifyContent: 'flex-start',
-        width: '100%',
-        gap: isMobileDrawer ? '8px' : '10px',
+        flex: 1,
+        minWidth: 0,
         opacity: isMinimized ? 0 : 1,
+        transform: isMinimized ? 'translateX(10px)' : 'translateX(0)',
         pointerEvents: isMinimized ? 'none' : 'auto',
-        transition: 'opacity 0.3s ease',
-        whiteSpace: 'nowrap'
+        transition: 'opacity 0.2s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        whiteSpace: 'nowrap',
+        gap: isMobileDrawer ? '8px' : '12px',
+        overflow: 'hidden'
       }}>
-        {/* Main Controls Row */}
+        {/* Row for Track info and control buttons */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          width: '100%',
-          gap: '8px'
+          flex: 1,
+          minWidth: 0,
+          gap: '12px'
         }}>
-          {/* Track Details Info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
-            {/* Album Artwork frame */}
-            <div 
-              onClick={() => setShowTrackList(!showTrackList)}
-              style={{ 
-                width: '32px', 
-                height: '32px', 
-                borderRadius: '8px', 
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 100%)', 
-                border: '1px solid rgba(255, 255, 255, 0.1)', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                cursor: 'pointer',
-                flexShrink: 0,
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <Music size={16} color={isPlaying ? "var(--accent-color)" : "rgba(255,255,255,0.75)"} style={{ filter: isPlaying ? "drop-shadow(0 0 4px var(--accent-glow))" : "none" }} />
-            </div>
-
-            {/* Title Text metadata */}
-            <div 
-              onClick={() => setShowTrackList(!showTrackList)}
-              style={{ display: 'flex', flexDirection: 'column', minWidth: 0, cursor: 'pointer', userSelect: 'none', flex: 1 }}
-            >
-              <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                {currentTrack.genre}
+          {/* Title Text metadata */}
+          <div 
+            onClick={() => setShowTrackList(!showTrackList)}
+            style={{ display: 'flex', flexDirection: 'column', minWidth: 0, cursor: 'pointer', userSelect: 'none', flex: 1 }}
+          >
+            <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+              {currentTrack.genre}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', minWidth: 0 }}>
+              <span style={{ fontSize: '12px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px' }}>
+                {currentTrack.name}
+                <ChevronDown size={10} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.6 }} />
               </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', minWidth: 0 }}>
-                <span style={{ fontSize: '12px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px' }}>
-                  {currentTrack.name}
-                  <ChevronDown size={10} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.6 }} />
-                </span>
-              </div>
             </div>
           </div>
 
@@ -437,6 +411,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 justifyContent: 'center',
                 transition: 'all 0.2s'
               }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
             >
               <SkipBack size={12} />
             </button>
@@ -457,6 +433,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 boxShadow: '0 4px 12px rgba(255, 255, 255, 0.25)',
                 transition: 'all 0.2s ease'
               }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
               {isPlaying ? <Pause size={12} fill="#0a0c10" color="#0a0c10" /> : <Play size={12} fill="#0a0c10" color="#0a0c10" style={{ marginLeft: '1px' }} />}
             </button>
@@ -474,6 +452,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 justifyContent: 'center',
                 transition: 'all 0.2s'
               }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
             >
               <SkipForward size={12} />
             </button>
@@ -494,6 +474,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                   transition: 'all 0.2s',
                   marginLeft: '2px'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)'}
               >
                 <Minimize2 size={12} />
               </button>
@@ -520,22 +502,21 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
               }} />
             </div>
 
-            {/* Volume Controls (revealed on hover) */}
+            {/* Volume Controls */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              width: showVolume ? '100px' : '0px',
-              opacity: showVolume ? 1 : 0,
-              overflow: 'hidden',
-              transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-              paddingLeft: showVolume ? '8px' : '0px',
-              borderLeft: showVolume ? '1px solid rgba(255, 255, 255, 0.14)' : 'none',
+              width: '85px',
+              paddingLeft: '8px',
+              borderLeft: '1px solid rgba(255, 255, 255, 0.14)',
               flexShrink: 0
             }}>
               <button 
                 onClick={toggleMute}
                 style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
               >
                 {isMuted || volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
               </button>
@@ -551,7 +532,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                   setIsMuted(false);
                 }}
                 style={{ 
-                  width: '60px',
+                  width: '50px',
+                  minWidth: '0',
                   margin: 0,
                   padding: 0,
                   background: `linear-gradient(to right, #ffffff ${((isMuted ? 0 : volume) * 100)}%, rgba(255, 255, 255, 0.25) ${((isMuted ? 0 : volume) * 100)}%)`
@@ -591,6 +573,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
               }}
               style={{ 
                 flex: 1,
+                width: '100%',
+                minWidth: '0',
                 margin: 0,
                 padding: 0,
                 background: `linear-gradient(to right, #ffffff ${((isMuted ? 0 : volume) * 100)}%, rgba(255, 255, 255, 0.25) ${((isMuted ? 0 : volume) * 100)}%)`
