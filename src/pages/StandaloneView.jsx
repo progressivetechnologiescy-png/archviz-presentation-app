@@ -131,7 +131,19 @@ export default function StandaloneView() {
         {!isSketchfab && (
           <div className="interactive-controls-wrapper">
             {/* Main Controls Container */}
-            <div className="glass-panel interactive-controls" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div 
+              className="glass-panel interactive-controls" 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '20px',
+                background: 'rgba(10, 12, 18, 0.7)',
+                border: '1px solid rgba(59, 130, 246, 0.25)',
+                boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 16px rgba(59, 130, 246, 0.15)',
+                backdropFilter: 'blur(30px) saturate(210%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(210%)'
+              }}
+            >
               
               {/* Control Mode Segmented Toggle Switch */}
               <div style={{ 

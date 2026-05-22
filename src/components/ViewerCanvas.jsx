@@ -497,14 +497,58 @@ export default function ViewerCanvas() {
     <>
       <div style={{ position: 'absolute', top: 100, right: 32, zIndex: 100, display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <button 
-          className="glass-panel hover-lift"
-          style={{ padding: '10px 20px', color: 'white', cursor: 'pointer', fontWeight: 'bold', border: '1px solid rgba(255,255,255,0.2)' }}
+          className="hover-lift"
+          style={{ 
+            padding: '12px 24px', 
+            color: 'white', 
+            cursor: 'pointer', 
+            fontWeight: 'bold', 
+            borderRadius: '12px',
+            background: 'rgba(10, 12, 18, 0.7)',
+            border: '1px solid rgba(59, 130, 246, 0.25)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(30px) saturate(210%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(210%)',
+            transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)';
+            e.currentTarget.style.color = '#60a5fa';
+            e.currentTarget.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(10, 12, 18, 0.7)';
+            e.currentTarget.style.color = 'white';
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)';
+          }}
           onClick={() => setShowQR(true)}>
           View in AR
         </button>
         <button 
-          className="glass-panel hover-lift"
-          style={{ padding: '10px 20px', color: 'white', cursor: 'pointer', fontWeight: 'bold', border: '1px solid rgba(255,255,255,0.2)' }}
+          className="hover-lift"
+          style={{ 
+            padding: '12px 24px', 
+            color: 'white', 
+            cursor: 'pointer', 
+            fontWeight: 'bold', 
+            borderRadius: '12px',
+            background: 'rgba(10, 12, 18, 0.7)',
+            border: '1px solid rgba(59, 130, 246, 0.25)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(30px) saturate(210%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(210%)',
+            transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)';
+            e.currentTarget.style.color = '#60a5fa';
+            e.currentTarget.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(10, 12, 18, 0.7)';
+            e.currentTarget.style.color = 'white';
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)';
+          }}
           onClick={() => store.enterVR()}>
           Enter VR
         </button>

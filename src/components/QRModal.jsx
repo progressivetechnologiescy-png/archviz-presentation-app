@@ -8,9 +8,38 @@ export default function QRModal({ onClose }) {
       background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center'
     }}>
-      <div className="glass-panel hover-lift" style={{ width: '400px', padding: '40px', borderRadius: '24px', position: 'relative', textAlign: 'center' }}>
+      <div 
+        className="glass-panel hover-lift" 
+        style={{ 
+          width: '400px', 
+          padding: '40px', 
+          borderRadius: '24px', 
+          position: 'relative', 
+          textAlign: 'center',
+          background: 'rgba(10, 12, 18, 0.85)',
+          border: '1px solid rgba(59, 130, 246, 0.25)',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+          backdropFilter: 'blur(30px) saturate(210%)',
+          WebkitBackdropFilter: 'blur(30px) saturate(210%)',
+          color: '#ffffff'
+        }}
+      >
         
-        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+        <button 
+          onClick={onClose} 
+          style={{ 
+            position: 'absolute', 
+            top: '16px', 
+            right: '16px', 
+            background: 'transparent', 
+            border: 'none', 
+            color: 'rgba(255, 255, 255, 0.6)', 
+            cursor: 'pointer',
+            transition: 'color 0.2s' 
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
+          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
+        >
           <X size={24} />
         </button>
 
@@ -18,8 +47,8 @@ export default function QRModal({ onClose }) {
           <Smartphone size={32} />
         </div>
 
-        <h2 style={{ fontSize: '24px', margin: '0 0 12px 0' }}>View on your desk</h2>
-        <p style={{ color: 'var(--text-secondary)', margin: '0 0 32px 0', fontSize: '15px', lineHeight: '1.5' }}>
+        <h2 style={{ fontSize: '24px', margin: '0 0 12px 0', color: '#ffffff' }}>View on your desk</h2>
+        <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '0 0 32px 0', fontSize: '15px', lineHeight: '1.5' }}>
           Scan this QR Code with your iPhone or Android camera to drop the 3D property model into your physical room using WebAR.
         </p>
 

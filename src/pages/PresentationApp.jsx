@@ -35,9 +35,7 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         border: 'none',
         color: active 
           ? '#ffffff' 
-          : (isMobile 
-              ? (isHovered ? '#1d4ed8' : 'rgba(15, 23, 42, 0.7)')
-              : (isHovered ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)')),
+          : (isHovered ? '#60a5fa' : 'rgba(255, 255, 255, 0.75)'),
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '700',
         boxShadow: (isMobile && active) ? '0 8px 24px rgba(59, 130, 246, 0.25)' : 'none',
         whiteSpace: 'nowrap',
@@ -702,7 +700,7 @@ export default function PresentationApp({ forceAdmin = false }) {
               background: hoveredFullscreen ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
               cursor: 'pointer', 
               border: '1px solid rgba(59, 130, 246, 0.25)', 
-              color: hoveredFullscreen ? '#ffffff' : '#60a5fa',
+              color: hoveredFullscreen ? '#60a5fa' : '#ffffff',
               boxShadow: hoveredFullscreen 
                 ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
                 : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
@@ -728,7 +726,7 @@ export default function PresentationApp({ forceAdmin = false }) {
                 background: hoveredShare ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
                 cursor: 'pointer', 
                 border: '1px solid rgba(59, 130, 246, 0.25)', 
-                color: hoveredShare ? '#ffffff' : '#60a5fa',
+                color: hoveredShare ? '#60a5fa' : '#ffffff',
                 boxShadow: hoveredShare 
                   ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
                   : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
@@ -750,7 +748,7 @@ export default function PresentationApp({ forceAdmin = false }) {
               width: '48px', height: '48px', borderRadius: '50%', 
               background: hoveredMobileMenu ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
               border: '1px solid rgba(59, 130, 246, 0.25)', 
-              color: hoveredMobileMenu ? '#ffffff' : '#60a5fa', 
+              color: hoveredMobileMenu ? '#60a5fa' : '#ffffff', 
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center', justifyContent: 'center',
@@ -792,7 +790,7 @@ export default function PresentationApp({ forceAdmin = false }) {
             borderRadius: '50%',
             background: 'rgba(255, 255, 255, 0.05)',
             border: '1px solid rgba(59, 130, 246, 0.25)',
-            color: '#60a5fa',
+            color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
