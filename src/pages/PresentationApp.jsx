@@ -14,6 +14,7 @@ import StandaloneView from './StandaloneView';
 import MobileARView from '../views/MobileARView';
 import ShareModal from '../components/ShareModal';
 import FloatingConcierge from '../components/FloatingConcierge';
+import ShaderBackground from '../components/ShaderBackground';
 
 const TabButton = (props) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -514,6 +515,9 @@ export default function PresentationApp({ forceAdmin = false }) {
   return (
     <div style={{ width: '100vw', height: '100dvh', position: 'relative', background: 'var(--bg-gradient)', overflow: 'hidden' }}>
       
+      {/* Interactive WebGL Background Shader (Active for static tabs only to save GPU in 3D mode) */}
+      {activeTab !== '3d' && <ShaderBackground />}
+      
       {/* Global Responsive Header */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
@@ -578,9 +582,10 @@ export default function PresentationApp({ forceAdmin = false }) {
           <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
             <div className="glass-panel" style={{ 
               position: 'relative',
-              display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
-              background: 'rgba(10, 12, 16, 0.8)',
-              boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
+              display: 'flex', gap: '6px', padding: '6px', borderRadius: '24px',
+              background: 'rgba(6, 8, 12, 0.75)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08)'
             }}>
               {/* Liquid Sliding Background Capsule */}
               {activeRect.width > 0 && (
@@ -592,10 +597,10 @@ export default function PresentationApp({ forceAdmin = false }) {
                     left: 0,
                     width: `${activeRect.width}px`,
                     transform: `translateX(${activeRect.left}px)`,
-                    background: 'var(--accent-color)',
-                    borderRadius: '12px',
-                    transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-                    boxShadow: '0 4px 14px var(--accent-glow)',
+                    background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                    borderRadius: '18px',
+                    transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), width 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxShadow: '0 8px 24px rgba(139, 92, 246, 0.35)',
                     zIndex: 1,
                     pointerEvents: 'none'
                   }}

@@ -347,59 +347,60 @@ ${aiContext || 'No specific details provided yet.'}
       {/* Expanded Chat Interface */}
       {isOpen && (
         <div className="glass-panel chat-window" style={{ 
-          width: '350px', height: '550px', marginBottom: '16px', borderRadius: '24px',
+          width: '360px', height: '580px', marginBottom: '16px', borderRadius: '28px',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          backgroundColor: 'rgba(20, 25, 35, 0.75)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1)',
+          backgroundColor: 'rgba(8, 12, 20, 0.7)',
+          backdropFilter: 'blur(30px)',
+          WebkitBackdropFilter: 'blur(30px)',
+          boxShadow: '0 30px 70px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.1)',
           border: '1px solid rgba(255,255,255,0.08)'
         }}>
           
           {/* Header */}
-          <div style={{ background: 'linear-gradient(135deg, var(--accent-color), #2563eb)', padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'white', display: 'flex', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.2)' }}>
+          <div style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.85), rgba(139, 92, 246, 0.85))', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'white', display: 'flex', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.3)', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
                  <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Agent" />
               </div>
               <div>
-                <h4 style={{ margin: 0, color: 'white', fontSize: '15px', fontWeight: '700', letterSpacing: '0.3px' }}>Emma</h4>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}></span>
-                  <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)', fontSize: '11px', fontWeight: '500' }}>AI Property Concierge</p>
+                <h4 style={{ margin: 0, color: 'white', fontSize: '16px', fontWeight: '800', letterSpacing: '0.5px' }}>Emma</h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }}></span>
+                  <p style={{ margin: 0, color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: '600', letterSpacing: '0.5px', textTransform: 'uppercase' }}>AI Property Concierge</p>
                 </div>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', opacity: 0.8, transition: 'opacity 0.2s' }} onMouseEnter={(e) => e.target.style.opacity = 1} onMouseLeave={(e) => e.target.style.opacity = 0.8}>
-              <X size={20} />
+            <button onClick={() => setIsOpen(false)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', opacity: 0.8, width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; e.currentTarget.style.background = 'rgba(255,255,255,0.15)' }} onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.8; e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}>
+              <X size={16} />
             </button>
           </div>
 
           {/* Quick Action WhatsApp Banner */}
           <a href="https://wa.me/15551234567" target="_blank" rel="noreferrer" style={{
-             background: 'rgba(37, 211, 102, 0.08)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
-             textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-             color: '#25D366', fontWeight: '600', fontSize: '13px', flexShrink: 0
+             background: 'rgba(37, 211, 102, 0.06)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '12px',
+             textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+             color: '#4ade80', fontWeight: '700', fontSize: '13px', flexShrink: 0
           }} className="whatsapp-action-banner">
-             <Phone size={14} fill="#25D366" stroke="none" /> 
+             <Phone size={14} fill="#4ade80" stroke="none" /> 
              <span>Connect with Sales on WhatsApp</span>
           </a>
 
           {/* Chat History */}
-          <div className="chat-scrollbar" style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="chat-scrollbar" style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {messages.map((msg, i) => (
               <div key={i} style={{ 
                 alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                background: msg.role === 'user' ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
-                padding: '12px 16px', borderRadius: '16px', maxWidth: '85%',
-                borderBottomRightRadius: msg.role === 'user' ? '4px' : '16px',
-                borderBottomLeftRadius: msg.role === 'agent' ? '4px' : '16px',
-                color: 'white', fontSize: '14px', lineHeight: '1.4',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                border: msg.role === 'user' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.05)'
+                background: msg.role === 'user' ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' : 'rgba(255,255,255,0.05)',
+                padding: '14px 18px', borderRadius: '20px', maxWidth: '85%',
+                borderBottomRightRadius: msg.role === 'user' ? '4px' : '20px',
+                borderBottomLeftRadius: msg.role === 'agent' ? '4px' : '20px',
+                color: 'white', fontSize: '14px', lineHeight: '1.5',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                border: msg.role === 'user' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.04)',
+                backdropFilter: msg.role === 'agent' ? 'blur(10px)' : 'none'
               }}>
                 {msg.isTyping ? (
-                  <div style={{ display: 'flex', gap: '5px', padding: '6px 4px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '6px', padding: '6px 4px', alignItems: 'center' }}>
                     <span className="dot-blink" style={{ width: '6px', height: '6px', background: 'rgba(255,255,255,0.8)', borderRadius: '50%' }}></span>
                     <span className="dot-blink" style={{ width: '6px', height: '6px', background: 'rgba(255,255,255,0.8)', borderRadius: '50%', animationDelay: '0.2s' }}></span>
                     <span className="dot-blink" style={{ width: '6px', height: '6px', background: 'rgba(255,255,255,0.8)', borderRadius: '50%', animationDelay: '0.4s' }}></span>
@@ -413,7 +414,7 @@ ${aiContext || 'No specific details provided yet.'}
           </div>
 
           {/* Input Area */}
-          <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.25)', flexShrink: 0 }}>
+          <div style={{ padding: '18px 20px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '10px', background: 'rgba(5, 7, 10, 0.4)', flexShrink: 0 }}>
             <input 
               type="text" 
               placeholder={coordinates ? "Ask about nearby schools, restaurants..." : "Ask about the property..."} 
@@ -421,16 +422,18 @@ ${aiContext || 'No specific details provided yet.'}
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
               disabled={isSearching}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '12px 18px', color: 'white', outline: 'none', fontSize: '14px', transition: 'border-color 0.2s' }}
-              onFocus={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.25)'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+              style={{ flex: 1, background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '14px 20px', color: 'white', outline: 'none', fontSize: '14px', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}
+              onFocus={(e) => { e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)'; e.target.style.boxShadow = '0 0 16px rgba(59, 130, 246, 0.15)' }}
+              onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
             />
             <button 
               onClick={handleSend}
               disabled={isSearching}
-              style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-color)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: isSearching ? 0.5 : 1, boxShadow: '0 4px 12px var(--accent-glow)', transition: 'all 0.2s' }}
+              style={{ width: '46px', height: '46px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: isSearching ? 0.5 : 1, boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              <Send size={16} />
+              <Send size={18} />
             </button>
           </div>
 
@@ -444,14 +447,14 @@ ${aiContext || 'No specific details provided yet.'}
             onClick={() => setIsOpen(true)}
             className="hover-lift"
             style={{ 
-              width: '64px', height: '64px', borderRadius: '50%', background: 'var(--accent-color)', 
-              border: '2px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer',
+              width: '68px', height: '68px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', 
+              border: '2px solid rgba(255,255,255,0.25)', color: 'white', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 12px 32px var(--accent-glow)',
+              boxShadow: '0 12px 40px rgba(59, 130, 246, 0.45)',
               flexShrink: 0
             }}
           >
-            <MessageSquare size={28} />
+            <MessageSquare size={30} />
           </button>
         </div>
       )}
