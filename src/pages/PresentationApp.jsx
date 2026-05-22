@@ -89,6 +89,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
   const [isMobile, setIsMobile] = useState(isMobileDrawer || window.innerWidth <= 1100);
   const [isTouchDevice] = useState(() => typeof window !== 'undefined' && (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)));
   const [isMinimized, setIsMinimized] = useState(isMobileDrawer ? false : true);
+  const [isPlayHovered, setIsPlayHovered] = useState(false);
 
   useEffect(() => {
     if (isMobileDrawer) {
@@ -250,13 +251,13 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           maxWidth: isMobileDrawer ? '320px' : 'none',
           height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '58px'),
           borderRadius: isMinimized ? '27px' : (isMobileDrawer ? '24px' : '29px'),
-          padding: isMinimized ? '0px 10px' : (isMobileDrawer ? '12px' : '6px 16px'),
+          padding: isMinimized ? '0' : (isMobileDrawer ? '12px' : '6px 16px'),
           margin: isMobileDrawer ? '0 auto' : '0',
           zIndex: 100,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'flex-start',
+          justifyContent: isMinimized ? 'center' : 'flex-start',
           gap: isMinimized ? '0px' : '12px',
           overflow: isMinimized ? 'hidden' : 'visible',
           cursor: isMinimized ? 'pointer' : 'default',
@@ -266,7 +267,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         }}
       >
 
-      {/* Rotating Music Disc Icon (Leftmost Artwork) */}
+      {/* Rotating Music Disc Icon (Leftmost Artwork) - Static disc shell to prevent border/shadow spin wobble */}
       <div 
         onClick={() => !isMinimized && setShowTrackList(!showTrackList)}
         style={{ 
@@ -281,11 +282,20 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           cursor: 'pointer',
           flexShrink: 0,
           transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-          animation: isPlaying ? 'spin 6s linear infinite' : 'none',
           boxShadow: isPlaying ? '0 0 12px var(--accent-glow)' : 'none'
         }}
       >
-        <Music size={16} color={isPlaying ? "var(--accent-color)" : "rgba(255,255,255,0.75)"} style={{ filter: isPlaying ? "drop-shadow(0 0 4px var(--accent-glow))" : "none" }} />
+        {/* Nested spinning container for perfect rotation centering with zero wobble */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          animation: isPlaying ? 'spin 6s linear infinite' : 'none'
+        }}>
+          <Music size={16} color={isPlaying ? "var(--accent-color)" : "rgba(255,255,255,0.75)"} style={{ filter: isPlaying ? "drop-shadow(0 0 4px var(--accent-glow))" : "none" }} />
+        </div>
       </div>
 
       {/* Track List Dropdown Overlay */}
@@ -371,7 +381,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         visibility: isMinimized ? 'hidden' : 'visible',
         whiteSpace: 'nowrap',
         gap: isMobileDrawer ? '8px' : '12px',
-        overflow: 'hidden',
+        overflow: isMinimized ? 'hidden' : 'visible',
         transition: 'max-width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.25s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 0.4s ease'
       }}>
         {/* Row for Track info and control buttons */}
@@ -423,6 +433,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
 
             <button 
               onClick={togglePlay}
+              onMouseEnter={() => setIsPlayHovered(true)}
+              onMouseLeave={() => setIsPlayHovered(false)}
               style={{
                 background: '#ffffff',
                 border: 'none',
@@ -437,10 +449,9 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 cursor: 'pointer',
                 padding: 0,
                 boxShadow: '0 4px 12px rgba(255, 255, 255, 0.25)',
-                transition: 'all 0.2s ease'
+                transform: isPlayHovered ? 'scale(1.08)' : 'scale(1)',
+                transition: 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s, color 0.2s, box-shadow 0.2s'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
               {isPlaying ? <Pause size={12} fill="#0a0c10" color="#0a0c10" /> : <Play size={12} fill="#0a0c10" color="#0a0c10" style={{ marginLeft: '1px' }} />}
             </button>
@@ -759,7 +770,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         {/* Desktop Navigation Pill */}
         {activeTab !== 'manage' ? (
           <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
-            <SpatialCard className="dark-obsidian-panel" maxTilt={4} style={{ 
+            <SpatialCard className="dark-obsidian-panel" maxTilt={4} hoverScale={1} style={{ 
               position: 'relative',
               display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
               background: 'rgba(16, 18, 26, 0.45)',

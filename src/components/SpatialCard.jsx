@@ -5,7 +5,7 @@ import React, { useState, useRef } from 'react';
  * It features dynamic mouse-move 3D parallax tilt, real-time cursor border glow tracking,
  * and elegant premium scale springs.
  */
-const SpatialCard = React.forwardRef(({ children, style = {}, className = '', maxTilt = 8, onClick, ...props }, ref) => {
+const SpatialCard = React.forwardRef(({ children, style = {}, className = '', maxTilt = 8, hoverScale = 1.025, onClick, ...props }, ref) => {
   const cardRef = useRef(null);
   const [tiltStyle, setTiltStyle] = useState({
     transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
@@ -35,7 +35,7 @@ const SpatialCard = React.forwardRef(({ children, style = {}, className = '', ma
     const rotateY = normalizedX * maxTilt;
 
     setTiltStyle({
-      transform: `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.025)`,
+      transform: `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(${hoverScale})`,
       transition: 'transform 0.1s ease, box-shadow 0.1s ease' // Ultra-fast tracking on mouse move
     });
 
