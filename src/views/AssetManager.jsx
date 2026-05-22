@@ -833,25 +833,6 @@ export default function AssetManager() {
                       Save URL
                     </button>
                   </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quick Tests:</span>
-                    <button 
-                      onClick={handleLoadLarnacaResidence} 
-                      className="hover-lift"
-                      style={{ 
-                        padding: '6px 12px', 
-                        borderRadius: '6px', 
-                        background: 'rgba(255,255,255,0.06)', 
-                        color: 'white', 
-                        border: '1px solid rgba(255,255,255,0.1)', 
-                        cursor: 'pointer', 
-                        fontSize: '12px', 
-                        fontWeight: '600' 
-                      }}
-                    >
-                      Larnaca Residence (Sketchfab)
-                    </button>
-                  </div>
                 </div>
               </div>
               <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '24px', background: 'var(--bg-panel)' }}>
