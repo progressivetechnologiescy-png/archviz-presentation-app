@@ -504,20 +504,22 @@ export default function ViewerCanvas() {
             cursor: 'pointer', 
             fontWeight: 'bold', 
             borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(16, 18, 26, 0.65)',
             border: '1px solid rgba(255, 255, 255, 0.14)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
             backdropFilter: 'blur(30px) saturate(210%)',
             WebkitBackdropFilter: 'blur(30px) saturate(210%)',
             transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
+            e.currentTarget.style.color = '#0a0c10';
+            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
+            e.currentTarget.style.background = 'rgba(16, 18, 26, 0.65)';
+            e.currentTarget.style.color = 'white';
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
           }}
           onClick={() => setShowQR(true)}>
           View in AR
@@ -530,20 +532,22 @@ export default function ViewerCanvas() {
             cursor: 'pointer', 
             fontWeight: 'bold', 
             borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(16, 18, 26, 0.65)',
             border: '1px solid rgba(255, 255, 255, 0.14)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
             backdropFilter: 'blur(30px) saturate(210%)',
             WebkitBackdropFilter: 'blur(30px) saturate(210%)',
             transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
+            e.currentTarget.style.color = '#0a0c10';
+            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
+            e.currentTarget.style.background = 'rgba(16, 18, 26, 0.65)';
+            e.currentTarget.style.color = 'white';
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
           }}
           onClick={() => store.enterVR()}>
           Enter VR
