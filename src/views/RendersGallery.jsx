@@ -70,9 +70,9 @@ export default function RendersGallery() {
 
   // Determine grid styles based on thumbnailSize
   const gridStyles = {
-    small: { minMax: '150px', height: '120px' },
-    medium: { minMax: '300px', height: '250px' },
-    large: { minMax: '500px', height: '400px' }
+    small: { minMax: '200px' },
+    medium: { minMax: '320px' },
+    large: { minMax: '500px' }
   }[thumbnailSize];
 
   return (
@@ -98,6 +98,7 @@ export default function RendersGallery() {
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
           border: 1px solid var(--border-glass) !important;
+          aspect-ratio: 16/9;
         }
         .gallery-item img {
           transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -248,9 +249,7 @@ export default function RendersGallery() {
                         }
                       }}
                       style={{ 
-                         height: gridStyles.height, 
-                         background: `linear-gradient(45deg, #1f2937, #111827)`,
-                         transition: 'height 0.3s ease'
+                         background: `linear-gradient(45deg, #1f2937, #111827)`
                       }}
                     >
                       {isRealImage ? (
