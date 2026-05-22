@@ -187,7 +187,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
       onMouseLeave={() => !isMobile && setShowVolume(false)}
       style={{
         position: isMobileDrawer ? 'relative' : 'absolute',
-        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '190px' : '68px')),
+        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '250px' : '68px')),
         top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
         left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
         right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
