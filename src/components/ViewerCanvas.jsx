@@ -6,6 +6,8 @@ import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import QRModal from './QRModal';
+import AtmosphereSky from './AtmosphereSky';
+
 
 // Reusable helper to dynamically upgrade basic materials to premium PBR MeshPhysicalMaterial settings
 function upgradeMaterial(child) {
@@ -426,6 +428,7 @@ export default function ViewerCanvas() {
           <Suspense fallback={<ModelLoader />}>
             {/* Reverted SoftShadows to BakeShadows to prevent shader crash */}
             <BakeShadows />
+            {!customPanorama && <AtmosphereSky />}
             
             {customPanorama ? (
               <CustomEnvironment url={customPanorama} />

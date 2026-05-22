@@ -78,16 +78,16 @@ export default function AvailabilityTab() {
             <p style={{ color: 'var(--text-secondary)', margin: 0 }}>View pricing and lock in your reservation.</p>
           </div>
 
-          <div className="glass-panel availability-filters" style={{ display: 'flex', gap: '12px' }}>
+          <div className="glass-panel availability-filters" style={{ display: 'flex', gap: '6px', padding: '6px', background: 'rgba(10, 12, 16, 0.6)' }}>
             {['All', 'Available', 'Reserved', 'Sold'].map(status => (
               <button
                 key={status}
                 onClick={() => setFilter(status)}
                 className="hover-lift"
                 style={{
-                  padding: '12px 24px', borderRadius: '12px', border: 'none',
-                  background: filter === status ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
-                  color: filter === status ? 'white' : 'var(--text-primary)',
+                  padding: '10px 20px', borderRadius: '12px', border: 'none',
+                  background: filter === status ? 'linear-gradient(135deg, var(--accent-color) 0%, #60a5fa 100%)' : 'transparent',
+                  color: filter === status ? 'white' : 'var(--text-secondary)',
                   fontWeight: filter === status ? 'bold' : '600', cursor: 'pointer', transition: 'all 0.3s ease',
                   boxShadow: filter === status ? '0 4px 16px var(--accent-glow)' : 'none',
                 }}>
@@ -109,13 +109,14 @@ export default function AvailabilityTab() {
                     setActiveUnitId(isSelected ? null : unit.id);
                     setInquireStatus('idle');
                   }} 
-                  className="hover-lift"
+                  className="glass-panel hover-lift"
                   style={{ 
-                    background: isSelected ? 'rgba(59, 130, 246, 0.05)' : 'var(--bg-panel)',
-                    border: isSelected ? '1px solid var(--accent-color)' : '1px solid var(--border-color)',
-                    borderRadius: '16px', padding: '32px', cursor: 'pointer',
+                    background: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'var(--bg-panel)',
+                    border: isSelected ? '1px solid var(--accent-color)' : '1px solid var(--border-glass)',
+                    padding: '32px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    boxShadow: isSelected ? '0 12px 32px var(--accent-glow)' : 'var(--shadow-lg)'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '48px', flexWrap: 'wrap', flex: 1 }}>

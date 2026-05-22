@@ -594,10 +594,10 @@ export default function PresentationApp({ forceAdmin = false }) {
                     left: 0,
                     width: `${activeRect.width}px`,
                     transform: `translateX(${activeRect.left}px)`,
-                    background: 'var(--accent-color)',
+                    background: 'linear-gradient(135deg, var(--accent-color) 0%, #60a5fa 100%)',
                     borderRadius: '12px',
                     transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-                    boxShadow: '0 4px 14px var(--accent-glow)',
+                    boxShadow: '0 8px 24px var(--accent-glow)',
                     zIndex: 1,
                     pointerEvents: 'none'
                   }}
