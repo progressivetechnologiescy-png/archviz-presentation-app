@@ -30,14 +30,14 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '12px',
         // Transparent in desktop mode so the absolute sliding capsule shows through.
         background: isMobile 
-          ? (active ? '#ffffff' : (isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent'))
+          ? (active ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' : (isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent'))
           : (active ? 'transparent' : (isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent')),
         border: 'none',
         color: active 
-          ? '#0a0c10' 
+          ? '#ffffff' 
           : (isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.75)'),
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '700',
-        boxShadow: (isMobile && active) ? '0 8px 24px rgba(255, 255, 255, 0.25)' : 'none',
+        boxShadow: (isMobile && active) ? '0 8px 24px rgba(59, 130, 246, 0.35)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
         opacity: 1,
@@ -57,7 +57,7 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
           height: isMobile ? '24px' : '16px',
           display: isMobile ? 'block' : 'inline-block',
           color: active 
-            ? '#0a0c10' 
+            ? '#ffffff' 
             : (isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.75)'),
           transition: 'color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
         }} 
@@ -66,7 +66,7 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         className="nav-tab-label"
         style={{
           color: active 
-            ? '#0a0c10' 
+            ? '#ffffff' 
             : (isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.75)'),
           transition: 'color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
         }}
@@ -633,10 +633,10 @@ export default function PresentationApp({ forceAdmin = false }) {
                     left: 0,
                     width: `${activeRect.width}px`,
                     transform: `translateX(${activeRect.left}px)`,
-                    background: '#ffffff',
+                    background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
                     borderRadius: '12px',
                     transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4)',
+                    boxShadow: '0 8px 20px rgba(59, 130, 246, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4)',
                     zIndex: 1,
                     pointerEvents: 'none'
                   }}
