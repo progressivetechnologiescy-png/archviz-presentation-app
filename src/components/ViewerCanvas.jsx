@@ -88,11 +88,20 @@ const walkVectors = {
 
 function WalkEngine() {
   const speed = 12; // Adjusted slightly for a more stable walking pace
+  const controlMode = useViewerStore(state => state.controlMode);
   
   const collisionMeshesRef = React.useRef([]);
+  const hasLandedRef = React.useRef(false);
   const raycaster = React.useMemo(() => new THREE.Raycaster(), []);
   const downVector = React.useMemo(() => new THREE.Vector3(0, -1, 0), []);
   let frameCount = 0;
+
+  // Reset landing state when walk mode is deactivated
+  React.useEffect(() => {
+    if (controlMode !== 'walk') {
+      hasLandedRef.current = false;
+    }
+  }, [controlMode]);
 
   useFrame((state, delta) => {
     const storeState = useViewerStore.getState();
@@ -131,16 +140,37 @@ function WalkEngine() {
 
       if (intersections.length > 0) {
         const firstFloorIntersection = intersections.find(hit => {
+          // If we haven't landed yet, accept any surface below the ray origin that is flat-ish
+          if (!hasLandedRef.current) {
+            // Must be below player head + 2m
+            if (hit.point.y > playerPos.y + 1.8) return false;
+          } else {
+            // Strictly reject surfaces that require a step-up of more than 0.4m (eye level 1.6m - 0.4m = 1.2m below camera)
+            if (hit.point.y > playerPos.y - 1.2) return false;
+          }
+          
           // Avoid snapping onto glass ceilings/walls or vertical elements
-          const norm = hit.face?.normal.clone().applyQuaternion(hit.object.quaternion);
-          return norm ? norm.y > 0.7 : true; // strictly flat or sloped upward surfaces
-        }) || intersections[0];
+          if (hit.face) {
+            const norm = hit.face.normal.clone();
+            norm.transformDirection(hit.object.matrixWorld);
+            return norm.y > 0.7; // strictly flat or sloped upward surfaces
+          }
+          return true;
+        });
 
-        const floorY = firstFloorIntersection.point.y;
-        const targetY = floorY + 1.6; // 1.6m is standard eye level
-        
-        // Smoothly drop or climb steps (gravity feeling)
-        state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, 0.15);
+        if (firstFloorIntersection) {
+          const floorY = firstFloorIntersection.point.y;
+          const targetY = floorY + 1.6; // 1.6m is standard eye level
+          
+          if (!hasLandedRef.current) {
+            // Hard snap on first frame/landing to prevent delayed drop
+            state.camera.position.y = targetY;
+            hasLandedRef.current = true;
+          } else {
+            // Smoothly drop or climb steps (gravity feeling)
+            state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, 0.2);
+          }
+        }
       }
     }
 
@@ -153,6 +183,9 @@ function WalkEngine() {
     // Orient motion relative to current camera heading
     walkVectors.direction.subVectors(walkVectors.frontVector, walkVectors.sideVector);
     walkVectors.direction.applyQuaternion(state.camera.quaternion);
+
+    // Keep horizontal movement purely planar (X-Z plane)
+    walkVectors.direction.y = 0;
 
     // Add global Up/Down vertical motion when keys are explicitly pressed
     walkVectors.direction.y += Number(storeState.moveUp) - Number(storeState.moveDown);
@@ -181,8 +214,8 @@ function WalkEngine() {
         if (intersections.length > 0 && intersections[0].distance < moveDistance + wallPadding) {
           const hit = intersections[0];
           const hitNormal = hit.face.normal.clone();
-          // Transform local normal to world coordinates
-          hitNormal.applyQuaternion(hit.object.quaternion);
+          // Transform local normal to world coordinates correctly
+          hitNormal.transformDirection(hit.object.matrixWorld);
           hitNormal.y = 0;
           hitNormal.normalize();
 
