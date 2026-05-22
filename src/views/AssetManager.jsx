@@ -139,7 +139,6 @@ export default function AssetManager() {
     customGLB, setCustomGLB,
     customUSDZ, setCustomUSDZ,
     customFloorplans,
-    customPanorama, setCustomPanorama, 
     customRenders, addCustomRender,
     customGPS, setCustomGPS,
     geminiApiKey, setGeminiApiKey,
@@ -418,7 +417,6 @@ export default function AssetManager() {
   const handleUploadFBX = (file) => uploadSingleFile(file, '3d_model_fbx', setCustomFBX);
   const handleUploadGLB = (file) => uploadSingleFile(file, '3d_model_glb', setCustomGLB);
   const handleUploadUSDZ = (file) => uploadSingleFile(file, '3d_model_usdz', setCustomUSDZ);
-  const handleUploadPanorama = (file) => uploadSingleFile(file, 'panorama', setCustomPanorama);
 
   const handleUploadFolder = async (files) => {
     if (!supabase) {
@@ -962,7 +960,6 @@ export default function AssetManager() {
                           
                           // 2. Low-Res Thumbnail Compression & Upload
                           const thumbFile = await compressImage(file, 400, 0.70); // Tiny fast-loading thumbnail
-                          const thumbExt = thumbFile.name.split('.').pop();
                           const thumbName = `thumb_${highResName}`; // Correlated name
                           const thumbPath = `renders/thumbnails/${thumbName}`;
                           

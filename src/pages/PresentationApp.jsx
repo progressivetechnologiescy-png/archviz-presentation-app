@@ -14,41 +14,42 @@ import StandaloneView from './StandaloneView';
 import MobileARView from '../views/MobileARView';
 import ShareModal from '../components/ShareModal';
 import FloatingConcierge from '../components/FloatingConcierge';
+import SpatialCard from '../components/SpatialCard';
 
-const TabButton = (props) => {
+const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const IconToRender = props.icon;
+  const IconToRender = icon;
   return (
     <button 
-      ref={props.btnRef}
+      ref={btnRef}
       className="nav-tab-btn"
-      onClick={props.onClick}
+      onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
         display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '12px',
         // Transparent in desktop mode so the absolute sliding capsule shows through.
-        background: props.isMobile 
-          ? (props.active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'))
-          : (props.active ? 'transparent' : (isHovered ? 'rgba(255,255,255,0.06)' : 'transparent')),
+        background: isMobile 
+          ? (active ? 'var(--accent-color)' : (isHovered ? 'rgba(255,255,255,0.1)' : 'transparent'))
+          : (active ? 'transparent' : (isHovered ? 'rgba(255,255,255,0.06)' : 'transparent')),
         border: 'none',
         color: 'white',
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '600',
-        boxShadow: (props.isMobile && props.active) ? '0 4px 12px var(--accent-glow)' : 'none',
+        boxShadow: (isMobile && active) ? '0 4px 12px var(--accent-glow)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
-        opacity: props.active ? 1 : (isHovered ? 1 : 0.85),
-        padding: props.isMobile ? '16px 24px' : undefined,
-        width: props.isMobile ? '100%' : 'auto',
-        justifyContent: props.isMobile ? 'flex-start' : 'center',
-        fontSize: props.isMobile ? '18px' : undefined,
-        gap: props.isMobile ? '16px' : undefined,
-        zIndex: props.isMobile ? undefined : 2,
-        position: props.isMobile ? undefined : 'relative'
+        opacity: active ? 1 : (isHovered ? 1 : 0.85),
+        padding: isMobile ? '16px 24px' : undefined,
+        width: isMobile ? '100%' : 'auto',
+        justifyContent: isMobile ? 'flex-start' : 'center',
+        fontSize: isMobile ? '18px' : undefined,
+        gap: isMobile ? '16px' : undefined,
+        zIndex: isMobile ? undefined : 2,
+        position: isMobile ? undefined : 'relative'
       }}
     >
-      <IconToRender className="nav-tab-icon" style={props.isMobile ? { width: '24px', height: '24px', display: 'block' } : undefined} /> 
-      <span className="nav-tab-label">{props.label}</span>
+      <IconToRender className="nav-tab-icon" style={isMobile ? { width: '24px', height: '24px', display: 'block' } : undefined} /> 
+      <span className="nav-tab-label">{label}</span>
     </button>
   );
 };
@@ -66,7 +67,6 @@ function AmbientSoundPlayer({ isMobileDrawer = false }) {
 
   useEffect(() => {
     if (isMobileDrawer) {
-      setIsMobile(true);
       return;
     }
     const handleResize = () => setIsMobile(window.innerWidth <= 1100);
@@ -122,6 +122,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false }) {
       }
       document.removeEventListener('mousedown', handleOutsideClick);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -178,7 +179,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false }) {
   };
 
   return (
-    <div 
+    <SpatialCard 
       ref={containerRef}
       onMouseEnter={() => !isMobile && setShowVolume(true)}
       onMouseLeave={() => !isMobile && setShowVolume(false)}
@@ -430,7 +431,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false }) {
           />
         </div>
       )}
-    </div>
+    </SpatialCard>
   );
 }
 
@@ -576,11 +577,12 @@ export default function PresentationApp({ forceAdmin = false }) {
         {/* Desktop Navigation Pill */}
         {activeTab !== 'manage' ? (
           <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
-            <div className="glass-panel" style={{ 
+            <SpatialCard className="glass-panel" maxTilt={4} style={{ 
               position: 'relative',
               display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
               background: 'rgba(10, 12, 16, 0.8)',
-              boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
+              boxShadow: '0 16px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)',
+              overflow: 'visible'
             }}>
               {/* Liquid Sliding Background Capsule */}
               {activeRect.width > 0 && (
@@ -610,7 +612,7 @@ export default function PresentationApp({ forceAdmin = false }) {
               <TabButton btnRef={el => buttonRefs.current['map'] = el} active={activeTab === 'map'} icon={Map} label="Location" onClick={() => setActiveTab('map')} />
               <TabButton btnRef={el => buttonRefs.current['panorama'] = el} active={activeTab === 'panorama'} icon={Hexagon} label="360° Tours" onClick={() => setActiveTab('panorama')} />
               <TabButton btnRef={el => buttonRefs.current['3d'] = el} active={activeTab === '3d'} icon={Component} label="3D Interactive" onClick={() => setActiveTab('3d')} />
-            </div>
+            </SpatialCard>
           </div>
         ) : (
           <div className="desktop-nav" style={{ flex: 1 }} /> /* Empty spacer when in manage mode */

@@ -6,6 +6,15 @@ import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import QRModal from './QRModal';
+import { EffectComposer, Bloom, Vignette, ChromaticAberration } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
+import WaterPool from './WaterPool';
+import Hotspots from './Hotspot';
+import AtmosphereSky from './AtmosphereSky';
+
+
+
+
 
 // Reusable helper to dynamically upgrade basic materials to premium PBR MeshPhysicalMaterial settings
 function upgradeMaterial(child) {
@@ -79,13 +88,13 @@ function upgradeMaterial(child) {
   });
 }
 
+const walkVectors = {
+  direction: new THREE.Vector3(),
+  frontVector: new THREE.Vector3(),
+  sideVector: new THREE.Vector3()
+};
+
 function WalkEngine() {
-  const { moveForward, moveBackward, moveLeft, moveRight } = useViewerStore();
-  
-  // Reuse vectors & Raycaster to prevent garbage collection stutters
-  const direction = new THREE.Vector3();
-  const frontVector = new THREE.Vector3();
-  const sideVector = new THREE.Vector3();
   const speed = 12; // Adjusted slightly for a more stable walking pace
   
   const collisionMeshesRef = React.useRef([]);
@@ -145,22 +154,22 @@ function WalkEngine() {
     if (!hasMovementInput) return;
 
     // Calculate planar movement intent
-    frontVector.set(0, 0, Number(storeState.moveBackward) - Number(storeState.moveForward));
-    sideVector.set(Number(storeState.moveLeft) - Number(storeState.moveRight), 0, 0);
+    walkVectors.frontVector.set(0, 0, Number(storeState.moveBackward) - Number(storeState.moveForward));
+    walkVectors.sideVector.set(Number(storeState.moveLeft) - Number(storeState.moveRight), 0, 0);
 
     // Orient motion relative to current camera heading
-    direction.subVectors(frontVector, sideVector);
-    direction.applyQuaternion(state.camera.quaternion);
+    walkVectors.direction.subVectors(walkVectors.frontVector, walkVectors.sideVector);
+    walkVectors.direction.applyQuaternion(state.camera.quaternion);
 
     // Add global Up/Down vertical motion when keys are explicitly pressed
-    direction.y += Number(storeState.moveUp) - Number(storeState.moveDown);
+    walkVectors.direction.y += Number(storeState.moveUp) - Number(storeState.moveDown);
 
     // Normalize speed
-    direction.normalize().multiplyScalar(speed * delta);
+    walkVectors.direction.normalize().multiplyScalar(speed * delta);
 
     // Wall Collision Raycasting (Horizontal sliding physics)
     if (collisionMeshesRef.current.length > 0 && !isActivelyFlying) {
-      const horizontalDir = direction.clone();
+      const horizontalDir = walkVectors.direction.clone();
       horizontalDir.y = 0; // only detect horizontal blockages
       const moveDistance = horizontalDir.length();
 
@@ -185,16 +194,16 @@ function WalkEngine() {
           hitNormal.normalize();
 
           // Calculate sliding vector (subtract projection into wall normal)
-          const dotProduct = direction.dot(hitNormal);
+          const dotProduct = walkVectors.direction.dot(hitNormal);
           if (dotProduct < 0) {
-            direction.sub(hitNormal.multiplyScalar(dotProduct));
+            walkVectors.direction.sub(hitNormal.multiplyScalar(dotProduct));
           }
         }
       }
     }
 
     // Apply movement translation
-    state.camera.position.add(direction);
+    state.camera.position.add(walkVectors.direction);
 
     // Update active 3D location name based on spatial boundaries in first-person mode
     const pos = state.camera.position;
@@ -427,6 +436,7 @@ export default function ViewerCanvas() {
           <Suspense fallback={<ModelLoader />}>
             {/* Reverted SoftShadows to BakeShadows to prevent shader crash */}
             <BakeShadows />
+            <AtmosphereSky />
             
             {customPanorama ? (
               <CustomEnvironment url={customPanorama} />
@@ -447,14 +457,29 @@ export default function ViewerCanvas() {
               <orthographicCamera attach="shadow-camera" args={[-40, 40, 40, -40, 0.1, 150]} />
             </directionalLight>
             
+            <AtmosphereSky />
             <WalkEngine />
             <LoadedArchModel />
+            <WaterPool />
+            <Hotspots />
 
             {/* Gorgeous high-fidelity contact shadows on the floor/ground */}
             <ContactShadows resolution={1024} scale={30} blur={2.5} opacity={0.65} far={15} color="#0b0f19" />
             
             {/* True First-Person Game Camera */}
             <PointerLockControls makeDefault />
+
+            {/* Premium Cinematic Post-Processing Pipeline */}
+            <EffectComposer disableNormalPass>
+              <Bloom 
+                luminanceThreshold={0.65} 
+                luminanceSmoothing={0.8} 
+                height={300} 
+                intensity={lightingPreset === 'night' ? 1.5 : (lightingPreset === 'morning' ? 1.2 : 0.8)} 
+              />
+              <Vignette eskil={false} offset={0.25} darkness={0.8} />
+              <ChromaticAberration blendFunction={BlendFunction.SCREEN} offset={[0.0006, 0.0006]} />
+            </EffectComposer>
           </Suspense>
         </XR>
       </Canvas>

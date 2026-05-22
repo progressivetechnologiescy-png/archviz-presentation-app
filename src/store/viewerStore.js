@@ -333,11 +333,6 @@ export const useViewerStore = create(
   setAiContext: (context) => set({ aiContext: context }),
   active3DLocationName: 'Exterior Plaza',
   setActive3DLocationName: (name) => set({ active3DLocationName: name }),
-  setActiveTourNodeId: (id) => set((state) => {
-    const node = state.customTourNodes[id];
-    const name = node ? (node.title || node.node_name || '360° Node') : '360° Node';
-    return { activeTourNodeId: id, active3DLocationName: `360° Room: ${name}` };
-  }),
   isGlobalScrolled: false,
   setGlobalScrolled: (val) => set({ isGlobalScrolled: val }),
   

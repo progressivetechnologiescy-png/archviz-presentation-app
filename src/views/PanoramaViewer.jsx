@@ -177,6 +177,7 @@ function MorphingPanorama({ activeNode, showHotspots, onHotspotClick, onSphereCl
         targetFov = THREE.MathUtils.lerp(42, baseFov, t * (2 - t));
       }
       
+      // eslint-disable-next-line react-hooks/immutability
       camera.fov = targetFov;
       camera.updateProjectionMatrix();
     }
@@ -254,9 +255,7 @@ function SphericalPanorama({ showHotspots, onHotspotClick, onSphereClick }) {
 export default function PanoramaViewer({ isEditing = false, onCanvasClick = null }) {
   const [useGyro, setUseGyro] = useState(false);
   const [gyroErrorMessage, setGyroErrorMessage] = useState(null);
-  const inventoryUnits = useViewerStore(state => state.inventoryUnits);
-  
-  const { companyName, activeTourNodeId, customTourNodes, setActiveTourNodeId, activeHotspotData, setActiveHotspotData } = useViewerStore();
+  const { activeTourNodeId, customTourNodes, setActiveTourNodeId, setActiveHotspotData } = useViewerStore();
 
   const handleHotspotClick = (spot) => {
     if (spot.targetNodeId && customTourNodes[spot.targetNodeId]) {

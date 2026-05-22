@@ -137,3 +137,81 @@ body {
   background: rgba(255, 107, 0, 0.3) !important;
   transform: scale(1.02) !important;
 }
+
+/* Spatial Glassmorphism with Dynamic Cursor Glow */
+.spatial-glow-panel {
+  position: relative;
+  background: var(--bg-panel);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-lg), var(--shadow-glass);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spatial-glow-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    100px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.25),
+    transparent 60%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+body.light-mode .spatial-glow-panel::before {
+  background: radial-gradient(
+    100px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(0, 0, 0, 0.15),
+    transparent 60%
+  );
+}
+
+.spatial-glow-panel:hover::before {
+  opacity: 1;
+}
+
+.spatial-glow-panel:hover {
+  border-color: var(--border-glass-light);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.65), var(--shadow-glass);
+}
+
+/* Pulsing rings for hotspots */
+@keyframes hotspotRipple {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes floatHotspot {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
