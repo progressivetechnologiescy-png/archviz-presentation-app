@@ -9,7 +9,7 @@ export default function QRModal({ onClose }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center'
     }}>
       <div 
-        className="glass-panel hover-lift" 
+        className="dark-obsidian-panel hover-lift" 
         style={{ 
           width: '400px', 
           padding: '40px', 
@@ -17,8 +17,8 @@ export default function QRModal({ onClose }) {
           position: 'relative', 
           textAlign: 'center',
           background: 'rgba(10, 12, 18, 0.85)',
-          border: '1px solid rgba(59, 130, 246, 0.25)',
-          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+          border: '1px solid rgba(255, 255, 255, 0.14)',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
           backdropFilter: 'blur(30px) saturate(210%)',
           WebkitBackdropFilter: 'blur(30px) saturate(210%)',
           color: '#ffffff'
@@ -37,13 +37,19 @@ export default function QRModal({ onClose }) {
             cursor: 'pointer',
             transition: 'color 0.2s' 
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
+          onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
           onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
         >
           <X size={24} />
         </button>
 
-        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', color: 'var(--accent-color)' }}>
+        <div style={{ 
+          width: '64px', height: '64px', borderRadius: '50%', 
+          background: 'rgba(255, 255, 255, 0.1)', display: 'flex', 
+          alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', 
+          color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.14)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255, 255, 255, 0.22)' 
+        }}>
           <Smartphone size={32} />
         </div>
 
@@ -61,7 +67,7 @@ export default function QRModal({ onClose }) {
           />
         </div>
 
-        <p style={{ margin: 0, fontSize: '13px', color: 'var(--accent-color)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
           Powered by WebXR
         </p>
 

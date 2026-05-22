@@ -30,14 +30,14 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         display: 'flex', alignItems: 'center', cursor: 'pointer', borderRadius: '12px',
         // Transparent in desktop mode so the absolute sliding capsule shows through.
         background: isMobile 
-          ? (active ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' : (isHovered ? 'rgba(59, 130, 246, 0.08)' : 'transparent'))
+          ? (active ? '#ffffff' : (isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent'))
           : (active ? 'transparent' : (isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent')),
         border: 'none',
         color: active 
-          ? '#ffffff' 
-          : (isHovered ? '#60a5fa' : 'rgba(255, 255, 255, 0.75)'),
+          ? '#0a0c10' 
+          : (isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.75)'),
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '700',
-        boxShadow: (isMobile && active) ? '0 8px 24px rgba(59, 130, 246, 0.25)' : 'none',
+        boxShadow: (isMobile && active) ? '0 8px 24px rgba(255, 255, 255, 0.25)' : 'none',
         whiteSpace: 'nowrap',
         flexShrink: 0,
         opacity: 1,
@@ -50,8 +50,29 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         position: isMobile ? undefined : 'relative'
       }}
     >
-      <IconToRender className="nav-tab-icon" style={isMobile ? { width: '24px', height: '24px', display: 'block' } : undefined} /> 
-      <span className="nav-tab-label">{label}</span>
+      <IconToRender 
+        className="nav-tab-icon" 
+        style={{
+          width: isMobile ? '24px' : '16px',
+          height: isMobile ? '24px' : '16px',
+          display: isMobile ? 'block' : 'inline-block',
+          color: active 
+            ? '#0a0c10' 
+            : (isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.75)'),
+          transition: 'color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+        }} 
+      /> 
+      <span 
+        className="nav-tab-label"
+        style={{
+          color: active 
+            ? '#0a0c10' 
+            : (isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.75)'),
+          transition: 'color 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+        }}
+      >
+        {label}
+      </span>
     </button>
   );
 };
@@ -185,30 +206,22 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
   return (
     <SpatialCard 
       ref={containerRef}
-      onMouseEnter={() => !isMobile && setShowVolume(true)}
-      onMouseLeave={() => !isMobile && setShowVolume(false)}
+      className="dark-obsidian-panel"
       style={{
         position: isMobileDrawer ? 'relative' : 'absolute',
         bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '250px' : '68px')),
         top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
         left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
         right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
-        width: isMobileDrawer ? '100%' : 'auto',
-        maxWidth: isMobileDrawer ? '320px' : 'none',
+        width: isMobileDrawer ? '100%' : '320px',
+        maxWidth: '320px',
         margin: isMobileDrawer ? '0 auto' : '0',
         zIndex: 100,
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: isMobile ? 'space-between' : 'flex-start',
-        gap: isMobile ? '8px' : '12px',
-        padding: isMobile ? '8px 14px' : '10px 18px',
-        borderRadius: isMobile ? '16px' : '20px',
-        background: 'rgba(10, 12, 18, 0.65)',
-        backdropFilter: 'blur(30px) saturate(210%)',
-        WebkitBackdropFilter: 'blur(30px) saturate(210%)',
-        border: '1px solid rgba(59, 130, 246, 0.25)',
-        boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 16px rgba(59, 130, 246, 0.15)',
-        color: '#ffffff',
+        flexDirection: 'column',
+        gap: '12px',
+        padding: '14px 16px',
+        borderRadius: '20px',
         transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
         fontFamily: 'Outfit, sans-serif'
       }}
@@ -234,13 +247,13 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           top: isMobile ? 'calc(100% + 8px)' : 'auto',
           left: 0,
           right: 0,
-          width: isMobile ? '100%' : '240px',
-          background: 'rgba(10, 12, 18, 0.85)',
+          width: '100%',
+          background: 'rgba(16, 18, 26, 0.95)',
           backdropFilter: 'blur(30px) saturate(210%)',
           WebkitBackdropFilter: 'blur(30px) saturate(210%)',
           borderRadius: '16px',
-          border: '1px solid rgba(59, 130, 246, 0.3)',
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+          border: '1px solid rgba(255, 255, 255, 0.14)',
+          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
           padding: '12px',
           display: 'flex',
           flexDirection: 'column',
@@ -248,7 +261,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           zIndex: 101,
           animation: 'chatEntrance 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         }}>
-          <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', padding: '0 8px 4px 8px', borderBottom: '1px solid rgba(59, 130, 246, 0.15)' }}>
+          <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', padding: '0 8px 4px 8px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
             SELECT SOUND GENRE
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxHeight: '180px', overflowY: 'auto' }} className="chat-scrollbar">
@@ -294,163 +307,145 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         </div>
       )}
 
-      {/* Audio Action Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <button 
-          onClick={prevTrack}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'rgba(255, 255, 255, 0.6)',
+      {/* Row 1: Media Title Info & Media Playback Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', width: '100%' }}>
+        
+        {/* Album Artwork frame */}
+        <div 
+          onClick={() => setShowTrackList(!showTrackList)}
+          style={{ 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '10px', 
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 100%)', 
+            border: '1px solid rgba(255, 255, 255, 0.1)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
             cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'color 0.2s'
+            flexShrink: 0,
+            transition: 'all 0.2s ease'
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
-          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
+          onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
         >
-          <SkipBack size={14} />
-        </button>
+          <Music size={18} color={isPlaying ? "var(--accent-color)" : "rgba(255,255,255,0.75)"} style={{ filter: isPlaying ? "drop-shadow(0 0 4px var(--accent-glow))" : "none", transition: 'all 0.3s ease' }} />
+        </div>
 
-        <button 
-          onClick={togglePlay}
-          style={{
-            background: isPlaying ? 'rgba(59, 130, 246, 0.25)' : 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
-            border: isPlaying ? '1px solid rgba(59, 130, 246, 0.4)' : 'none',
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: isPlaying ? '#60a5fa' : 'white',
-            cursor: 'pointer',
-            boxShadow: isPlaying ? 'none' : '0 4px 12px rgba(59, 130, 246, 0.35)',
-            transition: 'all 0.2s ease',
-            flexShrink: 0
-          }}
-          onMouseEnter={e => {
-            if (isPlaying) {
-              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.35)';
-            } else {
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.45)';
-            }
-          }}
-          onMouseLeave={e => {
-            if (isPlaying) {
-              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)';
-            } else {
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.35)';
-            }
-          }}
+        {/* Track Title Info */}
+        <div 
+          onClick={() => setShowTrackList(!showTrackList)}
+          style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, cursor: 'pointer', userSelect: 'none' }}
         >
-          {isPlaying ? <Pause size={14} fill="#60a5fa" color="#60a5fa" /> : <Play size={14} fill="white" color="white" style={{ marginLeft: '2px' }} />}
-        </button>
-
-        <button 
-          onClick={nextTrack}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'rgba(255, 255, 255, 0.6)',
-            cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
-          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
-        >
-          <SkipForward size={14} />
-        </button>
-      </div>
-
-      {/* Track Info & Visualizer */}
-      <div 
-        onClick={() => setShowTrackList(!showTrackList)}
-        style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'center' : 'flex-start', gap: isMobile ? '8px' : '2px', cursor: 'pointer', userSelect: 'none' }}
-      >
-        {!isMobile ? (
-          <span style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            {currentTrack.genre} <ChevronDown size={10} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+          <span style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {currentTrack.genre}
           </span>
-        ) : null}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: isMobile ? '13px' : '12px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            {currentTrack.name}
-            {isMobile && <ChevronDown size={12} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.7 }} />}
-          </span>
-          
-          {/* Visualizer bars */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px', width: '20px' }}>
-            <div className="visualizer-bar" style={{
-              height: isPlaying ? undefined : '3px',
-              animation: isPlaying ? 'floatBar1 1.2s infinite ease-in-out' : 'none'
-            }} />
-            <div className="visualizer-bar" style={{
-              height: isPlaying ? undefined : '5px',
-              animation: isPlaying ? 'floatBar2 0.8s infinite ease-in-out' : 'none'
-            }} />
-            <div className="visualizer-bar" style={{
-              height: isPlaying ? undefined : '6px',
-              animation: isPlaying ? 'floatBar3 1.0s infinite ease-in-out' : 'none'
-            }} />
-            <div className="visualizer-bar" style={{
-              height: isPlaying ? undefined : '3px',
-              animation: isPlaying ? 'floatBar4 0.7s infinite ease-in-out' : 'none'
-            }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
+            <span style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%' }}>
+              {currentTrack.name}
+              <ChevronDown size={12} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.6, flexShrink: 0 }} />
+            </span>
           </div>
         </div>
-      </div>
 
-      {/* Volume Controls (revealed on hover) */}
-      {!isMobile && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          width: showVolume ? '100px' : '0px',
-          opacity: showVolume ? 1 : 0,
-          overflow: 'hidden',
-          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-          paddingLeft: showVolume ? '8px' : '0px',
-          borderLeft: showVolume ? '1px solid rgba(59, 130, 246, 0.25)' : 'none'
-        }}>
+        {/* Audio Action Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           <button 
-            onClick={toggleMute}
-            style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+            onClick={prevTrack}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'rgba(255, 255, 255, 0.6)',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}
             onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
             onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
           >
-            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            <SkipBack size={14} />
           </button>
-          <input 
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={volume}
-            onChange={(e) => {
-              setVolume(parseFloat(e.target.value));
-              setIsMuted(false);
-            }}
+
+          <button 
+            onClick={togglePlay}
             style={{
-              width: '60px',
-              height: '4px',
-              WebkitAppearance: 'none',
-              background: 'rgba(255, 255, 255, 0.15)',
-              borderRadius: '2px',
-              outline: 'none',
-              cursor: 'pointer'
+              background: '#ffffff',
+              border: 'none',
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#0a0c10',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(255, 255, 255, 0.25)',
+              transition: 'all 0.2s ease',
+              flexShrink: 0
             }}
-          />
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.06)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 255, 255, 0.35)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 255, 255, 0.25)';
+            }}
+          >
+            {isPlaying ? <Pause size={14} fill="#0a0c10" color="#0a0c10" /> : <Play size={14} fill="#0a0c10" color="#0a0c10" style={{ marginLeft: '2px' }} />}
+          </button>
+
+          <button 
+            onClick={nextTrack}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'rgba(255, 255, 255, 0.6)',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
+          >
+            <SkipForward size={14} />
+          </button>
         </div>
-      )}
+
+      </div>
+
+      {/* Row 2: Sound Volume Pill Slider Track */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+        <button 
+          onClick={toggleMute}
+          style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+          onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
+          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
+        >
+          {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </button>
+
+        <input 
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={isMuted ? 0 : volume}
+          onChange={(e) => {
+            setVolume(parseFloat(e.target.value));
+            setIsMuted(false);
+          }}
+          style={{ flex: 1 }}
+        />
+
+        <Music size={14} style={{ color: 'rgba(255, 255, 255, 0.4)', flexShrink: 0 }} />
+      </div>
     </SpatialCard>
   );
 }
@@ -618,12 +613,12 @@ export default function PresentationApp({ forceAdmin = false }) {
         {/* Desktop Navigation Pill */}
         {activeTab !== 'manage' ? (
           <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', minWidth: 0 }}>
-            <SpatialCard className="glass-panel" maxTilt={4} style={{ 
+            <SpatialCard className="dark-obsidian-panel" maxTilt={4} style={{ 
               position: 'relative',
               display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
-              background: 'rgba(10, 12, 18, 0.65)',
-              border: '1px solid rgba(59, 130, 246, 0.25)',
-              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 16px rgba(59, 130, 246, 0.15)',
+              background: 'rgba(16, 18, 26, 0.45)',
+              border: '1px solid rgba(255, 255, 255, 0.14)',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
               overflow: 'visible',
               backdropFilter: 'blur(30px) saturate(210%)',
               WebkitBackdropFilter: 'blur(30px) saturate(210%)'
@@ -638,10 +633,10 @@ export default function PresentationApp({ forceAdmin = false }) {
                     left: 0,
                     width: `${activeRect.width}px`,
                     transform: `translateX(${activeRect.left}px)`,
-                    background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+                    background: '#ffffff',
                     borderRadius: '12px',
                     transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-                    boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)',
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4)',
                     zIndex: 1,
                     pointerEvents: 'none'
                   }}
@@ -674,7 +669,7 @@ export default function PresentationApp({ forceAdmin = false }) {
                   setActiveTab('manage');
                 }
               }}
-              className="glass-panel hover-lift header-manage-btn" 
+              className="dark-obsidian-panel hover-lift header-manage-btn" 
               style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '30px', background: activeTab === 'manage' ? 'var(--input-bg)' : 'var(--accent-color)', cursor: 'pointer', border: activeTab === 'manage' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white', fontWeight: 'bold' }}>
               {activeTab === 'manage' ? <Eye size={16} /> : <Settings size={16} />}
               <span className="action-text">{activeTab === 'manage' ? 'View App' : 'Manage'}</span>
@@ -691,24 +686,24 @@ export default function PresentationApp({ forceAdmin = false }) {
             }}
             onMouseEnter={() => setHoveredFullscreen(true)}
             onMouseLeave={() => setHoveredFullscreen(false)}
-            className="glass-panel hover-lift icon-action-btn fullscreen-btn" 
+            className="dark-obsidian-panel hover-lift icon-action-btn fullscreen-btn" 
             title="Fullscreen"
             style={{ 
               display: 'flex', alignItems: 'center', justifyContent: 'center', 
               width: '48px', height: '48px', padding: '0', 
               borderRadius: '50%', 
-              background: hoveredFullscreen ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
+              background: hoveredFullscreen ? 'rgba(255, 255, 255, 0.15)' : 'rgba(16, 18, 26, 0.45)', 
               cursor: 'pointer', 
-              border: '1px solid rgba(59, 130, 246, 0.25)', 
-              color: hoveredFullscreen ? '#60a5fa' : '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.14)', 
+              color: '#ffffff',
               boxShadow: hoveredFullscreen 
-                ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
-                : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+                ? '0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)' 
+                : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
               backdropFilter: 'blur(30px) saturate(210%)',
               WebkitBackdropFilter: 'blur(30px) saturate(210%)',
               transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}>
-            <Maximize size={18} />
+            <Maximize size={18} color="#ffffff" style={{ transition: 'color 0.3s' }} />
           </button>
 
           {/* Share Button (Hidden on Manage) */}
@@ -717,50 +712,54 @@ export default function PresentationApp({ forceAdmin = false }) {
               onClick={() => setIsShareModalOpen(true)}
               onMouseEnter={() => setHoveredShare(true)}
               onMouseLeave={() => setHoveredShare(false)}
-              className="glass-panel hover-lift icon-action-btn" 
+              className="dark-obsidian-panel hover-lift icon-action-btn" 
               title="Share"
               style={{ 
                 display: 'flex', alignItems: 'center', justifyContent: 'center', 
                 width: '48px', height: '48px', padding: '0', 
                 borderRadius: '50%', 
-                background: hoveredShare ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
+                background: hoveredShare ? 'rgba(255, 255, 255, 0.15)' : 'rgba(16, 18, 26, 0.45)', 
                 cursor: 'pointer', 
-                border: '1px solid rgba(59, 130, 246, 0.25)', 
-                color: hoveredShare ? '#60a5fa' : '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.14)', 
+                color: '#ffffff',
                 boxShadow: hoveredShare 
-                  ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
-                  : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+                  ? '0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)' 
+                  : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
                 backdropFilter: 'blur(30px) saturate(210%)',
                 WebkitBackdropFilter: 'blur(30px) saturate(210%)',
                 transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
               }}>
-              <Share2 size={18} />
+              <Share2 size={18} color="#ffffff" style={{ transition: 'color 0.3s' }} />
             </button>
           )}
 
           {/* Mobile Hamburger Toggle */}
           <button 
-            className="mobile-nav-toggle glass-panel icon-action-btn"
+            className="mobile-nav-toggle dark-obsidian-panel icon-action-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             onMouseEnter={() => setHoveredMobileMenu(true)}
             onMouseLeave={() => setHoveredMobileMenu(false)}
             style={{ 
               width: '48px', height: '48px', borderRadius: '50%', 
-              background: hoveredMobileMenu ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
-              border: '1px solid rgba(59, 130, 246, 0.25)', 
-              color: hoveredMobileMenu ? '#60a5fa' : '#ffffff', 
+              background: hoveredMobileMenu ? 'rgba(255, 255, 255, 0.15)' : 'rgba(16, 18, 26, 0.45)', 
+              border: '1px solid rgba(255, 255, 255, 0.14)', 
+              color: '#ffffff', 
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center', justifyContent: 'center',
               boxShadow: hoveredMobileMenu 
-                ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
-                : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+                ? '0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)' 
+                : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
               backdropFilter: 'blur(30px) saturate(210%)',
               WebkitBackdropFilter: 'blur(30px) saturate(210%)',
               transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMobileMenuOpen ? (
+              <X size={24} color="#ffffff" style={{ transition: 'color 0.3s' }} />
+            ) : (
+              <Menu size={24} color="#ffffff" style={{ transition: 'color 0.3s' }} />
+            )}
           </button>
         </div>
       </div>
@@ -779,7 +778,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         {/* Close Button to Exit Mobile Drawer */}
         <button 
           onClick={() => setIsMobileMenuOpen(false)}
-          className="glass-panel icon-action-btn"
+          className="dark-obsidian-panel icon-action-btn"
           title="Close Menu"
           style={{
             position: 'absolute',
@@ -788,18 +787,18 @@ export default function PresentationApp({ forceAdmin = false }) {
             width: '48px',
             height: '48px',
             borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(59, 130, 246, 0.25)',
+            background: 'rgba(16, 18, 26, 0.45)',
+            border: '1px solid rgba(255, 255, 255, 0.14)',
             color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
             zIndex: 102
           }}
         >
-          <X size={24} />
+          <X size={24} color="#ffffff" />
         </button>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
@@ -825,7 +824,7 @@ export default function PresentationApp({ forceAdmin = false }) {
 
           <button 
             onClick={() => { setIsShareModalOpen(true); setIsMobileMenuOpen(false); }}
-            className="glass-panel" 
+            className="dark-obsidian-panel" 
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', border: activeTab === 'manage' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)', color: activeTab === 'manage' ? 'var(--text-primary)' : 'white', fontWeight: 'bold', fontSize: '18px' }}>
             <Share2 size={24} /> Share
           </button>
@@ -833,7 +832,7 @@ export default function PresentationApp({ forceAdmin = false }) {
           {isAdmin && (
             <button 
               onClick={() => setActiveTab('manage')}
-              className="glass-panel" 
+              className="dark-obsidian-panel" 
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: activeTab === 'manage' ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)', border: activeTab === 'manage' ? 'none' : '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
               <Settings size={24} /> Manage
             </button>

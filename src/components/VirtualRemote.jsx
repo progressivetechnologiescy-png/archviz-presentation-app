@@ -16,11 +16,11 @@ const ArrowButton = (props) => {
       style={{
         width: '48px', height: '48px',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        border: '1px solid rgba(59, 130, 246, 0.25)',
-        background: isHovered ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-        color: isHovered ? '#ffffff' : '#60a5fa',
+        border: '1px solid rgba(255, 255, 255, 0.14)',
+        background: isHovered ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+        color: '#ffffff',
         cursor: 'pointer', borderRadius: '12px',
-        boxShadow: isHovered ? '0 0 12px rgba(59, 130, 246, 0.35)' : 'none',
+        boxShadow: isHovered ? '0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22)' : 'none',
         transition: 'all 0.2s ease',
         ...props.style
       }}
@@ -31,15 +31,15 @@ const ArrowButton = (props) => {
 };
 
 const kbdStyle = {
-  background: 'rgba(59, 130, 246, 0.1)',
-  border: '1px solid rgba(59, 130, 246, 0.35)',
+  background: 'rgba(255, 255, 255, 0.12)',
+  border: '1px solid rgba(255, 255, 255, 0.18)',
   borderRadius: '6px',
   padding: '2px 6px',
   fontSize: '11px',
   fontFamily: 'Outfit, sans-serif',
   fontWeight: '800',
-  color: '#60a5fa',
-  boxShadow: '0 2px 0 rgba(59, 130, 246, 0.15)',
+  color: '#ffffff',
+  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.25)',
   minWidth: '16px',
   textAlign: 'center',
   display: 'inline-block',
@@ -74,23 +74,23 @@ export default function VirtualRemote() {
           pointerEvents: 'none',
           animation: 'walkGuideEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards'
         }}>
-          <div className="glass-panel" style={{
+          <div className="dark-obsidian-panel" style={{
             padding: '8px 16px',
             borderRadius: '30px',
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            background: 'rgba(10, 12, 18, 0.7)',
-            backdropFilter: 'blur(30px) saturate(190%)',
-            WebkitBackdropFilter: 'blur(30px) saturate(190%)',
-            border: '1px solid rgba(59, 130, 246, 0.25)',
-            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+            background: 'rgba(16, 18, 26, 0.45)',
+            backdropFilter: 'blur(30px) saturate(210%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(210%)',
+            border: '1px solid rgba(255, 255, 255, 0.14)',
+            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.22)',
             color: '#ffffff',
             fontFamily: 'Outfit, sans-serif',
             whiteSpace: 'nowrap'
           }}>
-            <span style={{ fontSize: '10px', fontWeight: '800', color: '#60a5fa', letterSpacing: '1px', textTransform: 'uppercase' }}>Walk Mode</span>
-            <span style={{ fontSize: '12px', color: 'rgba(59, 130, 246, 0.2)' }}>•</span>
+            <span style={{ fontSize: '10px', fontWeight: '800', color: '#ffffff', letterSpacing: '1px', textTransform: 'uppercase' }}>Walk Mode</span>
+            <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.15)' }}>•</span>
             <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
               <kbd style={kbdStyle}>W</kbd>
               <kbd style={kbdStyle}>A</kbd>
@@ -98,14 +98,14 @@ export default function VirtualRemote() {
               <kbd style={kbdStyle}>D</kbd>
             </div>
             <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.7)' }}>to Walk</span>
-            <span style={{ fontSize: '12px', color: 'rgba(59, 130, 246, 0.2)' }}>•</span>
+            <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.15)' }}>•</span>
             <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
               <kbd style={kbdStyle}>Shift</kbd>
               <kbd style={kbdStyle}>Ctrl</kbd>
             </div>
             <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.7)' }}>to Fly</span>
-            <span style={{ fontSize: '12px', color: 'rgba(59, 130, 246, 0.2)' }}>•</span>
-            <span style={{ fontSize: '11px', fontWeight: '700', color: '#60a5fa' }}>Drag Mouse to Look</span>
+            <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.15)' }}>•</span>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: '#ffffff' }}>Drag Mouse to Look</span>
           </div>
         </div>
       </>
@@ -119,21 +119,21 @@ export default function VirtualRemote() {
           position: absolute; bottom: 30px; left: 32px; z-index: 100;
           padding: 16px; border-radius: 24px;
           display: grid; grid-template-columns: repeat(4, 48px); grid-template-rows: auto repeat(2, 48px); gap: 8px;
-          background: rgba(10, 12, 18, 0.7) !important;
-          border: 1px solid rgba(59, 130, 246, 0.25) !important;
-          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-          backdrop-filter: blur(30px) saturate(190%);
-          -webkit-backdrop-filter: blur(30px) saturate(190%);
+          background: rgba(16, 18, 26, 0.45) !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+          backdrop-filter: blur(30px) saturate(210%);
+          -webkit-backdrop-filter: blur(30px) saturate(210%);
         }
         .virtual-joystick-right {
           position: absolute; bottom: 30px; right: 32px; z-index: 100;
           padding: 12px 16px; border-radius: 24px;
           display: flex; gap: 8px; align-items: center;
-          background: rgba(10, 12, 18, 0.7) !important;
-          border: 1px solid rgba(59, 130, 246, 0.25) !important;
-          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-          backdrop-filter: blur(30px) saturate(190%);
-          -webkit-backdrop-filter: blur(30px) saturate(190%);
+          background: rgba(16, 18, 26, 0.45) !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+          backdrop-filter: blur(30px) saturate(210%);
+          -webkit-backdrop-filter: blur(30px) saturate(210%);
         }
         
         @media (max-width: 1024px) {
@@ -156,9 +156,9 @@ export default function VirtualRemote() {
       `}</style>
       
       {/* Primary Movement D-Pad (Left Side Joystick) */}
-      <div className="glass-panel virtual-joystick-left">
+      <div className="dark-obsidian-panel virtual-joystick-left">
         {/* Row 1: Keyboard WASD Helper (spans all columns, hidden on mobile) */}
-        <div className="keyboard-helper-row" style={{ gridColumn: '1 / span 4', gridRow: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', borderBottom: '1px solid rgba(59, 130, 246, 0.2)', paddingBottom: '8px', marginBottom: '2px', userSelect: 'none' }}>
+        <div className="keyboard-helper-row" style={{ gridColumn: '1 / span 4', gridRow: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', borderBottom: '1px solid rgba(255, 255, 255, 0.12)', paddingBottom: '8px', marginBottom: '2px', userSelect: 'none' }}>
           <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: '700', letterSpacing: '0.5px' }}>KEYBOARD:</span>
           <kbd style={kbdStyle}>W</kbd>
           <kbd style={kbdStyle}>A</kbd>
@@ -190,7 +190,7 @@ export default function VirtualRemote() {
       </div>
 
       {/* Secondary Camera Rotation Pad (Right Side Joystick) */}
-      <div className="glass-panel virtual-joystick-right">
+      <div className="dark-obsidian-panel virtual-joystick-right">
         <ArrowButton direction="lookLeft" icon={RotateCcw} style={{ width: '64px' }} setMovement={setMovement} />
         <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.6)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>Look</span>
         <ArrowButton direction="lookRight" icon={RotateCw} style={{ width: '64px' }} setMovement={setMovement} />

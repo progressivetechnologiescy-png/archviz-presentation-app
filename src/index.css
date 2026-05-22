@@ -3,53 +3,52 @@
 :root {
   --bg-dark: #0a0c10;
   --bg-gradient: radial-gradient(circle at center, #11141b 0%, #07080a 100%);
-  --bg-panel: rgba(10, 12, 18, 0.65);
+  --bg-panel: rgba(255, 255, 255, 0.08);
   
   --accent-color: #3b82f6;
   --accent-glow: color-mix(in srgb, var(--accent-color) 30%, transparent);
   
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-secondary: rgba(255, 255, 255, 0.65);
   
   /* Inputs */
-  --input-bg: rgba(0, 0, 0, 0.3);
-  --border-color: rgba(59, 130, 246, 0.2);
+  --input-bg: rgba(0, 0, 0, 0.25);
+  --border-color: rgba(255, 255, 255, 0.12);
   
-  /* Upgraded Glass Borders - Cyan/Electric Blue sheens */
-  --border-glass: rgba(59, 130, 246, 0.25);
-  --border-glass-light: rgba(59, 130, 246, 0.35);
+  /* Frosted macOS specular silver border sheens */
+  --border-glass: rgba(255, 255, 255, 0.16);
+  --border-glass-light: rgba(255, 255, 255, 0.28);
   
-  /* Shadows */
-  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.75);
-  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  --logo-shadow: 0 2px 12px rgba(59, 130, 246, 0.2), 0 0 4px rgba(0, 0, 0, 0.8);
-  --logo-shadow-sm: 0 1px 8px rgba(0, 0, 0, 0.9);
+  /* Premium drop shadows + upper inner-specular highlight */
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.55);
+  --shadow-glass: inset 0 1px 1px rgba(255, 255, 255, 0.22);
+  --logo-shadow: 0 2px 12px rgba(59, 130, 246, 0.15), 0 0 4px rgba(0, 0, 0, 0.7);
+  --logo-shadow-sm: 0 1px 8px rgba(0, 0, 0, 0.85);
 }
 
 body.light-mode {
   --bg-dark: #f8fafc;
   --bg-gradient: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
-  --bg-panel: rgba(255, 255, 255, 0.65);
+  --bg-panel: rgba(255, 255, 255, 0.45);
   
-  /* Keep accent color dynamic */
   --accent-glow: color-mix(in srgb, var(--accent-color) 30%, transparent);
   
   --text-primary: #0f172a;
   --text-secondary: rgba(15, 23, 42, 0.6);
   
   /* Inputs for Light Mode */
-  --input-bg: rgba(0, 0, 0, 0.05);
-  --border-color: rgba(0, 0, 0, 0.1);
+  --input-bg: rgba(0, 0, 0, 0.03);
+  --border-color: rgba(0, 0, 0, 0.08);
   
   /* Glass Borders for Light Mode */
-  --border-glass: rgba(0, 0, 0, 0.08);
-  --border-glass-light: rgba(0, 0, 0, 0.15);
+  --border-glass: rgba(255, 255, 255, 0.35);
+  --border-glass-light: rgba(255, 255, 255, 0.55);
   
   /* Shadows */
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.05);
-  --shadow-glass: inset 0 1px 0 rgba(255,255,255,0.8);
-  --logo-shadow: 0 2px 12px rgba(0,0,0,0.1), 0 0 4px rgba(0,0,0,0.05);
-  --logo-shadow-sm: 0 1px 8px rgba(0,0,0,0.1);
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.08);
+  --shadow-glass: inset 0 1px 1px rgba(255, 255, 255, 0.75);
+  --logo-shadow: 0 2px 12px rgba(0,0,0,0.05), 0 0 4px rgba(0,0,0,0.02);
+  --logo-shadow-sm: 0 1px 8px rgba(0,0,0,0.02);
 }
 
 * {
@@ -67,14 +66,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Base Glassmorphism Class - Massive Upgrade */
+/* Base Glassmorphism Class - Frosted macOS design style */
 .glass-panel {
   background: var(--bg-panel);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(40px) saturate(220%);
+  -webkit-backdrop-filter: blur(40px) saturate(220%);
   border: 1px solid var(--border-glass);
   box-shadow: var(--shadow-lg), var(--shadow-glass);
-  border-radius: 20px;
+  border-radius: 24px;
 }
 
 /* Micro-Animations */
@@ -82,8 +81,8 @@ body {
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
 }
 .hover-lift:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform: translateY(-4px) scale(1.025);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.3);
   border-color: var(--border-glass-light);
 }
 
@@ -259,4 +258,110 @@ body.light-mode ::-webkit-scrollbar-thumb:hover {
 body.light-mode .glass-panel {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
+
+/* Premium Dark Obsidian Panel - Refined to match Apple Control Center glassmorphism */
+.dark-obsidian-panel {
+  --bg-panel: rgba(16, 18, 26, 0.45) !important;
+  --border-glass: rgba(255, 255, 255, 0.14) !important;
+  --border-glass-light: rgba(255, 255, 255, 0.25) !important;
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.6) !important;
+  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+  --text-primary: #ffffff !important;
+  --text-secondary: rgba(255, 255, 255, 0.6) !important;
+
+  background: rgba(16, 18, 26, 0.45) !important;
+  backdrop-filter: blur(40px) saturate(220%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(220%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+  border-radius: 20px;
+  color: #ffffff !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body.light-mode .dark-obsidian-panel {
+  --bg-panel: rgba(16, 18, 26, 0.45) !important;
+  --border-glass: rgba(255, 255, 255, 0.14) !important;
+  --border-glass-light: rgba(255, 255, 255, 0.25) !important;
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.6) !important;
+  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+  --text-primary: #ffffff !important;
+  --text-secondary: rgba(255, 255, 255, 0.6) !important;
+
+  background: rgba(16, 18, 26, 0.45) !important;
+  backdrop-filter: blur(40px) saturate(220%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(220%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure hover visual effects can apply on dark-obsidian buttons by overriding important backgrounds */
+.dark-obsidian-panel.hover-lift:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+/* macOS/visionOS Control Center thick slider track styling */
+.dark-obsidian-panel input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 14px;
+  outline: none;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.dark-obsidian-panel input[type="range"]::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+  border-radius: 14px;
+}
+
+.dark-obsidian-panel input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 2px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: -400px 0 0 400px rgba(255, 255, 255, 0.95);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+/* Firefox Support */
+.dark-obsidian-panel input[type="range"]::-moz-range-track {
+  height: 28px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  border: none;
+}
+
+.dark-obsidian-panel input[type="range"]::-moz-range-progress {
+  background: rgba(255, 255, 255, 0.95);
+  height: 28px;
+  border-radius: 14px 0 0 14px;
+}
+
+.dark-obsidian-panel input[type="range"]::-moz-range-thumb {
+  width: 2px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.dark-obsidian-panel input[type="range"]:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
 
