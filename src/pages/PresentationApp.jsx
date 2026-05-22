@@ -54,8 +54,9 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
   );
 };
 
-function AmbientSoundPlayer({ isMobileDrawer = false }) {
+function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const controlMode = useViewerStore(state => state.controlMode);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.25);
   const [isMuted, setIsMuted] = useState(false);
@@ -185,7 +186,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false }) {
       onMouseLeave={() => !isMobile && setShowVolume(false)}
       style={{
         position: isMobileDrawer ? 'relative' : 'absolute',
-        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : '68px'),
+        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' ? '190px' : '68px')),
         top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
         left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
         right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
@@ -443,6 +444,7 @@ export default function PresentationApp({ forceAdmin = false }) {
   const companyName = useViewerStore(state => state.companyName);
   const logoUrl = useViewerStore(state => state.logoUrl);
   const mapMode = useViewerStore(state => state.mapMode);
+  const controlMode = useViewerStore(state => state.controlMode);
     
   const [isAdmin] = useState(() => {
     if (forceAdmin) return true;
@@ -823,12 +825,18 @@ export default function PresentationApp({ forceAdmin = false }) {
       </div>
 
       {/* Premium ambient soundtrack player loop */}
-      {activeTab !== 'manage' && !isMobileDevice && <AmbientSoundPlayer />}
+      {activeTab !== 'manage' && !isMobileDevice && <AmbientSoundPlayer activeTab={activeTab} />}
 
       {/* Global Footer Watermark */}
       <div style={{
-        position: 'absolute', bottom: '32px', left: '32px', zIndex: 100,
-        pointerEvents: 'auto', display: 'flex', alignItems: 'center'
+        position: 'absolute', 
+        bottom: (activeTab === '3d' && controlMode === 'walk') ? '8px' : '32px', 
+        left: (activeTab === '3d' && controlMode === 'walk') ? '48px' : '32px', 
+        zIndex: 100,
+        pointerEvents: 'auto', 
+        display: 'flex', 
+        alignItems: 'center',
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
       }}>
         <a 
           href="https://progressivetechnologies.com.cy/" 

@@ -23,6 +23,22 @@ const ArrowButton = (props) => {
   );
 };
 
+const kbdStyle = {
+  background: 'rgba(255, 255, 255, 0.12)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  borderRadius: '6px',
+  padding: '1px 5px',
+  fontSize: '10px',
+  fontFamily: 'Outfit, sans-serif',
+  fontWeight: '800',
+  color: 'white',
+  boxShadow: '0 2px 0 rgba(0,0,0,0.3)',
+  minWidth: '16px',
+  textAlign: 'center',
+  display: 'inline-block',
+  lineHeight: '1'
+};
+
 export default function VirtualRemote() {
   const setMovement = useViewerStore(state => state.setMovement);
   const controlMode = useViewerStore(state => state.controlMode);
@@ -36,7 +52,7 @@ export default function VirtualRemote() {
         .virtual-joystick-left {
           position: absolute; bottom: 30px; left: 32px; z-index: 100;
           padding: 16px; border-radius: 24px;
-          display: grid; grid-template-columns: repeat(4, 48px); grid-template-rows: repeat(2, 48px); gap: 8px;
+          display: grid; grid-template-columns: repeat(4, 48px); grid-template-rows: auto repeat(2, 48px); gap: 8px;
         }
         .virtual-joystick-right {
           position: absolute; bottom: 30px; right: 32px; z-index: 100;
@@ -50,9 +66,12 @@ export default function VirtualRemote() {
         }
         
         @media (max-width: 600px) {
+          .keyboard-helper-row {
+            display: none !important;
+          }
           .virtual-joystick-left {
             left: 16px; bottom: 20px; padding: 12px; gap: 4px;
-            grid-template-columns: repeat(4, 40px); grid-template-rows: repeat(2, 40px);
+            grid-template-columns: repeat(4, 40px); grid-template-rows: repeat(2, 40px) !important;
           }
           .virtual-joystick-right {
             right: 16px; bottom: 20px; padding: 8px 12px; gap: 4px;
@@ -62,25 +81,34 @@ export default function VirtualRemote() {
       
       {/* Primary Movement D-Pad (Left Side Joystick) */}
       <div className="glass-panel virtual-joystick-left">
+        {/* Row 1: Keyboard WASD Helper (spans all columns, hidden on mobile) */}
+        <div className="keyboard-helper-row" style={{ gridColumn: '1 / span 4', gridRow: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px', marginBottom: '2px', userSelect: 'none' }}>
+          <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '700', letterSpacing: '0.5px' }}>KEYBOARD:</span>
+          <kbd style={kbdStyle}>W</kbd>
+          <kbd style={kbdStyle}>A</kbd>
+          <kbd style={kbdStyle}>S</kbd>
+          <kbd style={kbdStyle}>D</kbd>
+        </div>
+
         {/* Left Column (Vertical Fly controls) */}
-        <div style={{ gridColumn: '1', gridRow: '1', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
+        <div style={{ gridColumn: '1', gridRow: '2', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
           <ArrowButton direction="moveUp" icon={ChevronsUp} style={{ width: '40px', height: '40px' }} setMovement={setMovement} />
         </div>
-        <div style={{ gridColumn: '1', gridRow: '2', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+        <div style={{ gridColumn: '1', gridRow: '3', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
           <ArrowButton direction="moveDown" icon={ChevronsDown} style={{ width: '40px', height: '40px' }} setMovement={setMovement} />
         </div>
 
         {/* Right Columns (Planar WASD equivalent) */}
-        <div style={{ gridColumn: '3', gridRow: '1' }}>
+        <div style={{ gridColumn: '3', gridRow: '2' }}>
           <ArrowButton direction="moveForward" icon={ArrowUp} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
-        <div style={{ gridColumn: '2', gridRow: '2' }}>
+        <div style={{ gridColumn: '2', gridRow: '3' }}>
           <ArrowButton direction="moveLeft" icon={ArrowLeft} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
-        <div style={{ gridColumn: '3', gridRow: '2' }}>
+        <div style={{ gridColumn: '3', gridRow: '3' }}>
           <ArrowButton direction="moveBackward" icon={ArrowDown} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
-        <div style={{ gridColumn: '4', gridRow: '2' }}>
+        <div style={{ gridColumn: '4', gridRow: '3' }}>
           <ArrowButton direction="moveRight" icon={ArrowRight} style={{ width: '100%', height: '100%' }} setMovement={setMovement} />
         </div>
       </div>

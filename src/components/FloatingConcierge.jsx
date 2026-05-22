@@ -29,7 +29,7 @@ function extractCoordinates(str) {
 }
 
 export default function FloatingConcierge() {
-  const { customGPS, active3DLocationName } = useViewerStore();
+  const { customGPS, active3DLocationName, controlMode } = useViewerStore();
   
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -300,7 +300,16 @@ ${aiContext || 'No specific details provided yet.'}
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: '32px', right: '32px', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+    <div style={{ 
+      position: 'fixed', 
+      bottom: controlMode === 'walk' ? '120px' : '32px', 
+      right: '32px', 
+      zIndex: 9999, 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'flex-end',
+      transition: 'bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+    }}>
       
       <style>{`
         @keyframes chatEntrance {

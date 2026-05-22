@@ -4,6 +4,23 @@ import VirtualRemote from '../components/VirtualRemote';
 import { Sun, Moon, Sunrise, Play, Square, MousePointer2, Compass, Move } from 'lucide-react';
 import ViewerCanvas from '../components/ViewerCanvas';
 
+const kbdStyle = {
+  background: 'rgba(255, 255, 255, 0.15)',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  borderRadius: '6px',
+  padding: '2px 6px',
+  fontSize: '11px',
+  fontFamily: 'Outfit, sans-serif',
+  fontWeight: '800',
+  color: 'white',
+  boxShadow: '0 2px 0 rgba(0,0,0,0.3)',
+  minWidth: '16px',
+  textAlign: 'center',
+  display: 'inline-block',
+  lineHeight: '1',
+  margin: '0 2px'
+};
+
 export default function StandaloneView() {
   const { isTouring, toggleTouring, setMovement, controlMode, setControlMode } = useViewerStore();
 
@@ -69,8 +86,8 @@ export default function StandaloneView() {
         ) : (
           <>
             <MousePointer2 size={16} style={{ color: 'var(--accent-color, #3b82f6)' }} />
-            <span style={{ fontSize: '14px', fontWeight: '500', letterSpacing: '0.5px' }}>
-              Click screen to lock cursor. Use <strong>W A S D</strong> to walk.
+            <span style={{ fontSize: '14px', fontWeight: '500', letterSpacing: '0.5px', display: 'flex', alignItems: 'center' }}>
+              Click screen to lock cursor. Use <kbd style={kbdStyle}>W</kbd><kbd style={kbdStyle}>A</kbd><kbd style={kbdStyle}>S</kbd><kbd style={kbdStyle}>D</kbd> or arrows to walk.
             </span>
           </>
         )}
