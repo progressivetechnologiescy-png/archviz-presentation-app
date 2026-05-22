@@ -156,9 +156,37 @@ export default function AssetManager() {
     setCustomGLBInput(customGLB || '');
   }, [customGLB]);
 
+  const handleClearExternalURL = async () => {
+    if (!supabase) {
+      setCustomGLB(null);
+      setCustomGLBInput('');
+      useViewerStore.setState({ primaryModel: customFBX || null });
+      setAlertModal({ isOpen: true, message: "External 3D Model URL cleared." });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      try {
+        await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: '3d_model_glb' });
+      } catch {
+        console.warn("Delete policy blocked old asset removal.");
+      }
+      setCustomGLB(null);
+      setCustomGLBInput('');
+      useViewerStore.setState({ primaryModel: customFBX || null });
+      setAlertModal({ isOpen: true, message: "External 3D Model URL cleared. System fell back to uploaded FBX or default model." });
+    } catch (error) {
+      console.error("Clear URL error:", error);
+      setAlertModal({ isOpen: true, message: `Failed to clear URL: ${error.message || JSON.stringify(error)}` });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSaveExternalURL = async () => {
     if (!customGLBInput.trim()) {
-      setAlertModal({ isOpen: true, message: "Please enter a valid URL." });
+      await handleClearExternalURL();
       return;
     }
 
@@ -832,6 +860,14 @@ export default function AssetManager() {
                     >
                       Save URL
                     </button>
+                    {customGLB && (
+                      <button 
+                        onClick={handleClearExternalURL} 
+                        style={{ padding: '12px 18px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.2s ease' }}
+                      >
+                        Clear
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
