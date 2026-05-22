@@ -35,33 +35,33 @@ export default function ShareModal({ onClose }) {
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-      background: 'rgba(240, 246, 255, 0.45)', backdropFilter: 'blur(10px)', zIndex: 1000,
+      background: 'rgba(5, 6, 8, 0.65)', backdropFilter: 'blur(10px)', zIndex: 1000,
       display: 'flex', alignItems: 'center', justifyContent: 'center'
     }}>
       <div className="glass-panel" style={{ 
         width: '400px', padding: '32px', borderRadius: '24px', position: 'relative',
-        backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        backgroundColor: 'rgba(10, 12, 18, 0.75)',
         backdropFilter: 'blur(30px) saturate(190%)',
         WebkitBackdropFilter: 'blur(30px) saturate(190%)',
-        boxShadow: '0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08)',
-        border: '1px solid rgba(59, 130, 246, 0.2)'
+        boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+        border: '1px solid rgba(59, 130, 246, 0.25)'
       }}>
         
-        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: '#1D4ED8', cursor: 'pointer', opacity: 0.7 }} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: '#60a5fa', cursor: 'pointer', opacity: 0.7 }} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>
           <X size={20} />
         </button>
 
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#1D4ED8', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#60a5fa', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}>
             <Share2 size={24} />
           </div>
-          <h2 style={{ fontSize: '24px', margin: '0 0 8px 0', color: '#0F172A', fontWeight: '800' }}>Share Gallery</h2>
-          <p style={{ color: 'rgba(15, 23, 42, 0.7)', margin: 0, fontSize: '14px', fontWeight: '500' }}>Send this immersive property experience directly to your clients.</p>
+          <h2 style={{ fontSize: '24px', margin: '0 0 8px 0', color: '#ffffff', fontWeight: '800' }}>Share Gallery</h2>
+          <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '14px', fontWeight: '500' }}>Send this immersive property experience directly to your clients.</p>
         </div>
 
         <button 
           onClick={handleNativeShare}
-          style={{ width: '100%', padding: '16px', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)', color: 'white', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', marginBottom: '24px', boxShadow: '0 8px 24px rgba(59, 130, 246, 0.25)' }}
+          style={{ width: '100%', padding: '16px', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)', color: 'white', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', marginBottom: '24px', boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)' }}
         >
           {navigator.share ? 'Share via Device' : 'Copy Link'}
         </button>
@@ -86,17 +86,17 @@ export default function ShareModal({ onClose }) {
           </a>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.7)', borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-          <Link size={16} style={{ color: '#1D4ED8', marginRight: '12px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', background: 'rgba(0, 0, 0, 0.35)', borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.25)' }}>
+          <Link size={16} style={{ color: '#60a5fa', marginRight: '12px' }} />
           <input 
             type="text" 
             readOnly 
             value={shareUrl} 
-            style={{ flex: 1, background: 'transparent', border: 'none', color: '#0F172A', fontSize: '14px', outline: 'none', fontWeight: '500' }} 
+            style={{ flex: 1, background: 'transparent', border: 'none', color: '#ffffff', fontSize: '14px', outline: 'none', fontWeight: '500' }} 
           />
           <button 
             onClick={handleCopy}
-            style={{ background: 'transparent', border: 'none', color: copied ? '#10b981' : '#1D4ED8', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '8px' }}
+            style={{ background: 'transparent', border: 'none', color: copied ? '#10b981' : '#60a5fa', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '8px' }}
           >
             {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />}
           </button>

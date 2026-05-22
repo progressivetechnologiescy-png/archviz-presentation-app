@@ -16,11 +16,11 @@ const ArrowButton = (props) => {
       style={{
         width: '48px', height: '48px',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        border: 'none',
-        background: isHovered ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.06)',
-        color: '#1d4ed8',
+        border: '1px solid rgba(59, 130, 246, 0.25)',
+        background: isHovered ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+        color: isHovered ? '#ffffff' : '#60a5fa',
         cursor: 'pointer', borderRadius: '12px',
-        boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.6)',
+        boxShadow: isHovered ? '0 0 12px rgba(59, 130, 246, 0.35)' : 'none',
         transition: 'all 0.2s ease',
         ...props.style
       }}
@@ -32,14 +32,14 @@ const ArrowButton = (props) => {
 
 const kbdStyle = {
   background: 'rgba(59, 130, 246, 0.1)',
-  border: '1px solid rgba(59, 130, 246, 0.3)',
+  border: '1px solid rgba(59, 130, 246, 0.35)',
   borderRadius: '6px',
   padding: '2px 6px',
   fontSize: '11px',
   fontFamily: 'Outfit, sans-serif',
   fontWeight: '800',
-  color: '#1d4ed8',
-  boxShadow: '0 2px 0 rgba(59, 130, 246, 0.2)',
+  color: '#60a5fa',
+  boxShadow: '0 2px 0 rgba(59, 130, 246, 0.15)',
   minWidth: '16px',
   textAlign: 'center',
   display: 'inline-block',
@@ -80,16 +80,16 @@ export default function VirtualRemote() {
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            background: 'rgba(255, 255, 255, 0.25)',
+            background: 'rgba(10, 12, 18, 0.7)',
             backdropFilter: 'blur(30px) saturate(190%)',
             WebkitBackdropFilter: 'blur(30px) saturate(190%)',
-            border: '1px solid rgba(59, 130, 246, 0.2)',
-            boxShadow: '0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08)',
-            color: '#0f172a',
+            border: '1px solid rgba(59, 130, 246, 0.25)',
+            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+            color: '#ffffff',
             fontFamily: 'Outfit, sans-serif',
             whiteSpace: 'nowrap'
           }}>
-            <span style={{ fontSize: '10px', fontWeight: '800', color: '#1d4ed8', letterSpacing: '1px', textTransform: 'uppercase' }}>Walk Mode</span>
+            <span style={{ fontSize: '10px', fontWeight: '800', color: '#60a5fa', letterSpacing: '1px', textTransform: 'uppercase' }}>Walk Mode</span>
             <span style={{ fontSize: '12px', color: 'rgba(59, 130, 246, 0.2)' }}>•</span>
             <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
               <kbd style={kbdStyle}>W</kbd>
@@ -97,15 +97,15 @@ export default function VirtualRemote() {
               <kbd style={kbdStyle}>S</kbd>
               <kbd style={kbdStyle}>D</kbd>
             </div>
-            <span style={{ fontSize: '11px', color: 'rgba(15, 23, 42, 0.7)' }}>to Walk</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.7)' }}>to Walk</span>
             <span style={{ fontSize: '12px', color: 'rgba(59, 130, 246, 0.2)' }}>•</span>
             <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
               <kbd style={kbdStyle}>Shift</kbd>
               <kbd style={kbdStyle}>Ctrl</kbd>
             </div>
-            <span style={{ fontSize: '11px', color: 'rgba(15, 23, 42, 0.7)' }}>to Fly</span>
+            <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.7)' }}>to Fly</span>
             <span style={{ fontSize: '12px', color: 'rgba(59, 130, 246, 0.2)' }}>•</span>
-            <span style={{ fontSize: '11px', fontWeight: '700', color: '#1d4ed8' }}>Drag Mouse to Look</span>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: '#60a5fa' }}>Drag Mouse to Look</span>
           </div>
         </div>
       </>
@@ -119,9 +119,9 @@ export default function VirtualRemote() {
           position: absolute; bottom: 30px; left: 32px; z-index: 100;
           padding: 16px; border-radius: 24px;
           display: grid; grid-template-columns: repeat(4, 48px); grid-template-rows: auto repeat(2, 48px); gap: 8px;
-          background: rgba(255, 255, 255, 0.25) !important;
-          border: 1px solid rgba(59, 130, 246, 0.2) !important;
-          box-shadow: 0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08) !important;
+          background: rgba(10, 12, 18, 0.7) !important;
+          border: 1px solid rgba(59, 130, 246, 0.25) !important;
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
           backdrop-filter: blur(30px) saturate(190%);
           -webkit-backdrop-filter: blur(30px) saturate(190%);
         }
@@ -129,9 +129,9 @@ export default function VirtualRemote() {
           position: absolute; bottom: 30px; right: 32px; z-index: 100;
           padding: 12px 16px; border-radius: 24px;
           display: flex; gap: 8px; align-items: center;
-          background: rgba(255, 255, 255, 0.25) !important;
-          border: 1px solid rgba(59, 130, 246, 0.2) !important;
-          box-shadow: 0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08) !important;
+          background: rgba(10, 12, 18, 0.7) !important;
+          border: 1px solid rgba(59, 130, 246, 0.25) !important;
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
           backdrop-filter: blur(30px) saturate(190%);
           -webkit-backdrop-filter: blur(30px) saturate(190%);
         }
@@ -159,7 +159,7 @@ export default function VirtualRemote() {
       <div className="glass-panel virtual-joystick-left">
         {/* Row 1: Keyboard WASD Helper (spans all columns, hidden on mobile) */}
         <div className="keyboard-helper-row" style={{ gridColumn: '1 / span 4', gridRow: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', borderBottom: '1px solid rgba(59, 130, 246, 0.2)', paddingBottom: '8px', marginBottom: '2px', userSelect: 'none' }}>
-          <span style={{ fontSize: '10px', color: 'rgba(15, 23, 42, 0.5)', fontWeight: '700', letterSpacing: '0.5px' }}>KEYBOARD:</span>
+          <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: '700', letterSpacing: '0.5px' }}>KEYBOARD:</span>
           <kbd style={kbdStyle}>W</kbd>
           <kbd style={kbdStyle}>A</kbd>
           <kbd style={kbdStyle}>S</kbd>
@@ -192,7 +192,7 @@ export default function VirtualRemote() {
       {/* Secondary Camera Rotation Pad (Right Side Joystick) */}
       <div className="glass-panel virtual-joystick-right">
         <ArrowButton direction="lookLeft" icon={RotateCcw} style={{ width: '64px' }} setMovement={setMovement} />
-        <span style={{ fontSize: '10px', color: 'rgba(15, 23, 42, 0.6)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>Look</span>
+        <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.6)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold' }}>Look</span>
         <ArrowButton direction="lookRight" icon={RotateCw} style={{ width: '64px' }} setMovement={setMovement} />
       </div>
     </>

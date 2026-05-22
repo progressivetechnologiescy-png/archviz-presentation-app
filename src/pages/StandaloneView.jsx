@@ -109,11 +109,11 @@ export default function StandaloneView() {
           .interactive-controls { 
             display: flex; align-items: center; gap: 24px; padding: 12px 24px; 
             border-radius: 40px; pointer-events: auto;
-            box-shadow: 0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(30px) saturate(190%);
-            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 16px rgba(59, 130, 246, 0.15) !important;
+            border: 1px solid rgba(59, 130, 246, 0.25) !important;
+            background: rgba(10, 12, 18, 0.65) !important;
+            backdrop-filter: blur(30px) saturate(210%);
+            -webkit-backdrop-filter: blur(30px) saturate(210%);
           }
           .tour-btn { 
             padding: 12px 24px; border-radius: 30px; border: none; 
@@ -137,7 +137,7 @@ export default function StandaloneView() {
               <div style={{ 
                 display: 'flex', 
                 gap: '4px', 
-                background: 'rgba(59, 130, 246, 0.05)', 
+                background: 'rgba(255, 255, 255, 0.03)', 
                 padding: '4px', 
                 borderRadius: '30px', 
                 border: '1px solid rgba(59, 130, 246, 0.15)' 
@@ -159,17 +159,17 @@ export default function StandaloneView() {
                     transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
                     background: controlMode === 'orbit' 
                       ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' 
-                      : (hoveredBtn === 'orbit' ? 'rgba(59, 130, 246, 0.08)' : 'transparent'),
+                      : (hoveredBtn === 'orbit' ? 'rgba(255, 255, 255, 0.08)' : 'transparent'),
                     color: controlMode === 'orbit' 
                       ? '#ffffff' 
-                      : (hoveredBtn === 'orbit' ? '#1d4ed8' : 'rgba(15, 23, 42, 0.7)'),
+                      : (hoveredBtn === 'orbit' ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)'),
                     border: 'none',
                     boxShadow: controlMode === 'orbit' 
                       ? '0 8px 24px rgba(59, 130, 246, 0.35)' 
                       : 'none'
                   }}
                 >
-                  <Compass size={14} style={{ color: controlMode === 'orbit' ? '#ffffff' : (hoveredBtn === 'orbit' ? '#1d4ed8' : 'rgba(15, 23, 42, 0.7)'), transition: 'color 0.3s' }} />
+                  <Compass size={14} style={{ color: controlMode === 'orbit' ? '#ffffff' : (hoveredBtn === 'orbit' ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)'), transition: 'color 0.3s' }} />
                   <span>3D Orbit</span>
                 </button>
                 
@@ -190,17 +190,17 @@ export default function StandaloneView() {
                     transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
                     background: controlMode === 'walk' 
                       ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' 
-                      : (hoveredBtn === 'walk' ? 'rgba(59, 130, 246, 0.08)' : 'transparent'),
+                      : (hoveredBtn === 'walk' ? 'rgba(255, 255, 255, 0.08)' : 'transparent'),
                     color: controlMode === 'walk' 
                       ? '#ffffff' 
-                      : (hoveredBtn === 'walk' ? '#1d4ed8' : 'rgba(15, 23, 42, 0.7)'),
+                      : (hoveredBtn === 'walk' ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)'),
                     border: 'none',
                     boxShadow: controlMode === 'walk' 
                       ? '0 8px 24px rgba(59, 130, 246, 0.35)' 
                       : 'none'
                   }}
                 >
-                  <Move size={14} style={{ color: controlMode === 'walk' ? '#ffffff' : (hoveredBtn === 'walk' ? '#1d4ed8' : 'rgba(15, 23, 42, 0.7)'), transition: 'color 0.3s' }} />
+                  <Move size={14} style={{ color: controlMode === 'walk' ? '#ffffff' : (hoveredBtn === 'walk' ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)'), transition: 'color 0.3s' }} />
                   <span>Walk Explorer</span>
                 </button>
               </div>
@@ -217,12 +217,12 @@ export default function StandaloneView() {
                 style={{ 
                   background: isTouring 
                     ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' 
-                    : (hoveredBtn === 'tour' ? 'rgba(59, 130, 246, 0.18)' : 'rgba(59, 130, 246, 0.08)'),
-                  color: isTouring ? '#ffffff' : '#1d4ed8', 
-                  border: isTouring ? 'none' : '1px solid rgba(59, 130, 246, 0.2)',
+                    : (hoveredBtn === 'tour' ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.12)'),
+                  color: isTouring ? '#ffffff' : '#60a5fa', 
+                  border: isTouring ? 'none' : '1px solid rgba(59, 130, 246, 0.25)',
                   boxShadow: isTouring ? '0 8px 24px rgba(239, 68, 68, 0.35)' : 'none'
                 }}>
-                {isTouring ? <Square size={18} fill="#ffffff" /> : <Play size={18} fill="#1d4ed8" style={{ color: '#1d4ed8' }} />}
+                {isTouring ? <Square size={18} fill="#ffffff" /> : <Play size={18} fill="#60a5fa" style={{ color: '#60a5fa' }} />}
                 <span className="tour-btn-text" style={{ transition: 'color 0.3s' }}>
                   {isTouring ? 'Stop Tour' : 'Play Cinematic Tour'}
                 </span>

@@ -359,11 +359,11 @@ ${aiContext || 'No specific details provided yet.'}
         <div className="glass-panel chat-window" style={{ 
           width: '350px', height: '550px', marginBottom: '16px', borderRadius: '24px',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          backgroundColor: 'rgba(255, 255, 255, 0.25)',
+          backgroundColor: 'rgba(10, 12, 18, 0.75)',
           backdropFilter: 'blur(30px) saturate(190%)',
           WebkitBackdropFilter: 'blur(30px) saturate(190%)',
-          boxShadow: '0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08)',
-          border: '1px solid rgba(59, 130, 246, 0.2)'
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+          border: '1px solid rgba(59, 130, 246, 0.25)'
         }}>
           
           {/* Header */}
@@ -387,11 +387,11 @@ ${aiContext || 'No specific details provided yet.'}
 
           {/* Quick Action WhatsApp Banner */}
           <a href="https://wa.me/15551234567" target="_blank" rel="noreferrer" style={{
-             background: 'rgba(37, 211, 102, 0.08)', borderBottom: '1px solid rgba(59, 130, 246, 0.1)', padding: '12px',
+             background: 'rgba(37, 211, 102, 0.08)', borderBottom: '1px solid rgba(59, 130, 246, 0.15)', padding: '12px',
              textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-             color: '#25D366', fontWeight: '600', fontSize: '13px', flexShrink: 0
+             color: '#4ade80', fontWeight: '600', fontSize: '13px', flexShrink: 0
           }} className="whatsapp-action-banner">
-             <Phone size={14} fill="#25D366" stroke="none" /> 
+             <Phone size={14} fill="#4ade80" stroke="none" /> 
              <span>Connect with Sales on WhatsApp</span>
           </a>
 
@@ -400,20 +400,20 @@ ${aiContext || 'No specific details provided yet.'}
             {messages.map((msg, i) => (
               <div key={i} style={{ 
                 alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' : 'rgba(59, 130, 246, 0.06)',
+                background: msg.role === 'user' ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' : 'rgba(255, 255, 255, 0.08)',
                 padding: '12px 16px', borderRadius: '16px', maxWidth: '85%',
                 borderBottomRightRadius: msg.role === 'user' ? '4px' : '16px',
                 borderBottomLeftRadius: msg.role === 'agent' ? '4px' : '16px',
-                color: msg.role === 'user' ? '#ffffff' : '#0f172a', 
+                color: '#ffffff', 
                 fontSize: '14px', lineHeight: '1.4',
-                boxShadow: msg.role === 'user' ? '0 4px 12px rgba(59, 130, 246, 0.2)' : '0 4px 12px rgba(0, 0, 0, 0.02)',
-                border: msg.role === 'user' ? 'none' : '1px solid rgba(59, 130, 246, 0.12)'
+                boxShadow: msg.role === 'user' ? '0 4px 12px rgba(59, 130, 246, 0.2)' : 'none',
+                border: msg.role === 'user' ? 'none' : '1px solid rgba(59, 130, 246, 0.15)'
               }}>
                 {msg.isTyping ? (
                   <div style={{ display: 'flex', gap: '5px', padding: '6px 4px', alignItems: 'center' }}>
-                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: '#1d4ed8', borderRadius: '50%' }}></span>
-                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: '#1d4ed8', borderRadius: '50%', animationDelay: '0.2s' }}></span>
-                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: '#1d4ed8', borderRadius: '50%', animationDelay: '0.4s' }}></span>
+                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: '#60a5fa', borderRadius: '50%' }}></span>
+                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: '#60a5fa', borderRadius: '50%', animationDelay: '0.2s' }}></span>
+                    <span className="dot-blink" style={{ width: '6px', height: '6px', background: '#60a5fa', borderRadius: '50%', animationDelay: '0.4s' }}></span>
                   </div>
                 ) : (
                   msg.text
@@ -424,7 +424,7 @@ ${aiContext || 'No specific details provided yet.'}
           </div>
 
           {/* Input Area */}
-          <div style={{ padding: '16px', borderTop: '1px solid rgba(59, 130, 246, 0.15)', display: 'flex', gap: '8px', background: 'rgba(255, 255, 255, 0.5)', flexShrink: 0 }}>
+          <div style={{ padding: '16px', borderTop: '1px solid rgba(59, 130, 246, 0.15)', display: 'flex', gap: '8px', background: 'rgba(15, 18, 26, 0.9)', flexShrink: 0 }}>
             <input 
               type="text" 
               placeholder={coordinates ? "Ask about nearby schools, restaurants..." : "Ask about the property..."} 
@@ -432,9 +432,9 @@ ${aiContext || 'No specific details provided yet.'}
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
               disabled={isSearching}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '20px', padding: '12px 18px', color: '#0f172a', outline: 'none', fontSize: '14px', transition: 'border-color 0.2s' }}
-              onFocus={(e) => e.target.style.borderColor = '#1d4ed8'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(59, 130, 246, 0.2)'}
+              style={{ flex: 1, background: 'rgba(0, 0, 0, 0.35)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '20px', padding: '12px 18px', color: '#ffffff', outline: 'none', fontSize: '14px', transition: 'all 0.2s' }}
+              onFocus={(e) => { e.target.style.borderColor = '#60a5fa'; e.target.style.boxShadow = '0 0 10px rgba(96, 165, 250, 0.25)'; }}
+              onBlur={(e) => { e.target.style.borderColor = 'rgba(59, 130, 246, 0.25)'; e.target.style.boxShadow = 'none'; }}
             />
             <button 
               onClick={handleSend}

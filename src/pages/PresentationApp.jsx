@@ -31,11 +31,13 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         // Transparent in desktop mode so the absolute sliding capsule shows through.
         background: isMobile 
           ? (active ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)' : (isHovered ? 'rgba(59, 130, 246, 0.08)' : 'transparent'))
-          : (active ? 'transparent' : (isHovered ? 'rgba(59, 130, 246, 0.08)' : 'transparent')),
+          : (active ? 'transparent' : (isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent')),
         border: 'none',
         color: active 
           ? '#ffffff' 
-          : (isHovered ? '#1d4ed8' : 'rgba(15, 23, 42, 0.7)'),
+          : (isMobile 
+              ? (isHovered ? '#1d4ed8' : 'rgba(15, 23, 42, 0.7)')
+              : (isHovered ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)')),
         transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', fontWeight: '700',
         boxShadow: (isMobile && active) ? '0 8px 24px rgba(59, 130, 246, 0.25)' : 'none',
         whiteSpace: 'nowrap',
@@ -203,12 +205,12 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         gap: isMobile ? '8px' : '12px',
         padding: isMobile ? '8px 14px' : '10px 18px',
         borderRadius: isMobile ? '16px' : '20px',
-        background: 'rgba(255, 255, 255, 0.25)',
-        backdropFilter: 'blur(30px) saturate(190%)',
-        WebkitBackdropFilter: 'blur(30px) saturate(190%)',
-        border: '1px solid rgba(59, 130, 246, 0.2)',
-        boxShadow: '0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08)',
-        color: '#0f172a',
+        background: 'rgba(10, 12, 18, 0.65)',
+        backdropFilter: 'blur(30px) saturate(210%)',
+        WebkitBackdropFilter: 'blur(30px) saturate(210%)',
+        border: '1px solid rgba(59, 130, 246, 0.25)',
+        boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 16px rgba(59, 130, 246, 0.15)',
+        color: '#ffffff',
         transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
         fontFamily: 'Outfit, sans-serif'
       }}
@@ -235,12 +237,12 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           left: 0,
           right: 0,
           width: isMobile ? '100%' : '240px',
-          background: 'rgba(255, 255, 255, 0.55)',
-          backdropFilter: 'blur(30px) saturate(190%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(190%)',
+          background: 'rgba(10, 12, 18, 0.85)',
+          backdropFilter: 'blur(30px) saturate(210%)',
+          WebkitBackdropFilter: 'blur(30px) saturate(210%)',
           borderRadius: '16px',
-          border: '1px solid rgba(59, 130, 246, 0.25)',
-          boxShadow: '0 16px 48px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.6)',
+          border: '1px solid rgba(59, 130, 246, 0.3)',
+          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
           padding: '12px',
           display: 'flex',
           flexDirection: 'column',
@@ -248,7 +250,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           zIndex: 101,
           animation: 'chatEntrance 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         }}>
-          <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(15, 23, 42, 0.5)', padding: '0 8px 4px 8px', borderBottom: '1px solid rgba(59, 130, 246, 0.1)' }}>
+          <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.4)', padding: '0 8px 4px 8px', borderBottom: '1px solid rgba(59, 130, 246, 0.15)' }}>
             SELECT SOUND GENRE
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxHeight: '180px', overflowY: 'auto' }} className="chat-scrollbar">
@@ -262,7 +264,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                     setShowTrackList(false);
                   }}
                   style={{
-                    background: isCurrent ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                    background: isCurrent ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
                     border: 'none',
                     borderRadius: '8px',
                     padding: '8px 10px',
@@ -272,11 +274,11 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                     width: '100%',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    color: isCurrent ? 'var(--accent-color)' : '#0f172a',
+                    color: isCurrent ? 'var(--accent-color)' : '#ffffff',
                     transition: 'all 0.2s ease'
                   }}
                   onMouseEnter={(e) => {
-                    if (!isCurrent) e.currentTarget.style.background = 'rgba(59, 130, 246, 0.04)';
+                    if (!isCurrent) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
                   }}
                   onMouseLeave={(e) => {
                     if (!isCurrent) e.currentTarget.style.background = 'transparent';
@@ -284,7 +286,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                     <span style={{ fontSize: '13px', fontWeight: '700' }}>{track.name}</span>
-                    <span style={{ fontSize: '10px', color: 'rgba(15, 23, 42, 0.5)', fontWeight: '500' }}>{track.genre}</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: '500' }}>{track.genre}</span>
                   </div>
                   {isCurrent && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-color)', boxShadow: '0 0 8px var(--accent-glow)' }} />}
                 </button>
@@ -301,7 +303,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           style={{
             background: 'transparent',
             border: 'none',
-            color: 'rgba(15, 23, 42, 0.6)',
+            color: 'rgba(255, 255, 255, 0.6)',
             cursor: 'pointer',
             padding: '4px',
             display: 'flex',
@@ -309,8 +311,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
             justifyContent: 'center',
             transition: 'color 0.2s'
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#1d4ed8'}
-          onMouseLeave={e => e.currentTarget.style.color = 'rgba(15, 23, 42, 0.6)'}
+          onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
+          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
         >
           <SkipBack size={14} />
         </button>
@@ -318,15 +320,15 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         <button 
           onClick={togglePlay}
           style={{
-            background: isPlaying ? 'rgba(59, 130, 246, 0.12)' : 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
-            border: isPlaying ? '1px solid rgba(59, 130, 246, 0.3)' : 'none',
+            background: isPlaying ? 'rgba(59, 130, 246, 0.25)' : 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+            border: isPlaying ? '1px solid rgba(59, 130, 246, 0.4)' : 'none',
             width: '32px',
             height: '32px',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: isPlaying ? '#1d4ed8' : 'white',
+            color: isPlaying ? '#60a5fa' : 'white',
             cursor: 'pointer',
             boxShadow: isPlaying ? 'none' : '0 4px 12px rgba(59, 130, 246, 0.35)',
             transition: 'all 0.2s ease',
@@ -334,20 +336,20 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           }}
           onMouseEnter={e => {
             if (isPlaying) {
-              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.35)';
             } else {
               e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.45)';
             }
           }}
           onMouseLeave={e => {
             if (isPlaying) {
-              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.12)';
+              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)';
             } else {
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.35)';
             }
           }}
         >
-          {isPlaying ? <Pause size={14} fill="#1d4ed8" color="#1d4ed8" /> : <Play size={14} fill="white" color="white" style={{ marginLeft: '2px' }} />}
+          {isPlaying ? <Pause size={14} fill="#60a5fa" color="#60a5fa" /> : <Play size={14} fill="white" color="white" style={{ marginLeft: '2px' }} />}
         </button>
 
         <button 
@@ -355,7 +357,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           style={{
             background: 'transparent',
             border: 'none',
-            color: 'rgba(15, 23, 42, 0.6)',
+            color: 'rgba(255, 255, 255, 0.6)',
             cursor: 'pointer',
             padding: '4px',
             display: 'flex',
@@ -363,8 +365,8 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
             justifyContent: 'center',
             transition: 'color 0.2s'
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#1d4ed8'}
-          onMouseLeave={e => e.currentTarget.style.color = 'rgba(15, 23, 42, 0.6)'}
+          onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
+          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
         >
           <SkipForward size={14} />
         </button>
@@ -376,12 +378,12 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'center' : 'flex-start', gap: isMobile ? '8px' : '2px', cursor: 'pointer', userSelect: 'none' }}
       >
         {!isMobile ? (
-          <span style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(15, 23, 42, 0.6)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.5)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             {currentTrack.genre} <ChevronDown size={10} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
           </span>
         ) : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: isMobile ? '13px' : '12px', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ fontSize: isMobile ? '13px' : '12px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '4px' }}>
             {currentTrack.name}
             {isMobile && <ChevronDown size={12} style={{ transform: showTrackList ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.7 }} />}
           </span>
@@ -419,13 +421,13 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           overflow: 'hidden',
           transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
           paddingLeft: showVolume ? '8px' : '0px',
-          borderLeft: showVolume ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'
+          borderLeft: showVolume ? '1px solid rgba(59, 130, 246, 0.25)' : 'none'
         }}>
           <button 
             onClick={toggleMute}
-            style={{ background: 'transparent', border: 'none', color: 'rgba(15, 23, 42, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
-            onMouseEnter={e => e.currentTarget.style.color = '#1d4ed8'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(15, 23, 42, 0.6)'}
+            style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+            onMouseEnter={e => e.currentTarget.style.color = '#60a5fa'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
           >
             {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
@@ -443,7 +445,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
               width: '60px',
               height: '4px',
               WebkitAppearance: 'none',
-              background: 'rgba(59, 130, 246, 0.15)',
+              background: 'rgba(255, 255, 255, 0.15)',
               borderRadius: '2px',
               outline: 'none',
               cursor: 'pointer'
@@ -546,11 +548,11 @@ export default function PresentationApp({ forceAdmin = false }) {
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'nowrap', gap: '24px',
-        background: isGlobalScrolled || isMobileMenuOpen ? 'rgba(255, 255, 255, 0.45)' : 'transparent', 
-        backdropFilter: isGlobalScrolled || isMobileMenuOpen ? 'blur(30px) saturate(190%)' : 'none', 
-        WebkitBackdropFilter: isGlobalScrolled || isMobileMenuOpen ? 'blur(30px) saturate(190%)' : 'none', 
-        borderBottom: isGlobalScrolled || isMobileMenuOpen ? '1px solid rgba(59, 130, 246, 0.2)' : '1px solid transparent',
-        boxShadow: isGlobalScrolled || isMobileMenuOpen ? '0 8px 32px rgba(59, 130, 246, 0.08)' : 'none',
+        background: isGlobalScrolled || isMobileMenuOpen ? 'rgba(10, 12, 18, 0.65)' : 'transparent', 
+        backdropFilter: isGlobalScrolled || isMobileMenuOpen ? 'blur(30px) saturate(210%)' : 'none', 
+        WebkitBackdropFilter: isGlobalScrolled || isMobileMenuOpen ? 'blur(30px) saturate(210%)' : 'none', 
+        borderBottom: isGlobalScrolled || isMobileMenuOpen ? '1px solid rgba(59, 130, 246, 0.25)' : '1px solid transparent',
+        boxShadow: isGlobalScrolled || isMobileMenuOpen ? '0 8px 32px rgba(0, 0, 0, 0.35)' : 'none',
         opacity: isLightboxOpen ? 0 : 1, 
         pointerEvents: isLightboxOpen ? 'none' : 'auto', 
         transition: 'all 0.3s ease',
@@ -599,16 +601,16 @@ export default function PresentationApp({ forceAdmin = false }) {
           <div className="desktop-logo-text">
             <h1 style={{ 
               margin: 0, fontSize: '22px', fontWeight: '700', letterSpacing: '0.5px', 
-              textShadow: isGlobalScrolled ? 'none' : (!isDarkBackgroundTab ? 'none' : '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)'), 
+              textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)', 
               whiteSpace: 'nowrap', 
-              color: isGlobalScrolled ? '#0f172a' : (!isDarkBackgroundTab ? 'var(--text-primary)' : 'white'),
+              color: 'white',
               transition: 'color 0.3s ease'
             }}>{projectTitle}</h1>
             <p style={{ 
               margin: '2px 0 0', 
-              color: isGlobalScrolled ? 'rgba(15, 23, 42, 0.7)' : (!isDarkBackgroundTab ? 'var(--text-secondary)' : 'rgba(255,255,255,0.9)'), 
+              color: 'rgba(255, 255, 255, 0.75)', 
               fontSize: '12px', fontWeight: '600', letterSpacing: '2px', 
-              textShadow: isGlobalScrolled ? 'none' : (!isDarkBackgroundTab ? 'none' : '0 1px 8px rgba(0,0,0,0.9)'), 
+              textShadow: '0 1px 8px rgba(0,0,0,0.9)', 
               whiteSpace: 'nowrap',
               transition: 'color 0.3s ease'
             }}>{companyName}</p>
@@ -621,12 +623,12 @@ export default function PresentationApp({ forceAdmin = false }) {
             <SpatialCard className="glass-panel" maxTilt={4} style={{ 
               position: 'relative',
               display: 'flex', gap: '4px', padding: '6px', borderRadius: '16px',
-              background: 'rgba(255, 255, 255, 0.25)',
-              border: '1px solid rgba(59, 130, 246, 0.2)',
-              boxShadow: '0 24px 64px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 0 16px rgba(59, 130, 246, 0.08)',
+              background: 'rgba(10, 12, 18, 0.65)',
+              border: '1px solid rgba(59, 130, 246, 0.25)',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 0 16px rgba(59, 130, 246, 0.15)',
               overflow: 'visible',
-              backdropFilter: 'blur(30px) saturate(190%)',
-              WebkitBackdropFilter: 'blur(30px) saturate(190%)'
+              backdropFilter: 'blur(30px) saturate(210%)',
+              WebkitBackdropFilter: 'blur(30px) saturate(210%)'
             }}>
               {/* Liquid Sliding Background Capsule */}
               {activeRect.width > 0 && (
@@ -697,15 +699,15 @@ export default function PresentationApp({ forceAdmin = false }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center', 
               width: '48px', height: '48px', padding: '0', 
               borderRadius: '50%', 
-              background: hoveredFullscreen ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.25)', 
+              background: hoveredFullscreen ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
               cursor: 'pointer', 
-              border: '1px solid rgba(59, 130, 246, 0.2)', 
-              color: hoveredFullscreen ? '#2563eb' : '#1d4ed8',
+              border: '1px solid rgba(59, 130, 246, 0.25)', 
+              color: hoveredFullscreen ? '#ffffff' : '#60a5fa',
               boxShadow: hoveredFullscreen 
-                ? '0 12px 32px rgba(59, 130, 246, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.8)' 
-                : '0 8px 32px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(30px) saturate(190%)',
-              WebkitBackdropFilter: 'blur(30px) saturate(190%)',
+                ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
+                : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(30px) saturate(210%)',
+              WebkitBackdropFilter: 'blur(30px) saturate(210%)',
               transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}>
             <Maximize size={18} />
@@ -723,15 +725,15 @@ export default function PresentationApp({ forceAdmin = false }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', 
                 width: '48px', height: '48px', padding: '0', 
                 borderRadius: '50%', 
-                background: hoveredShare ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.25)', 
+                background: hoveredShare ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
                 cursor: 'pointer', 
-                border: '1px solid rgba(59, 130, 246, 0.2)', 
-                color: hoveredShare ? '#2563eb' : '#1d4ed8',
+                border: '1px solid rgba(59, 130, 246, 0.25)', 
+                color: hoveredShare ? '#ffffff' : '#60a5fa',
                 boxShadow: hoveredShare 
-                  ? '0 12px 32px rgba(59, 130, 246, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.8)' 
-                  : '0 8px 32px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(30px) saturate(190%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(190%)',
+                  ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
+                  : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(30px) saturate(210%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(210%)',
                 transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
               }}>
               <Share2 size={18} />
@@ -746,17 +748,17 @@ export default function PresentationApp({ forceAdmin = false }) {
             onMouseLeave={() => setHoveredMobileMenu(false)}
             style={{ 
               width: '48px', height: '48px', borderRadius: '50%', 
-              background: hoveredMobileMenu ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.25)', 
-              border: '1px solid rgba(59, 130, 246, 0.2)', 
-              color: hoveredMobileMenu ? '#2563eb' : '#1d4ed8', 
+              background: hoveredMobileMenu ? 'rgba(59, 130, 246, 0.25)' : 'rgba(10, 12, 18, 0.65)', 
+              border: '1px solid rgba(59, 130, 246, 0.25)', 
+              color: hoveredMobileMenu ? '#ffffff' : '#60a5fa', 
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center', justifyContent: 'center',
               boxShadow: hoveredMobileMenu 
-                ? '0 12px 32px rgba(59, 130, 246, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.8)' 
-                : '0 8px 32px rgba(59, 130, 246, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(30px) saturate(190%)',
-              WebkitBackdropFilter: 'blur(30px) saturate(190%)',
+                ? '0 12px 32px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15)' 
+                : '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(30px) saturate(210%)',
+              WebkitBackdropFilter: 'blur(30px) saturate(210%)',
               transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
           >
@@ -769,7 +771,7 @@ export default function PresentationApp({ forceAdmin = false }) {
       {/* Mobile Full-Screen Menu Overlay */}
       <div style={{
         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-        background: 'rgba(240, 246, 255, 0.96)', backdropFilter: 'blur(30px)',
+        background: 'rgba(10, 12, 18, 0.98)', backdropFilter: 'blur(30px)',
         zIndex: 101, display: 'flex', flexDirection: 'column',
         padding: '100px 24px 40px', overflowY: 'auto',
         opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
@@ -788,14 +790,14 @@ export default function PresentationApp({ forceAdmin = false }) {
             width: '48px',
             height: '48px',
             borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.25)',
-            border: '1px solid rgba(59, 130, 246, 0.2)',
-            color: '#1d4ed8',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(59, 130, 246, 0.25)',
+            color: '#60a5fa',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 8px 32px rgba(59, 130, 246, 0.15)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
             zIndex: 102
           }}
         >
