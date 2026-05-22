@@ -42,9 +42,48 @@ const kbdStyle = {
 export default function VirtualRemote() {
   const setMovement = useViewerStore(state => state.setMovement);
   const controlMode = useViewerStore(state => state.controlMode);
+  
+  const [isTouchDevice] = React.useState(() => typeof window !== 'undefined' && (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)));
 
   // Only render walking virtual pads when actively in Walk Explorer mode
   if (controlMode !== 'walk') return null;
+
+  if (!isTouchDevice) {
+    return (
+      <div className="glass-panel" style={{
+        position: 'absolute',
+        bottom: '120px',
+        left: '32px',
+        zIndex: 100,
+        padding: '10px 18px',
+        borderRadius: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        background: 'rgba(10, 12, 16, 0.75)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        color: 'white',
+        fontFamily: 'Outfit, sans-serif',
+        pointerEvents: 'none',
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+      }}>
+        <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--accent-color, #3b82f6)', letterSpacing: '1px', textTransform: 'uppercase' }}>Walk Mode</span>
+        <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)' }}>•</span>
+        <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+          <kbd style={kbdStyle}>W</kbd>
+          <kbd style={kbdStyle}>A</kbd>
+          <kbd style={kbdStyle}>S</kbd>
+          <kbd style={kbdStyle}>D</kbd>
+        </div>
+        <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>to Walk</span>
+        <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)' }}>•</span>
+        <span style={{ fontSize: '12px', fontWeight: '500', color: 'rgba(255,255,255,0.8)' }}>Drag Mouse to Look</span>
+      </div>
+    );
+  }
 
   return (
     <>

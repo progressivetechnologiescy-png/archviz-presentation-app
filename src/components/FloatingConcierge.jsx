@@ -37,6 +37,7 @@ export default function FloatingConcierge() {
   const [humanReadableLocation, setHumanReadableLocation] = useState(customGPS || 'The Pinnacle Residence');
   const [coordinates, setCoordinates] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isTouchDevice] = useState(() => typeof window !== 'undefined' && (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)));
   
   const messagesEndRef = useRef(null);
 
@@ -302,7 +303,7 @@ ${aiContext || 'No specific details provided yet.'}
   return (
     <div style={{ 
       position: 'fixed', 
-      bottom: controlMode === 'walk' ? '120px' : '32px', 
+      bottom: (controlMode === 'walk' && isTouchDevice) ? '120px' : '32px', 
       right: '32px', 
       zIndex: 9999, 
       display: 'flex', 

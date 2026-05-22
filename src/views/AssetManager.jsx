@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, FileType, CheckCircle, MapPin, X, Plus } from 'lucide-react';
+import { UploadCloud, FileType, CheckCircle, MapPin, X, Plus, Link } from 'lucide-react';
 import { useViewerStore } from '../store/viewerStore';
 import PanoramaViewer from './PanoramaViewer';
 
@@ -149,6 +149,60 @@ export default function AssetManager() {
 
 
   const [gpsInput, setGpsInput] = useState(customGPS || '');
+  const [customGLBInput, setCustomGLBInput] = useState(customGLB || '');
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCustomGLBInput(customGLB || '');
+  }, [customGLB]);
+
+  const handleSaveExternalURL = async () => {
+    if (!customGLBInput.trim()) {
+      setAlertModal({ isOpen: true, message: "Please enter a valid URL." });
+      return;
+    }
+
+    if (!supabase) {
+      setAlertModal({ isOpen: true, message: "Database offline. Using local RAM." });
+      setCustomGLB(customGLBInput.trim());
+      useViewerStore.setState({ primaryModel: customGLBInput.trim() });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      // 1. Clean out old database rows for 3d_model_glb
+      try {
+        await supabase.from('presentation_assets').delete().match({ project_id: 'demo_project', asset_type: '3d_model_glb' });
+      } catch {
+        console.warn("Delete policy blocked old asset removal, proceeding with insert anyway.");
+      }
+
+      // 2. Insert new database row
+      const { error: dbError } = await supabase.from('presentation_assets').insert({
+        project_id: 'demo_project',
+        asset_type: '3d_model_glb',
+        asset_url: customGLBInput.trim()
+      });
+      if (dbError) throw dbError;
+
+      setCustomGLB(customGLBInput.trim());
+      useViewerStore.setState({ primaryModel: customGLBInput.trim() });
+      setAlertModal({ isOpen: true, message: "Successfully updated 3D Model URL to: " + customGLBInput.trim() });
+    } catch (error) {
+      console.error("Save URL error:", error);
+      setAlertModal({ isOpen: true, message: `Failed to save URL: ${error.message || JSON.stringify(error)}` });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleLoadLarnacaResidence = () => {
+    const larnacaUrl = "https://sketchfab.com/3d-models/larnaca-residence-aa25ff99af9641d49e73f5fea52a5b9b";
+    setCustomGLBInput(larnacaUrl);
+    setAlertModal({ isOpen: true, message: "Larnaca Residence Sketchfab link loaded into field. Please click 'Save URL' to apply it!" });
+  };
+
   const [isUploading, setIsUploading] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, message: '', onConfirm: null });
   const [alertModal, setAlertModal] = useState({ isOpen: false, message: '' });
@@ -755,6 +809,51 @@ export default function AssetManager() {
                 isUploaded={!!customUSDZ} 
                 onClear={() => clearAsset('3d_model_usdz', setCustomUSDZ)}
               />
+              <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '24px', background: 'var(--bg-panel)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                  <Link size={24} color="var(--text-secondary)" />
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0' }}>External 3D Model URL (Sketchfab / CDN GLB)</h4>
+                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>Paste a Sketchfab URL or any remote .glb URL to load it instantly.</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      type="text" 
+                      value={customGLBInput} 
+                      onChange={(e) => setCustomGLBInput(e.target.value)} 
+                      placeholder="e.g., 'https://sketchfab.com/3d-models/...'" 
+                      style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', background: 'var(--input-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }} 
+                    />
+                    <button 
+                      onClick={handleSaveExternalURL} 
+                      style={{ padding: '12px 24px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.2s ease' }}
+                    >
+                      Save URL
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quick Tests:</span>
+                    <button 
+                      onClick={handleLoadLarnacaResidence} 
+                      className="hover-lift"
+                      style={{ 
+                        padding: '6px 12px', 
+                        borderRadius: '6px', 
+                        background: 'rgba(255,255,255,0.06)', 
+                        color: 'white', 
+                        border: '1px solid rgba(255,255,255,0.1)', 
+                        cursor: 'pointer', 
+                        fontSize: '12px', 
+                        fontWeight: '600' 
+                      }}
+                    >
+                      Larnaca Residence (Sketchfab)
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div className="hover-lift" style={{ border: '1px solid var(--border-glass)', borderRadius: '16px', padding: '24px', background: 'var(--bg-panel)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                   <MapPin size={24} color="var(--text-secondary)" />

@@ -417,7 +417,7 @@ function ModelLoader() {
 }
 
 export default function ViewerCanvas() {
-  const { lightingPreset, customPanorama, controlMode } = useViewerStore();
+  const { lightingPreset, customPanorama, controlMode, primaryModel, customGLB, customFBX } = useViewerStore();
   // Dynamic scaling for smoothness
   const [dpr, setDpr] = useState(1.5);
   const [showQR, setShowQR] = useState(false);
@@ -430,6 +430,35 @@ export default function ViewerCanvas() {
   else if(lightingPreset === 'night') { preset = 'sunset'; intensity = 0.5; } // Replaced true 'night' with the stunning Golden Hour 'sunset' preset
 
   const hdrUrl = HDR_MAPS[lightingPreset] || HDR_MAPS.noon;
+
+  const modelUrl = primaryModel || customGLB || customFBX || '/3D_FINAL.fbx';
+  const isSketchfab = modelUrl && modelUrl.includes('sketchfab.com');
+
+  let sketchfabEmbedUrl = '';
+  if (isSketchfab) {
+    const parts = modelUrl.split('/');
+    const lastPart = parts[parts.length - 1] || parts[parts.length - 2] || '';
+    const idMatch = lastPart.match(/[a-f0-9]{32}/i);
+    const modelId = idMatch ? idMatch[0] : lastPart;
+    sketchfabEmbedUrl = `https://sketchfab.com/models/${modelId}/embed?autostart=1&internal=1&tracking=0&ui_ar=1&ui_help=0&ui_vr=1&ui_settings=1&ui_inspector=0&ui_annotations=1&ui_animations=1&camera=0`;
+  }
+
+  if (isSketchfab) {
+    return (
+      <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1, background: '#0a0c10' }}>
+        <iframe
+          title="Sketchfab 3D Model"
+          src={sketchfabEmbedUrl}
+          frameBorder="0"
+          allowFullScreen
+          mozallowfullscreen="true"
+          webkitallowfullscreen="true"
+          allow="autoplay; fullscreen; xr-spatial-tracking"
+          style={{ width: '100%', height: '100%', border: 'none' }}
+        />
+      </div>
+    );
+  }
 
   return (
     <>

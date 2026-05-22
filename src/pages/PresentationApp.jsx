@@ -65,6 +65,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
   const audioRef = useRef(null);
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(isMobileDrawer || window.innerWidth <= 1100);
+  const [isTouchDevice] = useState(() => typeof window !== 'undefined' && (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)));
 
   useEffect(() => {
     if (isMobileDrawer) {
@@ -186,7 +187,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
       onMouseLeave={() => !isMobile && setShowVolume(false)}
       style={{
         position: isMobileDrawer ? 'relative' : 'absolute',
-        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' ? '190px' : '68px')),
+        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '190px' : '68px')),
         top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
         left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
         right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
@@ -460,6 +461,7 @@ export default function PresentationApp({ forceAdmin = false }) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(window.innerWidth <= 1100);
+  const [isTouchDevice] = useState(() => typeof window !== 'undefined' && (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)));
 
   const [activeRect, setActiveRect] = useState({ left: 0, width: 0 });
   const buttonRefs = useRef({});
@@ -830,8 +832,8 @@ export default function PresentationApp({ forceAdmin = false }) {
       {/* Global Footer Watermark */}
       <div style={{
         position: 'absolute', 
-        bottom: (activeTab === '3d' && controlMode === 'walk') ? '8px' : '32px', 
-        left: (activeTab === '3d' && controlMode === 'walk') ? '48px' : '32px', 
+        bottom: (activeTab === '3d' && controlMode === 'walk' && isTouchDevice) ? '8px' : '32px', 
+        left: (activeTab === '3d' && controlMode === 'walk' && isTouchDevice) ? '48px' : '32px',  
         zIndex: 100,
         pointerEvents: 'auto', 
         display: 'flex', 
