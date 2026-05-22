@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useViewerStore } from '../store/viewerStore';
-import { X, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Play, Pause, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 
 
 export default function RendersGallery() {
@@ -89,6 +89,50 @@ export default function RendersGallery() {
           grid-template-columns: repeat(auto-fill, minmax(var(--grid-min), 1fr));
           gap: 24px;
           transition: all 0.3s ease;
+        }
+        .gallery-item {
+          position: relative;
+          border-radius: 16px !important;
+          overflow: hidden;
+          cursor: zoom-in;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+          border: 1px solid var(--border-glass) !important;
+        }
+        .gallery-item img {
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .gallery-item:hover img {
+          transform: scale(1.06) !important;
+        }
+        .gallery-item-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(10, 12, 16, 0.75) 0%, rgba(10, 12, 16, 0.1) 70%, transparent 100%);
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          padding: 20px;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          z-index: 1;
+        }
+        .gallery-item:hover .gallery-item-overlay {
+          opacity: 1;
+        }
+        .gallery-item-overlay-title {
+          color: white;
+          font-weight: 600;
+          font-size: 14px;
+          letter-spacing: 0.5px;
+          transform: translateY(10px);
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .gallery-item:hover .gallery-item-overlay-title {
+          transform: translateY(0);
         }
         @keyframes imgFadeIn {
           from { opacity: 0; }
@@ -196,7 +240,7 @@ export default function RendersGallery() {
                   return (
                     <div 
                       key={render.id || i} 
-                      className="hover-lift" 
+                      className="gallery-item" 
                       onClick={() => {
                         if (isRealImage) {
                           setSelectedIndex(displayImages.findIndex(r => r === render));
@@ -206,27 +250,31 @@ export default function RendersGallery() {
                       style={{ 
                          height: gridStyles.height, 
                          background: `linear-gradient(45deg, #1f2937, #111827)`,
-                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                         color: 'rgba(255,255,255,0.2)', fontSize: '14px',
-                         borderRadius: '12px', overflow: 'hidden', cursor: isRealImage ? 'zoom-in' : 'default',
-                         position: 'relative',
                          transition: 'height 0.3s ease'
                       }}
                     >
                       {isRealImage ? (
-                        <img 
-                          src={thumbnailUrl} 
-                          alt="Render Thumbnail" 
-                          loading="lazy" 
-                          onError={(e) => {
-                            // If the pre-generated static thumbnail URL fails, fall back to original raw image
-                            if (e.target.src !== src) {
-                              e.target.src = src;
-                            }
-                          }}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }} 
-                          className="img-fade-in"
-                        />
+                        <>
+                          <img 
+                            src={thumbnailUrl} 
+                            alt="Render Thumbnail" 
+                            loading="lazy" 
+                            onError={(e) => {
+                              // If the pre-generated static thumbnail URL fails, fall back to original raw image
+                              if (e.target.src !== src) {
+                                e.target.src = src;
+                              }
+                            }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }} 
+                            className="img-fade-in"
+                          />
+                          <div className="gallery-item-overlay">
+                            <div className="gallery-item-overlay-title">
+                              <Maximize2 size={16} />
+                              <span>View Fullscreen</span>
+                            </div>
+                          </div>
+                        </>
                       ) : (
                         <span style={{ zIndex: 1 }}>{`Render Placeholder ${src}`}</span>
                       )}

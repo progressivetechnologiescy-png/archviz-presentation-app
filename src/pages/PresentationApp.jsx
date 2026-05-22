@@ -765,30 +765,60 @@ export default function PresentationApp({ forceAdmin = false }) {
 
       {/* Main Content Viewport */}
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-        {activeTab === 'overview' && <ProjectOverview onNavigate={setActiveTab} />}
-        {activeTab === 'cinematics' && <CinematicsTab />}
+        {activeTab === 'overview' && (
+          <div key="overview" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            <ProjectOverview onNavigate={setActiveTab} />
+          </div>
+        )}
+        {activeTab === 'cinematics' && (
+          <div key="cinematics" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            <CinematicsTab />
+          </div>
+        )}
         
         {/* Keep RendersGallery mounted to prevent reloading images every time the user visits this tab */}
-        <div style={{ display: activeTab === 'renders' ? 'block' : 'none', width: '100%', height: '100%' }}>
+        <div className="animate-tab-content" style={{ display: activeTab === 'renders' ? 'block' : 'none', width: '100%', height: '100%' }}>
           <RendersGallery />
         </div>
         
-        {activeTab === 'floorplans' && <FloorplanViewer />}
-        {activeTab === 'availability' && <AvailabilityTab onNavigate={setActiveTab} />}
-        {activeTab === 'map' && <ProjectMap />}
-        {activeTab === 'panorama' && <PanoramaViewer />}
-        {activeTab === 'manage' && isAdmin && <AssetManager />}
+        {activeTab === 'floorplans' && (
+          <div key="floorplans" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            <FloorplanViewer />
+          </div>
+        )}
+        {activeTab === 'availability' && (
+          <div key="availability" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            <AvailabilityTab onNavigate={setActiveTab} />
+          </div>
+        )}
+        {activeTab === 'map' && (
+          <div key="map" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            <ProjectMap />
+          </div>
+        )}
+        {activeTab === 'panorama' && (
+          <div key="panorama" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            <PanoramaViewer />
+          </div>
+        )}
+        {activeTab === 'manage' && isAdmin && (
+          <div key="manage" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            <AssetManager />
+          </div>
+        )}
         
         {/* We reuse the StandaloneView for the 3D portion since it has the Sidebars built-in.
             It uses lazy execution naturally by mounting the Canvas only when this tab is selected! */}
         {activeTab === '3d' && (
-          isMobileDevice ? (
-            <MobileARView isEmbedded={true} />
-          ) : (
-            <Suspense fallback={<div style={{color:'white', padding: 50}}>Loading WebGL Engine...</div>}>
-              <StandaloneView isNested={true} />
-            </Suspense>
-          )
+          <div key="3d" className="animate-tab-content" style={{ width: '100%', height: '100%' }}>
+            {isMobileDevice ? (
+              <MobileARView isEmbedded={true} />
+            ) : (
+              <Suspense fallback={<div style={{color:'white', padding: 50}}>Loading WebGL Engine...</div>}>
+                <StandaloneView isNested={true} />
+              </Suspense>
+            )}
+          </div>
         )}
       </div>
 

@@ -94,6 +94,63 @@ export default function CinematicsTab() {
             gap: 24px;
             transition: all 0.3s ease;
           }
+          .video-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-glass) !important;
+            aspect-ratio: 16/9;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          .video-card-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          .video-card:hover .video-card-bg {
+            transform: scale(1.05);
+          }
+          .video-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 12, 16, 0.85) 0%, rgba(10, 12, 16, 0.25) 50%, rgba(10, 12, 16, 0.1) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            transition: background 0.4s ease;
+          }
+          .video-card:hover .video-card-overlay {
+            background: linear-gradient(to top, rgba(10, 12, 16, 0.95) 0%, rgba(10, 12, 16, 0.4) 50%, rgba(10, 12, 16, 0.2) 100%);
+          }
+          .play-btn-glow {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px var(--accent-glow);
+            flex-shrink: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          .video-card:hover .play-btn-glow {
+            transform: scale(1.12);
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+          }
+          .video-card:hover .play-btn-glow svg {
+            fill: var(--accent-color) !important;
+            color: var(--accent-color) !important;
+          }
+          .play-btn-glow svg {
+            transition: all 0.4s ease;
+          }
           @media (max-width: 768px) {
             .cinematics-container { padding: 100px 16px 32px !important; }
             .cinematics-header { flex-direction: column; align-items: stretch !important; gap: 16px; }
@@ -142,25 +199,24 @@ export default function CinematicsTab() {
               {[...videos].sort((a, b) => (a.order_index || 0) - (b.order_index || 0)).map(film => (
                 <div 
                   key={film.id} 
-                  className="hover-lift"
+                  className="video-card"
                   onClick={() => setActiveVideo(film)}
-                  style={{ 
-                    borderRadius: '20px', overflow: 'hidden', cursor: 'pointer',
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.3)',
-                    border: 'none',
-                    position: 'relative',
-                    aspectRatio: '16/9',
-                    background: film.thumbnail_url ? `url(${film.thumbnail_url}) center/cover` : '#111'
-                  }}
                 >
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px var(--accent-glow)', flexShrink: 0 }}>
-                        <Play fill="white" size={20} />
+                  <div 
+                    className="video-card-bg" 
+                    style={{ 
+                      backgroundImage: film.thumbnail_url ? `url(${film.thumbnail_url})` : 'none',
+                      backgroundColor: '#111'
+                    }} 
+                  />
+                  <div className="video-card-overlay">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 2 }}>
+                      <div className="play-btn-glow">
+                        <Play fill="white" color="white" size={20} />
                       </div>
                       <div>
-                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{film.title}</h3>
-                        <p style={{ margin: '4px 0 0 0', color: 'var(--accent-color)', fontSize: '14px', fontWeight: 'bold' }}>Play Video</p>
+                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>{film.title}</h3>
+                        <p style={{ margin: '4px 0 0 0', color: 'var(--accent-color)', fontSize: '14px', fontWeight: 'bold', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>Play Video</p>
                       </div>
                     </div>
                   </div>

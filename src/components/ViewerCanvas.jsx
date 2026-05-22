@@ -6,15 +6,6 @@ import { useViewerStore } from '../store/viewerStore';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import QRModal from './QRModal';
-import { EffectComposer, Bloom, Vignette, ChromaticAberration } from '@react-three/postprocessing';
-import { BlendFunction } from 'postprocessing';
-import WaterPool from './WaterPool';
-import Hotspots from './Hotspot';
-import AtmosphereSky from './AtmosphereSky';
-
-
-
-
 
 // Reusable helper to dynamically upgrade basic materials to premium PBR MeshPhysicalMaterial settings
 function upgradeMaterial(child) {
@@ -87,7 +78,6 @@ function upgradeMaterial(child) {
     physicalMat.needsUpdate = true;
   });
 }
-
 const walkVectors = {
   direction: new THREE.Vector3(),
   frontVector: new THREE.Vector3(),
@@ -436,7 +426,6 @@ export default function ViewerCanvas() {
           <Suspense fallback={<ModelLoader />}>
             {/* Reverted SoftShadows to BakeShadows to prevent shader crash */}
             <BakeShadows />
-            <AtmosphereSky />
             
             {customPanorama ? (
               <CustomEnvironment url={customPanorama} />
@@ -457,29 +446,14 @@ export default function ViewerCanvas() {
               <orthographicCamera attach="shadow-camera" args={[-40, 40, 40, -40, 0.1, 150]} />
             </directionalLight>
             
-            <AtmosphereSky />
             <WalkEngine />
             <LoadedArchModel />
-            <WaterPool />
-            <Hotspots />
 
             {/* Gorgeous high-fidelity contact shadows on the floor/ground */}
             <ContactShadows resolution={1024} scale={30} blur={2.5} opacity={0.65} far={15} color="#0b0f19" />
             
             {/* True First-Person Game Camera */}
             <PointerLockControls makeDefault />
-
-            {/* Premium Cinematic Post-Processing Pipeline */}
-            <EffectComposer disableNormalPass>
-              <Bloom 
-                luminanceThreshold={0.65} 
-                luminanceSmoothing={0.8} 
-                height={300} 
-                intensity={lightingPreset === 'night' ? 1.5 : (lightingPreset === 'morning' ? 1.2 : 0.8)} 
-              />
-              <Vignette eskil={false} offset={0.25} darkness={0.8} />
-              <ChromaticAberration blendFunction={BlendFunction.SCREEN} offset={[0.0006, 0.0006]} />
-            </EffectComposer>
           </Suspense>
         </XR>
       </Canvas>
