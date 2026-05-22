@@ -89,7 +89,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(isMobileDrawer || window.innerWidth <= 1100);
   const [isTouchDevice] = useState(() => typeof window !== 'undefined' && (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)));
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(isMobileDrawer ? false : true);
 
   useEffect(() => {
     if (isMobileDrawer) {
@@ -209,6 +209,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
       <button 
         ref={containerRef}
         onClick={() => setIsMinimized(false)}
+        onMouseEnter={() => !isMobile && setIsMinimized(false)}
         className="dark-obsidian-panel hover-lift"
         title="Maximize soundtrack player"
         style={{
@@ -259,7 +260,13 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
       ref={containerRef}
       className="dark-obsidian-panel"
       onMouseEnter={() => !isMobile && setShowVolume(true)}
-      onMouseLeave={() => !isMobile && setShowVolume(false)}
+      onMouseLeave={() => {
+        if (!isMobile) {
+          setIsMinimized(true);
+          setShowVolume(false);
+          setShowTrackList(false);
+        }
+      }}
       style={{
         position: isMobileDrawer ? 'relative' : 'absolute',
         bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '250px' : '68px')),
@@ -904,7 +911,7 @@ export default function PresentationApp({ forceAdmin = false }) {
           <X size={24} color="#ffffff" />
         </button>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 'none' }}>
           <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" isMobile onClick={() => setActiveTab('overview')} />
           <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" isMobile onClick={() => setActiveTab('renders')} />
           <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" isMobile onClick={() => setActiveTab('cinematics')} />
