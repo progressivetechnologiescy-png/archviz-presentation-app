@@ -112,12 +112,19 @@ export default function ProjectOverview({ onNavigate }) {
         `}</style>
         
         <div className="overview-content glass-panel" style={{ 
-          textAlign: 'center'
+          textAlign: 'center',
+          background: 'rgba(10, 12, 16, 0.72)',
+          border: '1px solid rgba(255, 255, 255, 0.16)',
+          backdropFilter: 'blur(30px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+          maxHeight: 'calc(100vh - 120px)',
+          overflowY: 'auto'
         }}>
-          <h1 className="overview-title" style={{ fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.5px' }}>
+          <h1 className="overview-title" style={{ fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.5px', color: '#ffffff' }}>
             {projectTitle}
           </h1>
-          <p className="overview-desc" style={{ color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '100%', margin: '0 auto 32px', whiteSpace: 'pre-wrap' }}>
+          <p className="overview-desc" style={{ color: 'rgba(255, 255, 255, 0.82)', lineHeight: '1.6', maxWidth: '100%', margin: '0 auto 32px', whiteSpace: 'pre-wrap' }}>
             {projectDescription}
           </p>
 

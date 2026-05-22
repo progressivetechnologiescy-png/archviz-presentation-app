@@ -302,66 +302,71 @@ body.light-mode .dark-obsidian-panel {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
 }
 
-/* macOS/visionOS Control Center thick slider track styling */
+/* macOS/visionOS Control Center slim modern slider track styling */
 .dark-obsidian-panel input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 28px;
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-radius: 14px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-radius: 2px;
   outline: none;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   cursor: pointer;
   margin: 0;
   padding: 0;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  border: none !important;
+  transition: background 0.2s ease;
 }
 
 .dark-obsidian-panel input[type="range"]::-webkit-slider-runnable-track {
-  height: 28px;
+  height: 4px;
   background: transparent;
-  border-radius: 14px;
+  border: none;
 }
 
 .dark-obsidian-panel input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 2px;
-  height: 28px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: -400px 0 0 400px rgba(255, 255, 255, 0.95);
-  border-radius: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   cursor: pointer;
+  margin-top: -3px; /* Centers 10px thumb vertically on 4px track */
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dark-obsidian-panel input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
 }
 
 /* Firefox Support */
 .dark-obsidian-panel input[type="range"]::-moz-range-track {
-  height: 28px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
   border: none;
 }
 
 .dark-obsidian-panel input[type="range"]::-moz-range-progress {
-  background: rgba(255, 255, 255, 0.95);
-  height: 28px;
-  border-radius: 14px 0 0 14px;
+  background: #ffffff;
+  height: 4px;
+  border-radius: 2px;
 }
 
 .dark-obsidian-panel input[type="range"]::-moz-range-thumb {
-  width: 2px;
-  height: 28px;
-  background: rgba(255, 255, 255, 0.95);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
   border: none;
-  border-radius: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   cursor: pointer;
 }
 
 .dark-obsidian-panel input[type="range"]:hover {
-  background: rgba(255, 255, 255, 0.18) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.3) !important;
 }
 
 

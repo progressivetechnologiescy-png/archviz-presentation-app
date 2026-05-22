@@ -7,10 +7,11 @@ import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import QRModal from './QRModal';
 import AtmosphereSky from './AtmosphereSky';
+import { AlertTriangle, X } from 'lucide-react';
 
 
 // Reusable helper to dynamically upgrade basic materials to premium PBR MeshPhysicalMaterial settings
-function upgradeMaterial(child) {
+function upgradeMaterial(child, isFBX = false) {
   if (!child.isMesh || !child.material) return;
   
   const name = (child.name || '').toLowerCase();
@@ -31,7 +32,7 @@ function upgradeMaterial(child) {
     if (!mat.isMeshPhysicalMaterial) {
       physicalMat = new THREE.MeshPhysicalMaterial({
         color: mat.color ? mat.color.clone() : new THREE.Color('#ffffff'),
-        map: mat.map,
+        map: isFBX ? null : mat.map, // Strip broken/corrupted diffuse maps for FBX models to restore true white/light surfaces
         roughness: 0.4,
         metalness: 0.1,
         transparent: mat.transparent || false,
@@ -45,6 +46,8 @@ function upgradeMaterial(child) {
       } else {
         child.material = physicalMat;
       }
+    } else if (isFBX) {
+      physicalMat.map = null; // Strip broken/corrupted diffuse maps for FBX models to restore true white/light surfaces
     }
 
     // Apply photorealistic lighting metrics based on categorized surface
@@ -280,7 +283,7 @@ function FBXModel({ url }) {
           child.receiveShadow = true;
           
           // Apply dynamic PBR upgrades
-          upgradeMaterial(child);
+          upgradeMaterial(child, true);
         }
       });
     }
@@ -454,6 +457,7 @@ export default function ViewerCanvas() {
   // Dynamic scaling for smoothness
   const [dpr, setDpr] = useState(1.5);
   const [showQR, setShowQR] = useState(false);
+  const [vrError, setVrError] = useState(false);
 
   // Determine HDRI Environment mapping
   let preset = 'apartment'; // Upgraded from 'city' to 'apartment' for insanely realistic interior reflections!
@@ -549,12 +553,174 @@ export default function ViewerCanvas() {
             e.currentTarget.style.color = 'white';
             e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22)';
           }}
-          onClick={() => store.enterVR()}>
+          onClick={async () => {
+            try {
+              const session = await store.enterVR();
+              if (!session) {
+                setVrError(true);
+              }
+            } catch (err) {
+              console.error("VR Error:", err);
+              setVrError(true);
+            }
+          }}>
           Enter VR
         </button>
       </div>
 
       {showQR && <QRModal onClose={() => setShowQR(false)} />}
+
+      {vrError && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'rgba(5, 7, 10, 0.75)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          padding: '24px',
+          boxSizing: 'border-box'
+        }}>
+          <div 
+            className="dark-obsidian-panel" 
+            style={{
+              width: '100%',
+              maxWidth: '520px',
+              background: 'rgba(18, 20, 28, 0.85)',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              padding: '32px',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center'
+            }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setVrError(false)}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'rgba(255, 255, 255, 0.7)',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
+              }}
+            >
+              <X size={16} />
+            </button>
+
+            {/* Alert Icon */}
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.15)',
+              borderRadius: '50%',
+              width: '64px',
+              height: '64px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+              boxShadow: '0 0 30px rgba(239, 68, 68, 0.2)'
+            }}>
+              <AlertTriangle size={32} color="#ef4444" />
+            </div>
+
+            {/* Text Header */}
+            <h3 style={{
+              margin: '0 0 12px 0',
+              fontSize: '22px',
+              fontWeight: '700',
+              color: '#ffffff',
+              letterSpacing: '-0.3px'
+            }}>
+              VR Mode Not Supported
+            </h3>
+
+            {/* Body Info */}
+            <p style={{
+              margin: '0 0 24px 0',
+              fontSize: '14px',
+              lineHeight: '1.6',
+              color: 'rgba(255, 255, 255, 0.75)'
+            }}>
+              WebXR Immersive VR is not supported on this browser or hardware setup. 
+              <br /><br />
+              To experience this premium presentation in full interactive Virtual Reality:
+            </p>
+
+            {/* List Box */}
+            <div style={{
+              width: '100%',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              borderRadius: '16px',
+              padding: '16px 20px',
+              textAlign: 'left',
+              marginBottom: '28px',
+              boxSizing: 'border-box'
+            }}>
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                <span style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>1.</span>
+                <span style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4' }}>
+                  Use a dedicated VR headset browser, such as the <strong>Meta Quest Browser</strong> on Oculus Quest 2 / 3 / Pro, or <strong>Apple Vision Pro</strong> Safari.
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <span style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>2.</span>
+                <span style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4' }}>
+                  If testing on a desktop or laptop, install the <strong>WebXR API Emulator</strong> extension from the Chrome Web Store to simulate camera tracks and headsets.
+                </span>
+              </div>
+            </div>
+
+            {/* Got It Button */}
+            <button
+              onClick={() => setVrError(false)}
+              className="hover-lift"
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: 'var(--accent-color)',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '15px',
+                cursor: 'pointer',
+                boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)',
+                transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+              }}
+            >
+              Understand & Dismiss
+            </button>
+          </div>
+        </div>
+      )}
 
       <Canvas shadows dpr={dpr} camera={{ position: [0, 1.6, 12], fov: 55 }}>
         {/* Drops pixel ratio if PC is lagging */}

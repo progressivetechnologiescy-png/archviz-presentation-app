@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Share2, Link, Copy, CheckCircle2, X } from 'lucide-react';
+import { useViewerStore } from '../store/viewerStore';
 
 export default function ShareModal({ onClose }) {
   const [copied, setCopied] = useState(false);
   const [copyBorderColor, setCopyBorderColor] = useState('rgba(255, 255, 255, 0.14)');
+  const projectTitle = useViewerStore(state => state.projectTitle) || 'The Pinnacle Residence';
   
   // Safely strip the admin parameter so clients don't get backend access
   const safeLocation = new URL(window.location.href);
@@ -20,8 +22,8 @@ export default function ShareModal({ onClose }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'The Pinnacle Residence - 3D Interactive Showcase',
-          text: 'Explore this exclusive luxury property in full 3D interactive VR.',
+          title: `${projectTitle} - 3D Interactive Showcase`,
+          text: `Explore ${projectTitle} in full 3D interactive VR.`,
           url: shareUrl,
         });
         onClose();
@@ -71,7 +73,7 @@ export default function ShareModal({ onClose }) {
           }}>
             <Share2 size={24} />
           </div>
-          <h2 style={{ fontSize: '24px', margin: '0 0 8px 0', color: '#ffffff', fontWeight: '800' }}>Share Gallery</h2>
+          <h2 style={{ fontSize: '24px', margin: '0 0 8px 0', color: '#ffffff', fontWeight: '800' }}>{projectTitle}</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: 0, fontSize: '14px', fontWeight: '500' }}>Send this immersive property experience directly to your clients.</p>
         </div>
 
