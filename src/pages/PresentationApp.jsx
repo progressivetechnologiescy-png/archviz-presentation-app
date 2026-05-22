@@ -209,7 +209,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
       <button 
         ref={containerRef}
         onClick={() => setIsMinimized(false)}
-        onMouseEnter={() => !isMobile && setIsMinimized(false)}
+        onMouseEnter={() => !isMobileDrawer && setIsMinimized(false)}
         className="dark-obsidian-panel hover-lift"
         title="Maximize soundtrack player"
         style={{
@@ -259,9 +259,9 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
     <SpatialCard 
       ref={containerRef}
       className="dark-obsidian-panel"
-      onMouseEnter={() => !isMobile && setShowVolume(true)}
+      onMouseEnter={() => !isMobileDrawer && setShowVolume(true)}
       onMouseLeave={() => {
-        if (!isMobile) {
+        if (!isMobileDrawer) {
           setIsMinimized(true);
           setShowVolume(false);
           setShowTrackList(false);
@@ -879,7 +879,7 @@ export default function PresentationApp({ forceAdmin = false }) {
       <div style={{
         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
         background: 'rgba(10, 12, 18, 0.98)', backdropFilter: 'blur(30px)',
-        zIndex: 101, display: 'flex', flexDirection: 'column',
+        zIndex: 101, 
         padding: '100px 24px 40px', overflowY: 'auto',
         opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
         transition: 'opacity 0.3s ease, transform 0.3s ease',
@@ -923,7 +923,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
-          {activeTab !== 'manage' && isMobileDevice && (
+          {activeTab !== 'manage' && (
             <div style={{ marginBottom: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
               <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'Outfit, sans-serif', width: '100%', maxWidth: '320px', textAlign: 'left' }}>
                 Ambient Music
