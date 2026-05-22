@@ -820,5 +820,5 @@ export default function PresentationApp({ forceAdmin = false }) {
   );
 }
 
-// Vercel webhook trigger
+// Vercel webhook trigger: force rebuild stable pre-redesign v1
 
