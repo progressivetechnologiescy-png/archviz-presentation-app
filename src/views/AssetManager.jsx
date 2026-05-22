@@ -622,7 +622,7 @@ export default function AssetManager() {
         <div className="cms-layout">
           {/* Sidebar Menu */}
           <div className="cms-sidebar">
-            {['overview', 'models', 'renders', 'cinematics', 'floorplans', 'availability', 'tours', 'ai_settings'].map(tab => (
+            {['overview', 'renders', 'cinematics', 'floorplans', 'availability', 'tours', 'models', 'ai_settings'].map(tab => (
               <button
                 key={tab}
                 onClick={() => {
@@ -643,12 +643,12 @@ export default function AssetManager() {
                 }}
               >
                 {tab === 'overview' && 'Overview & Branding'}
-                {tab === 'models' && '3D Models & Scene'}
                 {tab === 'renders' && 'Render Gallery'}
                 {tab === 'cinematics' && 'Videos'}
                 {tab === 'floorplans' && 'Floorplans'}
-                {tab === 'tours' && '360° Tours'}
                 {tab === 'availability' && 'Availability Grid'}
+                {tab === 'tours' && '360° Tours'}
+                {tab === 'models' && '3D Models & Scene'}
                 {tab === 'ai_settings' && 'Emma AI Settings'}
               </button>
             ))}
