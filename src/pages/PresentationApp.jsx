@@ -81,7 +81,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const controlMode = useViewerStore(state => state.controlMode);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.25);
+  const [volume, setVolume] = useState(0.45);
   const [isMuted, setIsMuted] = useState(false);
   const [showTrackList, setShowTrackList] = useState(false);
   const audioRef = useRef(null);
@@ -204,50 +204,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
   };
 
   return (
-    <SpatialCard 
-      ref={containerRef}
-      className="dark-obsidian-panel"
-      onMouseEnter={() => {
-        if (!isMobileDrawer) {
-          setIsMinimized(false);
-        }
-      }}
-      onMouseLeave={() => {
-        if (!isMobileDrawer) {
-          setIsMinimized(true);
-          setShowTrackList(false);
-        }
-      }}
-      onClick={() => {
-        if (isMinimized) {
-          setIsMinimized(false);
-        }
-      }}
-      style={{
-        position: isMobileDrawer ? 'relative' : 'absolute',
-        bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '250px' : '68px')),
-        top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
-        left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
-        right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
-        width: isMinimized ? '54px' : (isMobileDrawer ? '100%' : '380px'),
-        maxWidth: isMobileDrawer ? '320px' : 'none',
-        height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '54px'),
-        borderRadius: '27px',
-        padding: isMinimized ? '10px' : (isMobileDrawer ? '12px' : '8px 16px'),
-        margin: isMobileDrawer ? '0 auto' : '0',
-        zIndex: 100,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        gap: isMinimized ? '0px' : '12px',
-        overflow: 'hidden',
-        cursor: isMinimized ? 'pointer' : 'default',
-        transition: 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
-        fontFamily: 'Outfit, sans-serif',
-        border: '1px solid rgba(255, 255, 255, 0.16)'
-      }}
-    >
+    <>
       <style>{`
         @keyframes floatBar1 { 0%, 100% { height: 4px; } 50% { height: 16px; } }
         @keyframes floatBar2 { 0%, 100% { height: 6px; } 50% { height: 22px; } }
@@ -264,6 +221,50 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           to { transform: rotate(360deg); }
         }
       `}</style>
+      <SpatialCard 
+        ref={containerRef}
+        className="dark-obsidian-panel"
+        onMouseEnter={() => {
+          if (!isMobileDrawer) {
+            setIsMinimized(false);
+          }
+        }}
+        onMouseLeave={() => {
+          if (!isMobileDrawer) {
+            setIsMinimized(true);
+            setShowTrackList(false);
+          }
+        }}
+        onClick={() => {
+          if (isMinimized) {
+            setIsMinimized(false);
+          }
+        }}
+        style={{
+          position: isMobileDrawer ? 'relative' : 'absolute',
+          bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '250px' : '68px')),
+          top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
+          left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
+          right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
+          width: isMinimized ? '54px' : (isMobileDrawer ? '100%' : '380px'),
+          maxWidth: isMobileDrawer ? '320px' : 'none',
+          height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '54px'),
+          borderRadius: '27px',
+          padding: isMinimized ? '10px' : (isMobileDrawer ? '12px' : '8px 16px'),
+          margin: isMobileDrawer ? '0 auto' : '0',
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          gap: isMinimized ? '0px' : '12px',
+          overflow: isMinimized ? 'hidden' : 'visible',
+          cursor: isMinimized ? 'pointer' : 'default',
+          transition: 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          fontFamily: 'Outfit, sans-serif',
+          border: '1px solid rgba(255, 255, 255, 0.16)'
+        }}
+      >
 
       {/* Rotating Music Disc Icon (Leftmost Artwork) */}
       <div 
@@ -432,6 +433,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 justifyContent: 'center',
                 color: '#0a0c10',
                 cursor: 'pointer',
+                padding: 0,
                 boxShadow: '0 4px 12px rgba(255, 255, 255, 0.25)',
                 transition: 'all 0.2s ease'
               }}
@@ -588,6 +590,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         )}
       </div>
     </SpatialCard>
+    </>
   );
 }
 
@@ -908,10 +911,10 @@ export default function PresentationApp({ forceAdmin = false }) {
 
       {/* Mobile Full-Screen Menu Overlay */}
       <div style={{
-        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100dvh',
         background: 'rgba(10, 12, 18, 0.98)', backdropFilter: 'blur(30px)',
         zIndex: 101, 
-        padding: '100px 24px 40px', overflowY: 'auto',
+        padding: '100px 24px 120px', overflowY: 'auto',
         opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
         transition: 'opacity 0.3s ease, transform 0.3s ease',
         transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(-20px)'
