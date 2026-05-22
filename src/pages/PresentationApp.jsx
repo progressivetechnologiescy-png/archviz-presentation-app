@@ -41,11 +41,11 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
         whiteSpace: 'nowrap',
         flexShrink: 0,
         opacity: 1,
-        padding: isMobile ? '16px 24px' : undefined,
+        padding: isMobile ? '12px 16px' : undefined,
         width: isMobile ? '100%' : 'auto',
         justifyContent: isMobile ? 'flex-start' : 'center',
-        fontSize: isMobile ? '18px' : undefined,
-        gap: isMobile ? '16px' : undefined,
+        fontSize: isMobile ? '14px' : undefined,
+        gap: isMobile ? '10px' : undefined,
         zIndex: isMobile ? undefined : 2,
         position: isMobile ? undefined : 'relative'
       }}
@@ -53,8 +53,8 @@ const TabButton = ({ btnRef, active, icon, label, onClick, isMobile }) => {
       <IconToRender 
         className="nav-tab-icon" 
         style={{
-          width: isMobile ? '24px' : '16px',
-          height: isMobile ? '24px' : '16px',
+          width: isMobile ? '18px' : '16px',
+          height: isMobile ? '18px' : '16px',
           display: isMobile ? 'block' : 'inline-block',
           color: active 
             ? '#ffffff' 
@@ -248,15 +248,15 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
           width: isMinimized ? '54px' : (isMobileDrawer ? '100%' : '380px'),
           maxWidth: isMobileDrawer ? '320px' : 'none',
-          height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '54px'),
-          borderRadius: '27px',
-          padding: isMinimized ? '10px' : (isMobileDrawer ? '12px' : '8px 16px'),
+          height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '58px'),
+          borderRadius: isMinimized ? '27px' : (isMobileDrawer ? '24px' : '29px'),
+          padding: isMinimized ? '0px' : (isMobileDrawer ? '12px' : '6px 16px'),
           margin: isMobileDrawer ? '0 auto' : '0',
           zIndex: 100,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'flex-start',
+          justifyContent: isMinimized ? 'center' : 'flex-start',
           gap: isMinimized ? '0px' : '12px',
           overflow: isMinimized ? 'hidden' : 'visible',
           cursor: isMinimized ? 'pointer' : 'default',
@@ -370,7 +370,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         transition: 'opacity 0.2s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
         whiteSpace: 'nowrap',
         gap: isMobileDrawer ? '8px' : '12px',
-        overflow: 'hidden'
+        overflow: isMinimized ? 'hidden' : 'visible'
       }}>
         {/* Row for Track info and control buttons */}
         <div style={{
@@ -914,10 +914,15 @@ export default function PresentationApp({ forceAdmin = false }) {
         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100dvh',
         background: 'rgba(10, 12, 18, 0.98)', backdropFilter: 'blur(30px)',
         zIndex: 101, 
-        padding: '100px 24px 120px', overflowY: 'auto',
+        padding: '80px 24px 32px', overflowY: 'auto',
         opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
         transition: 'opacity 0.3s ease, transform 0.3s ease',
-        transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(-20px)'
+        transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(-20px)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '24px'
       }}>
         {/* Close Button to Exit Mobile Drawer */}
         <button 
@@ -926,10 +931,10 @@ export default function PresentationApp({ forceAdmin = false }) {
           title="Close Menu"
           style={{
             position: 'absolute',
-            top: '24px',
+            top: '20px',
             right: '24px',
-            width: '48px',
-            height: '48px',
+            width: '44px',
+            height: '44px',
             borderRadius: '50%',
             background: 'rgba(16, 18, 26, 0.45)',
             border: '1px solid rgba(255, 255, 255, 0.14)',
@@ -942,10 +947,18 @@ export default function PresentationApp({ forceAdmin = false }) {
             zIndex: 102
           }}
         >
-          <X size={24} color="#ffffff" />
+          <X size={20} color="#ffffff" />
         </button>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 'none' }}>
+        {/* Top Section: Tab Buttons Grid */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(2, 1fr)', 
+          gap: '8px', 
+          width: '100%',
+          maxWidth: '340px',
+          flex: 'none' 
+        }}>
           <TabButton active={activeTab === 'overview'} icon={Info} label="Overview" isMobile onClick={() => setActiveTab('overview')} />
           <TabButton active={activeTab === 'renders'} icon={ImageIcon} label="Renders" isMobile onClick={() => setActiveTab('renders')} />
           <TabButton active={activeTab === 'cinematics'} icon={Video} label="Videos" isMobile onClick={() => setActiveTab('cinematics')} />
@@ -956,10 +969,19 @@ export default function PresentationApp({ forceAdmin = false }) {
           <TabButton active={activeTab === '3d'} icon={Component} label="3D Interactive" isMobile onClick={() => setActiveTab('3d')} />
         </div>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
+        {/* Bottom Section: Ambient Music and/or Admin button */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '12px', 
+          width: '100%',
+          maxWidth: '340px',
+          flex: 'none',
+          marginBottom: '16px'
+        }}>
           {activeTab !== 'manage' && (
-            <div style={{ marginBottom: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'Outfit, sans-serif', width: '100%', maxWidth: '320px', textAlign: 'left' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+              <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'Outfit, sans-serif', width: '100%', textAlign: 'left', paddingLeft: '8px' }}>
                 Ambient Music
               </div>
               <AmbientSoundPlayer isMobileDrawer={true} />
@@ -969,8 +991,8 @@ export default function PresentationApp({ forceAdmin = false }) {
             <button 
               onClick={() => setActiveTab('manage')}
               className="dark-obsidian-panel" 
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '16px', borderRadius: '16px', background: activeTab === 'manage' ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)', border: activeTab === 'manage' ? 'none' : '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
-              <Settings size={24} /> Manage
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '12px', borderRadius: '14px', background: activeTab === 'manage' ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)', border: activeTab === 'manage' ? 'none' : '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 'bold', fontSize: '15px' }}>
+              <Settings size={20} /> Manage
             </button>
           )}
         </div>
