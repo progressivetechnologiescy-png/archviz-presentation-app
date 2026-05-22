@@ -25,17 +25,21 @@ const ArrowButton = (props) => {
 
 export default function VirtualRemote() {
   const setMovement = useViewerStore(state => state.setMovement);
+  const controlMode = useViewerStore(state => state.controlMode);
+
+  // Only render walking virtual pads when actively in Walk Explorer mode
+  if (controlMode !== 'walk') return null;
 
   return (
     <>
       <style>{`
         .virtual-joystick-left {
-          position: absolute; bottom: 30px; left: 380px; z-index: 100;
+          position: absolute; bottom: 30px; left: 32px; z-index: 100;
           padding: 16px; border-radius: 24px;
           display: grid; grid-template-columns: repeat(4, 48px); grid-template-rows: repeat(2, 48px); gap: 8px;
         }
         .virtual-joystick-right {
-          position: absolute; bottom: 30px; right: 380px; z-index: 100;
+          position: absolute; bottom: 30px; right: 32px; z-index: 100;
           padding: 12px 16px; border-radius: 24px;
           display: flex; gap: 8px; align-items: center;
         }
