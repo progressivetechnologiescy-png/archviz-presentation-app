@@ -113,10 +113,10 @@ export default function ProjectOverview({ onNavigate }) {
         
         <div className="overview-content glass-panel" style={{ 
           textAlign: 'center',
-          background: 'rgba(10, 12, 16, 0.72)',
+          background: 'rgba(10, 12, 16, 0.32)',
           border: '1px solid rgba(255, 255, 255, 0.16)',
-          backdropFilter: 'blur(30px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+          backdropFilter: 'blur(40px) saturate(220%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(220%)',
           boxShadow: '0 24px 64px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
           maxHeight: 'calc(100vh - 120px)',
           overflowY: 'auto'

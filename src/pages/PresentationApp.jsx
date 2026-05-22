@@ -213,10 +213,10 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         title="Maximize soundtrack player"
         style={{
           position: isMobileDrawer ? 'relative' : 'absolute',
-          bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '250px' : '68px')),
-          top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : 'auto'),
+          bottom: isMobileDrawer ? 'auto' : (isMobile ? 'auto' : (activeTab === 'overview' ? 'auto' : (activeTab === '3d' && controlMode === 'walk' && isTouchDevice ? '250px' : '68px'))),
+          top: isMobileDrawer ? 'auto' : (isMobile ? '96px' : (activeTab === 'overview' ? '96px' : 'auto')),
           left: isMobileDrawer ? 'auto' : (isMobile ? '16px' : '32px'),
-          right: isMobileDrawer ? 'auto' : (isMobile ? '16px' : 'auto'),
+          right: 'auto',
           width: '54px',
           height: '54px',
           borderRadius: '50%',
@@ -916,14 +916,7 @@ export default function PresentationApp({ forceAdmin = false }) {
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '32px' }}>
-          {activeTab !== 'manage' && isMobileDevice && (
-            <div style={{ marginBottom: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'Outfit, sans-serif', width: '100%', maxWidth: '320px', textAlign: 'left' }}>
-                Ambient Music
-              </div>
-              <AmbientSoundPlayer isMobileDrawer={true} />
-            </div>
-          )}
+
 
 
 
@@ -998,7 +991,7 @@ export default function PresentationApp({ forceAdmin = false }) {
       </div>
 
       {/* Premium ambient soundtrack player loop */}
-      {activeTab !== 'manage' && !isMobileDevice && <AmbientSoundPlayer activeTab={activeTab} />}
+      {activeTab !== 'manage' && <AmbientSoundPlayer activeTab={activeTab} />}
 
       {/* Global Footer Watermark */}
       <div style={{
