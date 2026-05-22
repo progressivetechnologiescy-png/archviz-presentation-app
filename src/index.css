@@ -307,9 +307,9 @@ body.light-mode .dark-obsidian-panel {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.25) !important;
-  border-radius: 2px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
   outline: none;
   cursor: pointer;
   margin: 0;
@@ -319,7 +319,7 @@ body.light-mode .dark-obsidian-panel {
 }
 
 .dark-obsidian-panel input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px;
+  height: 6px;
   background: transparent;
   border: none;
 }
@@ -327,46 +327,46 @@ body.light-mode .dark-obsidian-panel {
 .dark-obsidian-panel input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  margin-top: -3px; /* Centers 10px thumb vertically on 4px track */
+  margin-top: -4px; /* Centers 14px thumb vertically on 6px track */
   transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .dark-obsidian-panel input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.3);
+  transform: scale(1.25);
 }
 
 /* Firefox Support */
 .dark-obsidian-panel input[type="range"]::-moz-range-track {
-  height: 4px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
   border: none;
 }
 
 .dark-obsidian-panel input[type="range"]::-moz-range-progress {
   background: #ffffff;
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 3px;
 }
 
 .dark-obsidian-panel input[type="range"]::-moz-range-thumb {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: #ffffff;
   border: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
 .dark-obsidian-panel input[type="range"]:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.45);
 }
 
 

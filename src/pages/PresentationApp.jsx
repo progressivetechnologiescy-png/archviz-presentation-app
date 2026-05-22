@@ -233,7 +233,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
         maxWidth: isMobileDrawer ? '320px' : 'none',
         height: isMinimized ? '54px' : (isMobileDrawer ? 'auto' : '54px'),
         borderRadius: '27px',
-        padding: isMinimized ? '10px' : (isMobileDrawer ? '12px' : '10px 16px'),
+        padding: isMinimized ? '10px' : (isMobileDrawer ? '12px' : '8px 16px'),
         margin: isMobileDrawer ? '0 auto' : '0',
         zIndex: 100,
         display: 'flex',
@@ -358,7 +358,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
 
       {/* Expanded Controls Panel Wrapper */}
       <div style={{
-        display: 'flex',
+        display: isMinimized ? 'none' : 'flex',
         flexDirection: isMobileDrawer ? 'column' : 'row',
         alignItems: isMobileDrawer ? 'stretch' : 'center',
         flex: 1,
@@ -403,6 +403,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
               style={{
                 background: 'transparent',
                 border: 'none',
+                outline: 'none',
                 color: 'rgba(255, 255, 255, 0.6)',
                 cursor: 'pointer',
                 padding: '4px',
@@ -422,6 +423,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
               style={{
                 background: '#ffffff',
                 border: 'none',
+                outline: 'none',
                 width: '28px',
                 height: '28px',
                 borderRadius: '50%',
@@ -444,6 +446,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
               style={{
                 background: 'transparent',
                 border: 'none',
+                outline: 'none',
                 color: 'rgba(255, 255, 255, 0.6)',
                 cursor: 'pointer',
                 padding: '4px',
@@ -465,6 +468,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 style={{
                   background: 'transparent',
                   border: 'none',
+                  outline: 'none',
                   color: 'rgba(255, 255, 255, 0.45)',
                   cursor: 'pointer',
                   padding: '4px',
@@ -514,7 +518,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
             }}>
               <button 
                 onClick={toggleMute}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+                style={{ background: 'transparent', border: 'none', outline: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
                 onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
               >
@@ -536,7 +540,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                   minWidth: '0',
                   margin: 0,
                   padding: 0,
-                  background: `linear-gradient(to right, #ffffff ${((isMuted ? 0 : volume) * 100)}%, rgba(255, 255, 255, 0.25) ${((isMuted ? 0 : volume) * 100)}%)`
+                  background: `linear-gradient(to right, #ffffff ${((isMuted ? 0 : volume) * 100)}%, rgba(255, 255, 255, 0.35) ${((isMuted ? 0 : volume) * 100)}%)`
                 }}
               />
             </div>
@@ -556,7 +560,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
           }}>
             <button 
               onClick={toggleMute}
-              style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0, flexShrink: 0 }}
+              style={{ background: 'transparent', border: 'none', outline: 'none', color: 'rgba(255, 255, 255, 0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0, flexShrink: 0 }}
             >
               {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
@@ -577,7 +581,7 @@ function AmbientSoundPlayer({ isMobileDrawer = false, activeTab = 'overview' }) 
                 minWidth: '0',
                 margin: 0,
                 padding: 0,
-                background: `linear-gradient(to right, #ffffff ${((isMuted ? 0 : volume) * 100)}%, rgba(255, 255, 255, 0.25) ${((isMuted ? 0 : volume) * 100)}%)`
+                background: `linear-gradient(to right, #ffffff ${((isMuted ? 0 : volume) * 100)}%, rgba(255, 255, 255, 0.35) ${((isMuted ? 0 : volume) * 100)}%)`
               }}
             />
           </div>

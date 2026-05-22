@@ -87,7 +87,7 @@ export default function ProjectOverview({ onNavigate }) {
       {/* Dark Overlay for Readability */}
       <div style={{
         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-        background: 'radial-gradient(circle at center, rgba(10,12,16,0.2) 0%, rgba(10,12,16,0.85) 100%)',
+        background: 'radial-gradient(circle at center, rgba(10,12,16,0.05) 0%, rgba(10,12,16,0.45) 100%)',
         zIndex: 3,
         pointerEvents: 'none'
       }} />
@@ -113,11 +113,11 @@ export default function ProjectOverview({ onNavigate }) {
         
         <div className="overview-content glass-panel" style={{ 
           textAlign: 'center',
-          background: 'rgba(10, 12, 16, 0.32)',
+          background: 'rgba(16, 18, 26, 0.25)',
           border: '1px solid rgba(255, 255, 255, 0.16)',
-          backdropFilter: 'blur(40px) saturate(220%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(220%)',
-          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+          backdropFilter: 'blur(12px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
           maxHeight: 'calc(100vh - 120px)',
           overflowY: 'auto'
         }}>
