@@ -34,12 +34,14 @@ export default function MobileARView({ isEmbedded = false }) {
 
   const accentGlow = `${accentColor}40`; // 25% opacity
 
-  // Determine the active model URL
-  const modelUrl = primaryModel || customGLB || customFBX || '';
+  // Determine the active model URL. For AR drops, ALWAYS prioritize the GLB file if available since FBX cannot be loaded in <model-viewer>!
+  const modelUrl = customGLB || (primaryModel && !primaryModel.toLowerCase().endsWith('.fbx') && !primaryModel.toLowerCase().endsWith('.obj') ? primaryModel : '') || customFBX || '';
   const isGLTF = modelUrl.toLowerCase().endsWith('.glb') || modelUrl.toLowerCase().endsWith('.gltf') || (modelUrl && !modelUrl.includes('sketchfab.com') && !modelUrl.toLowerCase().endsWith('.fbx') && !modelUrl.toLowerCase().endsWith('.obj'));
   const isSketchfab = modelUrl && modelUrl.includes('sketchfab.com');
-  const isFBX = modelUrl.toLowerCase().endsWith('.fbx') || modelUrl.toLowerCase().endsWith('.obj');
-  const isSamplePreview = !modelUrl;
+  
+  const isDefaultFBX = modelUrl === '/3D_FINAL.fbx' || modelUrl.endsWith('/3D_FINAL.fbx');
+  const isSamplePreview = !modelUrl || isDefaultFBX;
+  const isFBX = (modelUrl.toLowerCase().endsWith('.fbx') || modelUrl.toLowerCase().endsWith('.obj')) && !isDefaultFBX;
 
   // Use the explicitly uploaded GLB for Android/WebXR, or default to Astronaut
   const androidSrc = isGLTF ? modelUrl : (isSamplePreview ? 'https://modelviewer.dev/shared-assets/models/Astronaut.glb' : '');
