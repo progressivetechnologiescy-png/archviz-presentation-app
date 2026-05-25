@@ -1073,34 +1073,36 @@ export default function PresentationApp({ forceAdmin = false }) {
       {/* Premium ambient soundtrack player loop */}
       {activeTab !== 'manage' && !isMobileDevice && <AmbientSoundPlayer activeTab={activeTab} />}
 
-      {/* Global Footer Watermark */}
-      <div style={{
-        position: 'absolute', 
-        bottom: (activeTab === '3d' && controlMode === 'walk' && isTouchDevice) ? '8px' : '32px', 
-        left: (activeTab === '3d' && controlMode === 'walk' && isTouchDevice) ? '48px' : '32px',  
-        zIndex: 100,
-        pointerEvents: 'auto', 
-        display: 'flex', 
-        alignItems: 'center',
-        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
-      }}>
-        <a 
-          href="https://progressivetechnologies.com.cy/" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{
-            color: 'rgba(255,255,255,0.4)', fontSize: '12px', textDecoration: 'none',
-            fontFamily: 'Outfit, sans-serif', letterSpacing: '0.5px', transition: 'color 0.2s ease',
-            textShadow: '0 1px 4px rgba(0,0,0,0.8)'
-          }}
-          onMouseEnter={(e) => e.target.style.color = 'rgba(255,255,255,0.9)'}
-          onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.4)'}
-        >
-          Developed by <strong>Progressive Technologies</strong>
-        </a>
-      </div>
+      {/* Global Footer Watermark - Hidden on mobile during full-screen AR drops */}
+      {(!isMobileDevice || activeTab !== '3d') && (
+        <div style={{
+          position: 'absolute', 
+          bottom: (activeTab === '3d' && controlMode === 'walk' && isTouchDevice) ? '8px' : '32px', 
+          left: (activeTab === '3d' && controlMode === 'walk' && isTouchDevice) ? '48px' : '32px',  
+          zIndex: 100,
+          pointerEvents: 'auto', 
+          display: 'flex', 
+          alignItems: 'center',
+          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+        }}>
+          <a 
+            href="https://progressivetechnologies.com.cy/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              color: 'rgba(255,255,255,0.4)', fontSize: '12px', textDecoration: 'none',
+              fontFamily: 'Outfit, sans-serif', letterSpacing: '0.5px', transition: 'color 0.2s ease',
+              textShadow: '0 1px 4px rgba(0,0,0,0.8)'
+            }}
+            onMouseEnter={(e) => e.target.style.color = 'rgba(255,255,255,0.9)'}
+            onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.4)'}
+          >
+            Developed by <strong>Progressive Technologies</strong>
+          </a>
+        </div>
+      )}
 
-      {activeTab !== 'standalone' && (!isMobileDevice || !isMobileMenuOpen) && <FloatingConcierge />}
+      {activeTab !== 'standalone' && (!isMobileDevice || !isMobileMenuOpen) && (!isMobileDevice || activeTab !== '3d') && <FloatingConcierge />}
       {isShareModalOpen && <ShareModal onClose={() => setIsShareModalOpen(false)} />}
     </div>
   );
