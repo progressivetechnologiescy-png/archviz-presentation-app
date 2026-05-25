@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useViewerStore } from '../store/viewerStore';
 import { supabase } from '../lib/supabase';
 
@@ -12,6 +12,9 @@ export default function MobileARView({ isEmbedded = false }) {
     fetchCloudAssets,
     accentColor = '#3b82f6'
   } = useViewerStore();
+
+  const [bypassOffline, setBypassOffline] = useState(false);
+  const isDbOffline = !supabase && !bypassOffline;
   
   useEffect(() => {
     fetchCloudAssets(supabase);
@@ -69,6 +72,100 @@ export default function MobileARView({ isEmbedded = false }) {
     viewer.addEventListener('load', handleLoad);
     return () => viewer.removeEventListener('load', handleLoad);
   }, [androidSrc]);
+
+  // 0. Premium Obsidian Glass Warning modal for offline database configurations on mobile devices
+  if (isDbOffline) {
+    return (
+      <div style={{
+        width: '100vw', height: '100dvh',
+        background: 'linear-gradient(to bottom, #111216, #060709)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        fontFamily: 'Outfit, sans-serif', color: 'white', padding: '24px', boxSizing: 'border-box'
+      }}>
+        <div className="glass-panel" style={{
+          background: 'rgba(18, 20, 28, 0.85)',
+          border: '1px solid rgba(239, 68, 68, 0.25)',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
+          borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', textAlign: 'center', maxWidth: '440px', width: '100%',
+          backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)'
+        }}>
+          {/* Warning Icon */}
+          <div style={{
+            background: 'rgba(239, 68, 68, 0.12)', borderRadius: '50%',
+            width: '56px', height: '56px', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', marginBottom: '20px', boxShadow: '0 0 20px rgba(239, 68, 68, 0.15)'
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 'bold' }}>Vercel Config Missing</h3>
+          <p style={{ margin: '0 0 24px 0', fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.5' }}>
+            This mobile device cannot load your custom 3D files because the **Supabase Environment Variables** have not been added to your production hosting (Vercel) dashboard.
+          </p>
+
+          <div style={{
+            width: '100%', background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px',
+            padding: '16px', textAlign: 'left', marginBottom: '24px', boxSizing: 'border-box'
+          }}>
+            <h4 style={{ margin: '0 0 8px 0', fontSize: '12px', textTransform: 'uppercase', color: accentColor, fontWeight: 'bold', letterSpacing: '0.5px' }}>
+              How to fix this:
+            </h4>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '8px' }}>
+              <span style={{ color: accentColor, fontWeight: 'bold', fontSize: '13px' }}>1.</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4' }}>
+                Open your **Vercel Project Settings** and navigate to the **Environment Variables** tab.
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '8px' }}>
+              <span style={{ color: accentColor, fontWeight: 'bold', fontSize: '13px' }}>2.</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4' }}>
+                Add **`VITE_SUPABASE_URL`** & **`VITE_SUPABASE_ANON_KEY`** (copied from your local `.env` file).
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+              <span style={{ color: accentColor, fontWeight: 'bold', fontSize: '13px' }}>3.</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4' }}>
+                Redeploy the project in Vercel to apply the configuration.
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+            <button
+              onClick={() => {
+                alert("To add them:\n\n1. Copy the VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY values from your local project's .env file.\n2. Paste them into Vercel project's Environment Variables dashboard.");
+              }}
+              style={{
+                width: '100%', padding: '14px', borderRadius: '12px', border: 'none',
+                background: accentColor, color: '#ffffff',
+                fontWeight: 'bold', fontSize: '15px', cursor: 'pointer',
+                boxShadow: `0 8px 24px ${accentGlow}`, transition: 'all 0.3s'
+              }}
+            >
+              Show Variable Guidelines
+            </button>
+            <button
+              onClick={() => setBypassOffline(true)}
+              style={{
+                width: '100%', padding: '14px', borderRadius: '12px',
+                background: 'rgba(255, 255, 255, 0.05)', color: 'rgba(255,255,255,0.7)',
+                border: '1px solid rgba(255, 255, 255, 0.1)', cursor: 'pointer',
+                fontWeight: 'bold', fontSize: '14px'
+              }}
+            >
+              Load Sample Preview Anyway
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 1. Premium glassmorphic loader while fetching cloud records
   if (isFetchingAssets) {
