@@ -409,51 +409,41 @@ export default function MobileARView({ isEmbedded = false }) {
           camera-controls 
           touch-action="pan-y"
           auto-rotate
+          camera-orbit="0deg 75deg 180%"
           shadow-intensity="0.5"
           shadow-softness="1"
           style={{ width: '100%', height: '100%', '--poster-color': 'transparent' }}
         >
-        </model-viewer>
-
-        {/* AR Controls Area */}
-        <div style={{ 
-          position: 'absolute', bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', 
-          left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px',
-          width: '100%', maxWidth: '350px'
-        }}>
-          
-          {/* Instructions Banner */}
-          <div style={{
-            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px',
-            padding: '12px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.9)'
-          }}>
-            <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
-              <strong>Manual Control Enabled</strong><br/>
-              Pinch to scale • Drag to position • Double-tap to reset
-            </p>
-          </div>
-
-          {/* Custom AR Button */}
+          {/* Slotted Custom AR Button - bound natively by model-viewer for flawless touch trigger */}
           <button 
-            onClick={() => {
-              const viewer = document.getElementById('ar-viewer');
-              if (viewer && viewer.activateAR) {
-                viewer.activateAR();
-              } else {
-                alert("AR is initializing or not supported on this specific device/browser.");
-              }
-            }}
+            slot="ar-button"
             style={{ 
+              position: 'absolute', bottom: '32px', 
+              left: '50%', transform: 'translateX(-50%)',
               background: 'var(--accent-color)', color: 'white', border: 'none', 
               padding: '16px 32px', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px',
               fontFamily: 'Outfit, sans-serif', boxShadow: '0 8px 24px var(--accent-glow)',
-              cursor: 'pointer', zIndex: 1000, whiteSpace: 'nowrap', width: '100%'
+              cursor: 'pointer', zIndex: 1000, whiteSpace: 'nowrap', width: '90%', maxWidth: '350px',
+              display: 'block'
             }}
           >
             Drop in AR
           </button>
+        </model-viewer>
+
+        {/* Instructions Banner - Positioned right above the slotted AR button */}
+        <div style={{
+          position: 'absolute', bottom: '112px', 
+          left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px',
+          padding: '12px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.9)',
+          width: '90%', maxWidth: '320px', pointerEvents: 'none', zIndex: 999
+        }}>
+          <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>
+            <strong>Manual Control Enabled</strong><br/>
+            Pinch to scale • Drag to position • Double-tap to reset
+          </p>
         </div>
       </div>
 
